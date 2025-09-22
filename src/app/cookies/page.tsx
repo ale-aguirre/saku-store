@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { CopyBlock } from '@/types/content'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Política de Cookies | Sakú Lencería',
   description: 'Información sobre el uso de cookies en Sakú Lencería',

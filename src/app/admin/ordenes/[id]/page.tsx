@@ -158,7 +158,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
     if (user && !authLoading && orderId) {
       fetchOrder()
     }
-  }, [user, orderId, fetchOrder])
+  }, [user, authLoading, orderId, fetchOrder])
 
   const updateOrderStatus = async (newStatus: string) => {
     if (!order) return

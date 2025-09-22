@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { CopyBlock } from '@/types/content'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Política de Privacidad | Sakú Lencería',
   description: 'Política de privacidad y protección de datos de Sakú Lencería',

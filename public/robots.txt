@@ -1,0 +1,12 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /auth/
+Disallow: /api/
+
+# Host
+Host: https://saku-store.vercel.app
+
+# Sitemaps
+Sitemap: https://saku-store.vercel.app/sitemap.xml
