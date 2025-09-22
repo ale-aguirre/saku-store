@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Inter, Marcellus } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { GoogleAnalytics } from "@/components/analytics/google-analytics";
+import { MetaPixel } from "@/components/analytics/meta-pixel";
+import { ConsentBanner } from "@/components/consent-banner";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -26,6 +29,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
+      <head>
+        <GoogleAnalytics />
+        <MetaPixel />
+      </head>
       <body
         className={`${inter.variable} ${marcellus.variable} font-sans antialiased`}
       >
@@ -36,6 +43,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <ConsentBanner />
         </ThemeProvider>
       </body>
     </html>
