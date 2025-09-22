@@ -43,7 +43,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
+      <div className="container flex h-16 items-center justify-between px-safe-x max-w-safe mx-auto">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
           <Image
@@ -142,7 +142,7 @@ export function Header() {
           )}
 
           <CartDrawer>
-            <Button variant="ghost" size="icon" className="relative">
+            <Button variant="ghost" size="icon" className="relative" data-testid="cart-trigger">
               <ShoppingBag className="h-4 w-4" />
               <span className="sr-only">Carrito</span>
               {/* Cart count badge */}

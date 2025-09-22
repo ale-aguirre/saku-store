@@ -49,12 +49,13 @@ const SIZES = ['85', '90', '95', '100']
 const COLORS = ['Negro', 'Rojo', 'Blanco']
 const CATEGORIES = ['Brasieres', 'Conjuntos', 'Bombachas', 'Camisones']
 
-export default function EditProductPage({ params }: { params: { id: string } }) {
+export default function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { user, loading: authLoading } = useAuth()
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [product, setProduct] = useState<Product | null>(null)
+  const [productId, setProductId] = useState<string>('')
   
   // Product form data
   const [formData, setFormData] = useState({
@@ -75,7 +76,16 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
     sku: ''
   })
 
+  // Resolve params promise
+  useEffect(() => {
+    params.then(resolvedParams => {
+      setProductId(resolvedParams.id)
+    })
+  }, [params])
+
   const fetchProduct = useCallback(async () => {
+    if (!productId) return
+    
     try {
       const supabase = createClient()
       
@@ -83,7 +93,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
       const { data: productData, error: productError } = await supabase
         .from('products')
         .select('*')
-        .eq('id', params.id)
+        .eq('id', productId)
         .single()
 
       if (productError) throw productError
@@ -103,7 +113,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
       const { data: variantsData, error: variantsError } = await supabase
         .from('product_variants')
         .select('*')
-        .eq('product_id', params.id)
+        .eq('product_id', productId)
 
       if (variantsError) throw variantsError
 
@@ -114,13 +124,13 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
     } finally {
       setLoading(false)
     }
-  }, [params.id])
+  }, [productId])
 
   useEffect(() => {
-    if (user) {
+    if (user && productId) {
       fetchProduct()
     }
-  }, [user, params.id, fetchProduct])
+  }, [user, productId, fetchProduct])
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -153,7 +163,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
       const { data, error } = await (supabase as any)
         .from('product_variants')
         .insert({
-          product_id: params.id,
+          product_id: productId,
           size: newVariant.size,
           color: newVariant.color,
           stock: newVariant.stock,
@@ -235,7 +245,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
           status: formData.status,
           image_url: formData.image_url || null
         })
-        .eq('id', params.id)
+        .eq('id', productId)
 
       if (productError) throw productError
 

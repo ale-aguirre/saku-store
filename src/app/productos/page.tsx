@@ -29,7 +29,7 @@ function ProductCard({ product }: { product: Product }) {
     : `$${minPrice.toLocaleString()} - $${maxPrice.toLocaleString()}`
 
   return (
-    <Link href={`/productos/${product.id}`} className="group">
+    <Link href={`/productos/${product.id}`} className="group" data-testid="product-card">
       <Card className="overflow-hidden border-0 shadow-sm hover:shadow-md transition-shadow">
         <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
           {product.image_url ? (
@@ -227,9 +227,9 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="py-8">
+    <div className="space-y-safe-section px-safe-x py-safe-y">
       {/* Header */}
-      <div className="mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-safe-y">
         <h1 className="text-3xl font-serif font-normal mb-4">Nuestros Productos</h1>
         <p className="text-muted-foreground">
           Descubre toda nuestra colección de lencería premium

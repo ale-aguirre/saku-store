@@ -60,3 +60,46 @@
 - **F1 MVP Sales**: Home/PLP/PDP, Cart (drawer) + coupons, Shipping (flat + Cordoba courier), Checkout Pro, orders pending→paid, Admin MVP, transactional emails.
 - **F2 Ops & CRM**: MP webhook, tracking link, n8n Cloud (abandoned cart, NPS, RFM, winback), Admin automations & campaigns, WhatsApp BSP templates.
 - **F3 Optimization**: Bricks checkout (optional), advanced filters/search, wishlist, reviews, bundles, A/B tests, CWV, reports (CR, AOV, % recovered, NPS, RFM).
+### Environment Variables Policy (MVP)
+Use as few env vars as possible. Prefer DB-backed settings (`site_settings`, `copy_blocks`) before adding new envs. Any new env var must be justified in the PR.
+
+**Allowed (MVP)**
+- NEXT_PUBLIC_SUPABASE_URL
+- NEXT_PUBLIC_SUPABASE_ANON_KEY
+- SUPABASE_SERVICE_ROLE  # server only
+- MP_ACCESS_TOKEN        # test/prod
+- SMTP_HOST, SMTP_PORT, SMTP_SECURE, SMTP_USER, SMTP_PASS, SMTP_FROM
+- GA4_ID, META_PIXEL_ID
+
+### Data Model Canon
+The canonical schema lives in `AI_QA_CONTEXT.md`.
+- Inventory is per-variant (size × color).
+- Orders store a snapshot of items/prices at purchase time.
+- Schema changes require: migration script, backfill plan, and updating `AI_QA_CONTEXT.md`.
+
+### UI/UX Spacing & Layout Guardrails
+- Safe areas: never flush UI to screen edges.
+- Containers: max-width ~1280–1440px; padding `px-4` (mobile), `md:px-6`, `lg:px-8`.
+- Vertical rhythm: 8-pt scale.
+- Tap targets ≥ 44×44px; line-height ≥ 1.5; body ≥ 14–16px.
+- Grid gutters: ≥16px mobile, ≥24px tablet/desktop.
+- Critical pages (Home/PLP/PDP/Checkout/Admin): require a spacing pass before merge.
+
+## Git Workflow (mandatory)
+- **Branches**
+  - `main` → production (protected; PR from release/hotfix only)
+  - `develop` → integration (default PR target)
+  - Short-lived: `feature/*`, `fix/*`, `hotfix/*`, `chore/*`, `docs/*`, `refactor/*`, `perf/*`, `test/*`
+- **Naming**
+  - `feature/catalog-variant-selector`, `fix/mp-webhook-retry`, `hotfix/checkout-crash`
+- **Commits**: Conventional Commits
+  - `feat: add variant selector to PDP`
+  - `fix: handle MP webhook idempotency`
+- **PR Policy**
+  - Target `develop`, squash-merge, CI (build, lint, tests) must pass. ≥1 review.
+  - Include scope, screenshots (UI), acceptance criteria checklist.
+- **Releases**
+  - Cut `release/x.y.0` from `develop` → QA → merge to `main` with tag `vX.Y.Z` (SemVer).
+  - Back-merge `main` → `develop` after release.
+- **Hotfix**
+  - Branch `hotfix/...` from `main`, patch, tag, then back-merge to `develop`.

@@ -84,14 +84,26 @@ const ORDER_STATUSES = [
   { value: 'cancelled', label: 'Cancelado' },
 ]
 
-export default function OrderDetailPage({ params }: { params: { id: string } }) {
+export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { user, loading: authLoading } = useAuth()
   const [order, setOrder] = useState<OrderDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [trackingCode, setTrackingCode] = useState('')
   const [isUpdating, setIsUpdating] = useState(false)
+  const [orderId, setOrderId] = useState<string | null>(null)
+
+  // Resolver params como promesa
+  useEffect(() => {
+    const resolveParams = async () => {
+      const resolvedParams = await params
+      setOrderId(resolvedParams.id)
+    }
+    resolveParams()
+  }, [params])
 
   const fetchOrder = useCallback(async () => {
+    if (!orderId) return
+    
     try {
       const supabase = createClient()
       
@@ -125,25 +137,28 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
             created_at
           )
         `)
-        .eq('id', params.id)
+        .eq('id', orderId)
         .single()
 
-      if (error) throw error
+      if (error) {
+        console.error('Error fetching order:', error)
+        return
+      }
 
-      setOrder(data)
-      setTrackingCode((data as any).tracking_code || '')
+      setOrder(data as OrderDetail)
+      setTrackingCode((data as OrderDetail).tracking_code || '')
     } catch (error) {
-      console.error('Error fetching order:', error)
+      console.error('Error:', error)
     } finally {
       setLoading(false)
     }
-  }, [params.id])
+  }, [orderId])
 
   useEffect(() => {
-    if (user) {
+    if (user && !authLoading && orderId) {
       fetchOrder()
     }
-  }, [user, params.id, fetchOrder])
+  }, [user, orderId, fetchOrder])
 
   const updateOrderStatus = async (newStatus: string) => {
     if (!order) return

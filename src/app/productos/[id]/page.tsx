@@ -103,9 +103,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   const isInStock = selectedVariant && selectedVariant.stock_quantity > 0
 
   return (
-    <div className="py-8">
+    <div className="py-safe-y px-safe-x">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
+      <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-safe-y">
         <Link href="/" className="hover:text-foreground">Inicio</Link>
         <span>/</span>
         <Link href="/productos" className="hover:text-foreground">Productos</Link>
@@ -219,6 +219,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 
                 return (
                   <Button
+                    data-testid="size-selector"
                     key={size}
                     variant={selectedSize === size ? "default" : "outline"}
                     size="sm"
@@ -245,6 +246,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 
                 return (
                   <button
+                    data-testid="color-selector"
                     key={color}
                     onClick={() => setSelectedColor(color)}
                     disabled={!hasStock}
@@ -299,6 +301,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           {/* Add to Cart */}
           <div className="space-y-3">
             <Button 
+              data-testid="add-to-cart"
               size="lg" 
               className="w-full bg-[#d8ceb5] text-black hover:bg-[#d8ceb5]/90"
               disabled={!selectedSize || !selectedColor || !isInStock}

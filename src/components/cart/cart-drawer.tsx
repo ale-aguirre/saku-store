@@ -75,11 +75,11 @@ export function CartDrawer({ children }: CartDrawerProps) {
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => open ? openCart() : closeCart()}>
-      <SheetTrigger asChild onClick={openCart}>
+      <SheetTrigger asChild>
         <div className="relative">
           {children}
           {itemCount > 0 && (
-            <Badge 
+            <Badge data-testid="cart-count" 
               className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center bg-[#d8ceb5] text-black text-xs"
             >
               {itemCount}
@@ -112,9 +112,9 @@ export function CartDrawer({ children }: CartDrawerProps) {
         ) : (
           <>
             {/* Cart Items */}
-            <div className="flex-1 overflow-y-auto space-y-4 py-4">
+            <div className="flex-1 overflow-y-auto space-y-safe-y py-safe-y">
               {cartItems.map((item) => (
-                <div key={item.id} className="flex gap-3 p-3 border rounded-lg">
+                <div key={item.id} data-testid="cart-item" className="flex gap-3 p-3 border rounded-lg">
                   <div className="relative w-16 h-20 flex-shrink-0">
                     <Image
                       src={item.image}
@@ -186,12 +186,14 @@ export function CartDrawer({ children }: CartDrawerProps) {
                 <div className="space-y-2">
                   <div className="flex gap-2">
                     <Input
+                      data-testid="coupon-input"
                       placeholder="Código de cupón"
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value)}
                       className="flex-1"
                     />
                     <Button 
+                      data-testid="apply-coupon"
                       onClick={applyCoupon}
                       disabled={!couponCode.trim()}
                       variant="outline"
@@ -209,7 +211,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
                   )}
                 </div>
               ) : (
-                <div className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-950/20 rounded border border-green-200 dark:border-green-800">
+                <div data-testid="discount-applied" className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-950/20 rounded border border-green-200 dark:border-green-800">
                   <div className="flex items-center gap-2">
                     <Tag className="h-4 w-4 text-green-600" />
                     <span className="text-sm font-medium text-green-700 dark:text-green-300">
@@ -263,7 +265,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
               
               <div className="flex justify-between font-semibold">
                 <span>Total</span>
-                <span>${finalTotal.toLocaleString()}</span>
+                <span data-testid="cart-total">${finalTotal.toLocaleString()}</span>
               </div>
             </div>
 

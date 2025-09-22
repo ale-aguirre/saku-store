@@ -59,3 +59,14 @@
 - **NPS**: 0–10 likelihood to recommend, post‑purchase.
 - **RFM**: Recency, Frequency, Monetary segmentation.
 - **BSP**: WhatsApp Business API provider (e.g., 360dialog, Gupshup).
+
+### Non-negotiable Data Rules
+
+Variant = (size, color). Stock, SKU and price live at variant level.
+Orders must store item/price snapshot and Mercado Pago IDs/status.
+Coupons must record per-user limits and a global max-uses counter.
+
+### Layout Defaults (MVP)
+
+Container widths and paddings follow `project_rules.md`.
+Show size guide and hygiene policy on PDP clearly but unobtrusively.

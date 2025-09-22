@@ -40,9 +40,40 @@ export const useCheckout = () => {
     setState(prev => ({ ...prev, error }))
   }
 
+  const isCordobaPostalCode = (postalCode: string): boolean => {
+    // Códigos postales de Córdoba Capital: 5000-5999
+    const code = parseInt(postalCode)
+    return code >= 5000 && code <= 5999
+  }
+
   const getShippingCost = (method: 'nacional' | 'cadete') => {
     // Tarifas de envío según las reglas del proyecto
     return method === 'cadete' ? 2500 : 3500
+  }
+
+  const getAvailableShippingMethods = (postalCode?: string) => {
+    const methods = [
+      {
+        id: 'nacional',
+        name: 'Envío Nacional',
+        description: 'Correo Argentino - 5-7 días hábiles',
+        cost: 3500,
+        available: true
+      }
+    ]
+
+    // Solo agregar cadete si el código postal es de Córdoba
+    if (postalCode && isCordobaPostalCode(postalCode)) {
+      methods.push({
+        id: 'cadete',
+        name: 'Cadete Córdoba',
+        description: 'Solo Córdoba Capital - 1-2 días hábiles',
+        cost: 2500,
+        available: true
+      })
+    }
+
+    return methods
   }
 
   const getTotalWithShipping = (shippingMethod: 'nacional' | 'cadete') => {
@@ -92,6 +123,8 @@ export const useCheckout = () => {
     getTotalPrice,
     getShippingCost,
     getTotalWithShipping,
+    getAvailableShippingMethods,
+    isCordobaPostalCode,
     setShippingData,
     setLoading,
     setError,

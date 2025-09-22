@@ -36,6 +36,8 @@ export default function CheckoutPage() {
     getTotalPrice,
     getShippingCost,
     getTotalWithShipping,
+    getAvailableShippingMethods,
+    isCordobaPostalCode,
     isLoading,
     error,
     createMercadoPagoPreference
@@ -45,6 +47,7 @@ export default function CheckoutPage() {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors }
   } = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),
@@ -54,8 +57,18 @@ export default function CheckoutPage() {
   })
 
   const shippingMethod = watch('shippingMethod')
+  const postalCode = watch('postalCode')
   const shippingCost = getShippingCost(shippingMethod)
   const total = getTotalWithShipping(shippingMethod)
+  
+  // Obtener métodos de envío disponibles según el código postal
+  const availableShippingMethods = getAvailableShippingMethods(postalCode)
+  
+  // Si el método actual no está disponible, cambiar a nacional
+  const currentMethodAvailable = availableShippingMethods.some(method => method.id === shippingMethod)
+  if (!currentMethodAvailable && shippingMethod === 'cadete') {
+    setValue('shippingMethod', 'nacional')
+  }
 
   const onSubmit = async (data: CheckoutFormData) => {
     try {
@@ -79,8 +92,8 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="py-8">
-      <div className="mb-6">
+    <div className="py-safe-y px-safe-x">
+      <div className="mb-safe-y">
         <Link href="/productos" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Volver a productos
@@ -225,32 +238,29 @@ export default function CheckoutPage() {
                    register('shippingMethod').onChange(event)
                  }}
                >
-                <div className="flex items-center space-x-2 p-4 border rounded-lg">
-                  <RadioGroupItem value="nacional" id="nacional" />
-                  <Label htmlFor="nacional" className="flex-1 cursor-pointer">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="font-medium">Envío Nacional</p>
-                        <p className="text-sm text-muted-foreground">Correo Argentino - 5-7 días hábiles</p>
+                {availableShippingMethods.map((method) => (
+                  <div key={method.id} className="flex items-center space-x-2 p-4 border rounded-lg">
+                    <RadioGroupItem value={method.id} id={method.id} />
+                    <Label htmlFor={method.id} className="flex-1 cursor-pointer">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="font-medium">{method.name}</p>
+                          <p className="text-sm text-muted-foreground">{method.description}</p>
+                        </div>
+                        <span className="font-medium">${(method.cost / 100).toLocaleString()}</span>
                       </div>
-                      <span className="font-medium">${(3500 / 100).toLocaleString()}</span>
-                    </div>
-                  </Label>
-                </div>
-
-                <div className="flex items-center space-x-2 p-4 border rounded-lg">
-                  <RadioGroupItem value="cadete" id="cadete" />
-                  <Label htmlFor="cadete" className="flex-1 cursor-pointer">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="font-medium">Cadete Córdoba</p>
-                        <p className="text-sm text-muted-foreground">Solo Córdoba Capital - 1-2 días hábiles</p>
-                      </div>
-                      <span className="font-medium">${(2500 / 100).toLocaleString()}</span>
-                    </div>
-                  </Label>
-                </div>
+                    </Label>
+                  </div>
+                ))}
               </RadioGroup>
+              
+              {postalCode && !isCordobaPostalCode(postalCode) && (
+                <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                    💡 <strong>Tip:</strong> Si estás en Córdoba Capital (CP 5000-5999), tendrás disponible el envío por cadete más económico.
+                  </p>
+                </div>
+              )}
               {errors.shippingMethod && (
                 <p className="text-red-500 text-sm mt-1">{errors.shippingMethod.message}</p>
               )}

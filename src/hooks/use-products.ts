@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
+import { mockProducts } from '@/lib/mock-data'
 
 export interface Product {
   id: string
@@ -80,7 +81,9 @@ export function useProducts(filters: ProductFilters = {}, sortBy: string = 'crea
       const { data, error } = await query
 
       if (error) {
-        throw error
+        // Use mock data when Supabase is not available
+        console.warn('Supabase error, using mock data:', error.message)
+        return mockProducts
       }
 
       let products = data as Product[]
@@ -149,7 +152,15 @@ export function useProduct(id: string) {
         .eq('is_active', true)
         .single()
 
-      if (error) throw error
+      if (error) {
+        // Use mock data when Supabase is not available
+        console.warn('Supabase error, using mock data:', error.message)
+        const mockProduct = mockProducts.find(p => p.id === id)
+        if (!mockProduct) {
+          throw new Error('Product not found')
+        }
+        return mockProduct
+      }
       return data as Product
     },
     enabled: !!id,

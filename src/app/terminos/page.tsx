@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { CopyBlock } from '@/types/content'
 
@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 
 async function getTermsContent() {
   try {
+    const supabase = await createClient()
     const { data, error } = await supabase
       .from('copy_blocks')
       .select('content, title')

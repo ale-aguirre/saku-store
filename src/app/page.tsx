@@ -63,12 +63,12 @@ const features = [
   },
 ]
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="space-y-16">
+    <div className="space-y-safe-section">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-[#d8ceb5]/20 to-[#d8ceb5]/10 py-20 -mx-4 sm:-mx-6 lg:-mx-8">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative h-[60vh] min-h-[400px] flex items-center justify-center bg-gradient-to-r from-primary/10 to-primary/5">
+        <div className="text-center space-y-safe-y px-safe-x">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <Badge variant="secondary" className="w-fit">

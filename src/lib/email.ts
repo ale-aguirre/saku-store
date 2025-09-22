@@ -4,28 +4,41 @@ interface EmailConfig {
   to: string
   subject: string
   html: string
+  text?: string
 }
 
-interface OrderEmailData {
-  orderNumber: string
-  customerName: string
-  total: number
-  items: Array<{
-    name: string
-    quantity: number
-    price: number
-    size: string
-    color: string
-  }>
-  shippingAddress: {
-    firstName: string
-    lastName: string
-    address: string
-    city: string
-    province: string
-    postalCode: string
-  }
+export interface OrderEmailData {
+  customerName?: string
+  orderNumber?: string
+  total?: number
   trackingCode?: string
+  order: {
+    id: string
+    order_number: string
+    user_id: string
+    status: 'pending' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded'
+    payment_status: 'pending' | 'paid' | 'failed' | 'refunded' | 'partially_refunded'
+    created_at: string
+    subtotal: number
+    discount_amount: number
+    shipping_amount: number
+    tax_amount: number
+    total_amount: number
+    shipping_address: any
+    billing_address: any
+    tracking_number?: string | null
+    tracking_url?: string | null
+  }
+  customerEmail: string
+  items: Array<{
+    id: string
+    order_id: string
+    variant_id: string
+    quantity: number
+    unit_price: number
+    total_price: number
+    product_snapshot: any
+  }>
 }
 
 // Configurar transporter de nodemailer
@@ -131,52 +144,93 @@ const getEmailTemplate = (content: string) => `
 
 // Email de confirmación de pedido
 export const sendOrderConfirmationEmail = async (data: OrderEmailData) => {
+  const { order, customerEmail, items } = data
+  const formatPrice = (price: number) => `$${price.toLocaleString('es-AR')}`
+  
   const content = `
-    <h2>¡Gracias por tu compra, ${data.customerName}!</h2>
-    
-    <p>Hemos recibido tu pedido <strong>#${data.orderNumber}</strong> y lo estamos procesando.</p>
+    <h2>¡Gracias por tu compra!</h2>
+    <p>Hemos recibido tu pedido <strong>#${order.order_number}</strong> y lo estamos procesando.</p>
     
     <div class="order-summary">
-      <h3>Resumen del pedido:</h3>
-      ${data.items.map(item => `
+      <h3>Resumen del pedido</h3>
+      <p><strong>Fecha:</strong> ${new Date(order.created_at).toLocaleDateString('es-AR')}</p>
+      <p><strong>Estado:</strong> ${order.status === 'pending' ? 'Pendiente de pago' : 'Confirmado'}</p>
+      
+      ${items.map(item => `
         <div class="item">
           <div>
-            <strong>${item.name}</strong><br>
-            <small>Talle ${item.size} • ${item.color} • Cantidad: ${item.quantity}</small>
+            <strong>${item.product_snapshot?.name || 'Producto'}</strong><br>
+            ${item.product_snapshot?.variant_name ? `<small>Variante: ${item.product_snapshot.variant_name}</small>` : ''}
           </div>
-          <div>$${(item.price / 100).toLocaleString()}</div>
+          <div>
+            ${item.quantity} × ${formatPrice(item.unit_price)} = ${formatPrice(item.total_price)}
+          </div>
         </div>
       `).join('')}
       
+      <div style="margin-top: 15px;">
+        <p><strong>Subtotal:</strong> ${formatPrice(order.subtotal)}</p>
+        ${order.discount_amount > 0 ? `<p><strong>Descuento:</strong> -${formatPrice(order.discount_amount)}</p>` : ''}
+        <p><strong>Envío:</strong> ${formatPrice(order.shipping_amount)}</p>
+        ${order.tax_amount > 0 ? `<p><strong>Impuestos:</strong> ${formatPrice(order.tax_amount)}</p>` : ''}
+      </div>
+      
       <div class="total">
-        Total: $${(data.total / 100).toLocaleString()}
+        Total: ${formatPrice(order.total_amount)}
       </div>
     </div>
     
-    <h3>Dirección de envío:</h3>
-    <p>
-      ${data.shippingAddress.firstName} ${data.shippingAddress.lastName}<br>
-      ${data.shippingAddress.address}<br>
-      ${data.shippingAddress.city}, ${data.shippingAddress.province}<br>
-      CP: ${data.shippingAddress.postalCode}
-    </p>
+    ${order.shipping_address ? `
+    <div class="order-summary">
+      <h3>Dirección de envío</h3>
+      <p>
+        ${order.shipping_address.first_name} ${order.shipping_address.last_name}<br>
+        ${order.shipping_address.address_line_1}<br>
+        ${order.shipping_address.address_line_2 ? `${order.shipping_address.address_line_2}<br>` : ''}
+        ${order.shipping_address.city}, ${order.shipping_address.state}<br>
+        ${order.shipping_address.postal_code}
+      </p>
+    </div>
+    ` : ''}
     
-    <p><strong>Próximos pasos:</strong></p>
-    <ul>
-      <li>Prepararemos tu pedido en 1-2 días hábiles</li>
-      <li>Te enviaremos el código de seguimiento cuando despachemos tu pedido</li>
-      <li>El tiempo de entrega es de 3-7 días hábiles</li>
-    </ul>
+    <p>Te enviaremos un email con el código de seguimiento una vez que tu pedido sea despachado.</p>
     
-    <p><em>Importante:</em> Por razones de higiene, no se aceptan devoluciones de productos de lencería.</p>
-    
-    <a href="${process.env.NEXT_PUBLIC_SITE_URL}/cuenta/pedidos" class="button">Ver mi pedido</a>
+    <a href="${process.env.NEXT_PUBLIC_SITE_URL}/orders/${order.id}" class="button">Ver estado del pedido</a>
   `
 
+  const textContent = `
+SAKÚ LENCERÍA - Confirmación de Pedido
+
+¡Gracias por tu compra!
+
+Pedido: #${order.order_number}
+Fecha: ${new Date(order.created_at).toLocaleDateString('es-AR')}
+Estado: ${order.status === 'pending' ? 'Pendiente de pago' : 'Confirmado'}
+
+PRODUCTOS:
+${items.map(item => `- ${item.product_snapshot?.name || 'Producto'}${item.product_snapshot?.variant_name ? ` (${item.product_snapshot.variant_name})` : ''}
+  ${item.quantity} × ${formatPrice(item.unit_price)} = ${formatPrice(item.total_price)}`).join('\n')}
+
+Subtotal: ${formatPrice(order.subtotal)}
+${order.discount_amount > 0 ? `Descuento: -${formatPrice(order.discount_amount)}\n` : ''}Envío: ${formatPrice(order.shipping_amount)}
+Total: ${formatPrice(order.total_amount)}
+
+${order.shipping_address ? `DIRECCIÓN DE ENVÍO:
+${order.shipping_address.name}
+${order.shipping_address.address_line_1}
+${order.shipping_address.address_line_2 ? `${order.shipping_address.address_line_2}\n` : ''}${order.shipping_address.city}, ${order.shipping_address.state}
+${order.shipping_address.postal_code}` : ''}
+
+Te enviaremos un email con el código de seguimiento una vez que tu pedido sea despachado.
+
+Ver estado del pedido: ${process.env.NEXT_PUBLIC_SITE_URL}/orders/${order.id}
+  `.trim()
+
   const emailConfig: EmailConfig = {
-    to: data.customerName, // Aquí debería ir el email del cliente
-    subject: `Confirmación de pedido #${data.orderNumber} - Sakú Lencería`,
-    html: getEmailTemplate(content)
+    to: customerEmail,
+    subject: `Confirmación de pedido #${order.order_number} - Sakú Lencería`,
+    html: getEmailTemplate(content),
+    text: textContent
   }
 
   return sendEmail(emailConfig)
@@ -217,7 +271,7 @@ export const sendOrderStatusUpdateEmail = async (data: OrderEmailData & { status
     <p>${statusMessage}</p>
     
     <p><strong>Pedido:</strong> #${data.orderNumber}</p>
-    <p><strong>Total:</strong> $${(data.total / 100).toLocaleString()}</p>
+    <p><strong>Total:</strong> $${((data.total || 0) / 100).toLocaleString()}</p>
     
     ${data.trackingCode ? `
       <p><strong>Código de seguimiento:</strong> ${data.trackingCode}</p>
@@ -228,7 +282,7 @@ export const sendOrderStatusUpdateEmail = async (data: OrderEmailData & { status
   `
 
   const emailConfig: EmailConfig = {
-    to: data.customerName, // Aquí debería ir el email del cliente
+    to: data.customerEmail,
     subject: `${statusTitle} - Pedido #${data.orderNumber}`,
     html: getEmailTemplate(content)
   }
@@ -242,17 +296,18 @@ export const sendEmail = async (config: EmailConfig) => {
     const transporter = createTransporter()
     
     const mailOptions = {
-      from: `"Sakú Lencería" <${process.env.SMTP_FROM}>`,
+      from: process.env.SMTP_FROM || 'noreply@sakulenceria.com',
       to: config.to,
       subject: config.subject,
       html: config.html,
+      ...(config.text && { text: config.text }),
     }
 
     const result = await transporter.sendMail(mailOptions)
-    console.log('Email sent successfully:', result.messageId)
+    console.log('Email enviado exitosamente:', result.messageId)
     return { success: true, messageId: result.messageId }
   } catch (error) {
-    console.error('Error sending email:', error)
-    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
+    console.error('Error enviando email:', error)
+    return { success: false, error: error instanceof Error ? error.message : 'Error desconocido' }
   }
 }

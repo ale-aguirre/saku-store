@@ -58,6 +58,24 @@ const config: Config = {
         sans: ["var(--font-inter)", "ui-sans-serif", "system-ui"],
         serif: ["var(--font-marcellus)", "ui-serif", "Georgia"],
       },
+      spacing: {
+        // Safe margins for mobile-first design
+        'safe-x': '1rem', // 16px - horizontal safe margin
+        'safe-y': '1.5rem', // 24px - vertical safe margin
+        'safe-section': '2rem', // 32px - section spacing
+        'safe-component': '1.25rem', // 20px - component internal spacing
+        'safe-element': '0.75rem', // 12px - element spacing
+        'safe-tight': '0.5rem', // 8px - tight spacing
+        // Container max widths
+        'container-sm': '640px',
+        'container-md': '768px', 
+        'container-lg': '1024px',
+        'container-xl': '1280px',
+      },
+      maxWidth: {
+        'safe': '1280px', // Max container width
+        'content': '65ch', // Max text content width for readability
+      },
     },
   },
   plugins: [],
