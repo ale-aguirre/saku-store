@@ -1,0 +1,10 @@
+<svg width="300" height="400" viewBox="0 0 300 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="300" height="400" fill="#f8f9fa"/>
+  <rect x="50" y="100" width="200" height="200" rx="8" fill="#e9ecef"/>
+  <ellipse cx="120" cy="180" rx="35" ry="40" fill="#d8ceb5" opacity="0.6"/>
+  <ellipse cx="180" cy="180" rx="35" ry="40" fill="#d8ceb5" opacity="0.6"/>
+  <path d="M85 160 Q150 140 215 160" stroke="#d8ceb5" stroke-width="3" fill="none"/>
+  <circle cx="150" cy="140" r="3" fill="#d8ceb5"/>
+  <text x="150" y="340" text-anchor="middle" fill="#666" font-family="Arial, sans-serif" font-size="14">Brasier Comfort Plus</text>
+  <text x="150" y="360" text-anchor="middle" fill="#999" font-family="Arial, sans-serif" font-size="12">Máximo Confort</text>
+</svg>

@@ -2,7 +2,7 @@
 
 import Script from "next/script";
 import { useEffect } from "react";
-import { AnalyticsEvent, AnalyticsItem } from "@/types/content";
+import { AnalyticsItem } from "@/types/content";
 
 interface GoogleAnalyticsProps {
   measurementId?: string;
@@ -18,8 +18,9 @@ export function GoogleAnalytics({ measurementId }: GoogleAnalyticsProps) {
         window.gtag ||
         function (...args: unknown[]) {
           // Initialize gtag queue if it doesn't exist
-          (window.gtag as any).q = (window.gtag as any).q || [];
-          (window.gtag as any).q.push(args);
+          const gtagWithQueue = window.gtag as any;
+          gtagWithQueue.q = gtagWithQueue.q || [];
+          gtagWithQueue.q.push(args);
         };
 
       // Set default consent to denied

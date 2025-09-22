@@ -2,7 +2,6 @@
 
 import Script from 'next/script'
 import { useEffect } from 'react'
-import { AnalyticsItem } from '@/types/content'
 
 interface MetaPixelProps {
   pixelId?: string
@@ -15,13 +14,16 @@ export function MetaPixel({ pixelId }: MetaPixelProps) {
     if (typeof window !== 'undefined' && META_PIXEL_ID) {
       // Initialize fbq
       window.fbq = window.fbq || function(...args: unknown[]) {
-        const fbq = window.fbq as any
-        fbq.callMethod 
-          ? fbq.callMethod.apply(window.fbq, args)
-          : fbq.queue.push(args)
+        const fbqWithQueue = window.fbq as any;
+        if (fbqWithQueue.callMethod) {
+          fbqWithQueue.callMethod.apply(window.fbq, args)
+        } else {
+          fbqWithQueue.queue = fbqWithQueue.queue || [];
+          fbqWithQueue.queue.push(args)
+        }
       }
       
-      const fbq = window.fbq as any
+      const fbq = window.fbq as any;
       if (!fbq.loaded) {
         const f = document.createElement('script')
         f.async = true

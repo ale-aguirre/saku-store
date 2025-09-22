@@ -1,51 +1,53 @@
-import type { Metadata } from "next";
-import { Inter, Marcellus } from "next/font/google";
-import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import { GoogleAnalytics } from "@/components/analytics/google-analytics";
-import { MetaPixel } from "@/components/analytics/meta-pixel";
-import { ConsentBanner } from "@/components/consent-banner";
+import type { Metadata } from 'next'
+import { Inter, Marcellus } from 'next/font/google'
+import './globals.css'
+import { ThemeProvider } from '@/components/theme-provider'
+import { QueryProvider } from '@/components/providers/query-provider'
+import { ConsentBanner } from '@/components/consent-banner'
+import { GoogleAnalytics } from '@/components/analytics/google-analytics'
+import { MetaPixel } from '@/components/analytics/meta-pixel'
+import { MainLayout } from '@/components/layout/main-layout'
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
+const inter = Inter({ 
+  subsets: ['latin'],
+  variable: '--font-inter',
+})
 
-const marcellus = Marcellus({
-  variable: "--font-marcellus",
-  weight: "400",
-  subsets: ["latin"],
-});
+const marcellus = Marcellus({ 
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-marcellus',
+})
 
 export const metadata: Metadata = {
-  title: "Sakú Lencería",
-  description: "Lencería íntima de calidad premium para la mujer moderna",
-};
+  title: 'Sakú Lencería',
+  description: 'Lencería femenina de calidad premium',
+}
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <head>
-        <GoogleAnalytics />
-        <MetaPixel />
-      </head>
-      <body
-        className={`${inter.variable} ${marcellus.variable} font-sans antialiased`}
-      >
+      <body className={`${inter.variable} ${marcellus.variable} font-sans`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <ConsentBanner />
+          <QueryProvider>
+            <MainLayout>
+              {children}
+            </MainLayout>
+            <ConsentBanner />
+          </QueryProvider>
         </ThemeProvider>
+        <GoogleAnalytics />
+        <MetaPixel />
       </body>
     </html>
-  );
+  )
 }

@@ -67,7 +67,7 @@ export default async function TermsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="py-8 max-w-4xl mx-auto">
         <div className="prose prose-neutral dark:prose-invert max-w-none">
           <h1 className="text-3xl font-bold text-foreground mb-8 font-marcellus">
             {termsData.title}

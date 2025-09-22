@@ -125,7 +125,7 @@ export function ConsentBanner() {
                 <Button
                   size="sm"
                   onClick={acceptAll}
-                  className="bg-saku-beige hover:bg-saku-beige/90 text-black"
+                  className="bg-saku-beige hover:bg-saku-beige/90 text-black dark:text-black"
                 >
                   Aceptar todas
                 </Button>
@@ -207,7 +207,7 @@ export function ConsentBanner() {
                 </Button>
                 <Button
                   onClick={saveCustomPreferences}
-                  className="flex-1 bg-saku-beige hover:bg-saku-beige/90 text-black"
+                  className="flex-1 bg-saku-beige hover:bg-saku-beige/90 text-black dark:text-black"
                 >
                   Guardar preferencias
                 </Button>

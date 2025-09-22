@@ -1,0 +1,35 @@
+<svg width="600" height="400" viewBox="0 0 600 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="heroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#d8ceb5;stop-opacity:0.1"/>
+      <stop offset="100%" style="stop-color:#d8ceb5;stop-opacity:0.3"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" fill="url(#heroGradient)"/>
+  
+  <!-- Figura femenina estilizada -->
+  <g transform="translate(200, 50)">
+    <!-- Silueta elegante -->
+    <ellipse cx="100" cy="80" rx="60" ry="90" fill="#d8ceb5" opacity="0.4"/>
+    <ellipse cx="100" cy="70" rx="45" ry="70" fill="#d8ceb5" opacity="0.3"/>
+    
+    <!-- Detalles de lencería -->
+    <ellipse cx="85" cy="120" rx="15" ry="20" fill="#d8ceb5" opacity="0.6"/>
+    <ellipse cx="115" cy="120" rx="15" ry="20" fill="#d8ceb5" opacity="0.6"/>
+    <path d="M70 110 Q100 100 130 110" stroke="#d8ceb5" stroke-width="2" fill="none"/>
+    
+    <!-- Elementos decorativos -->
+    <circle cx="60" cy="60" r="3" fill="#d8ceb5" opacity="0.5"/>
+    <circle cx="140" cy="80" r="2" fill="#d8ceb5" opacity="0.7"/>
+    <circle cx="50" cy="140" r="2" fill="#d8ceb5" opacity="0.6"/>
+  </g>
+  
+  <!-- Elementos decorativos de fondo -->
+  <circle cx="80" cy="100" r="20" fill="#d8ceb5" opacity="0.1"/>
+  <circle cx="520" cy="150" r="30" fill="#d8ceb5" opacity="0.1"/>
+  <circle cx="450" cy="80" r="15" fill="#d8ceb5" opacity="0.15"/>
+  
+  <!-- Texto elegante -->
+  <text x="300" y="350" text-anchor="middle" fill="#d8ceb5" font-family="serif" font-size="24" opacity="0.7">Sakú Lencería</text>
+  <text x="300" y="375" text-anchor="middle" fill="#999" font-family="sans-serif" font-size="14">Elegancia &amp; Comodidad</text>
+</svg>

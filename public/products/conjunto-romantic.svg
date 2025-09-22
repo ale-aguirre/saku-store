@@ -1,0 +1,11 @@
+<svg width="300" height="400" viewBox="0 0 300 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="300" height="400" fill="#f8f9fa"/>
+  <rect x="50" y="80" width="200" height="240" rx="8" fill="#fce7e7"/>
+  <circle cx="150" cy="120" r="15" fill="#dc2626" opacity="0.7"/>
+  <rect x="120" y="140" width="60" height="80" rx="4" fill="#dc2626" opacity="0.4"/>
+  <rect x="110" y="230" width="80" height="60" rx="4" fill="#dc2626" opacity="0.3"/>
+  <path d="M130 110 Q150 95 170 110" stroke="#dc2626" stroke-width="2" fill="none"/>
+  <path d="M125 115 Q150 100 175 115" stroke="#dc2626" stroke-width="1" fill="none" opacity="0.6"/>
+  <text x="150" y="340" text-anchor="middle" fill="#666" font-family="Arial, sans-serif" font-size="14">Conjunto Romantic</text>
+  <text x="150" y="360" text-anchor="middle" fill="#999" font-family="Arial, sans-serif" font-size="12">Estilo Romántico</text>
+</svg>
