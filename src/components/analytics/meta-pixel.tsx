@@ -2,6 +2,7 @@
 
 import Script from 'next/script'
 import { useEffect } from 'react'
+import { useConsentGuard } from '@/components/consent/consent-provider'
 
 interface MetaPixelProps {
   pixelId?: string
@@ -9,6 +10,7 @@ interface MetaPixelProps {
 
 export function MetaPixel({ pixelId }: MetaPixelProps) {
   const META_PIXEL_ID = pixelId || process.env.NEXT_PUBLIC_META_PIXEL_ID
+  const { canUseMarketing } = useConsentGuard()
 
   useEffect(() => {
     if (typeof window !== 'undefined' && META_PIXEL_ID) {
@@ -35,12 +37,16 @@ export function MetaPixel({ pixelId }: MetaPixelProps) {
       
       fbq.queue = fbq.queue || []
 
-      // Initialize pixel with consent denied by default
-      window.fbq('consent', 'revoke')
-      window.fbq('init', META_PIXEL_ID)
-      window.fbq('track', 'PageView')
+      // Initialize pixel only if marketing consent is given
+      if (canUseMarketing) {
+        window.fbq('consent', 'grant')
+        window.fbq('init', META_PIXEL_ID)
+        window.fbq('track', 'PageView')
+      } else {
+        window.fbq('consent', 'revoke')
+      }
     }
-  }, [META_PIXEL_ID])
+  }, [META_PIXEL_ID, canUseMarketing])
 
   if (!META_PIXEL_ID) {
     return null
@@ -69,7 +75,14 @@ export function MetaPixel({ pixelId }: MetaPixelProps) {
 // Helper functions for tracking events
 export const trackMetaEvent = (eventName: string, parameters?: Record<string, unknown>) => {
   if (typeof window !== 'undefined' && window.fbq) {
-    window.fbq('track', eventName, parameters)
+    // Only track if marketing consent is granted
+    const hasConsent = localStorage.getItem('saku-consent-settings');
+    if (hasConsent) {
+      const settings = JSON.parse(hasConsent);
+      if (settings.marketing) {
+        window.fbq('track', eventName, parameters)
+      }
+    }
   }
 }
 

@@ -1,0 +1,22 @@
+{
+  "name": "saku-store-scripts",
+  "version": "1.0.0",
+  "description": "Scripts de utilidad para Sakú Store",
+  "main": "notify-completion.js",
+  "scripts": {
+    "notify": "node notify-completion.js",
+    "test-notify": "node notify-completion.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.2",
+    "nodemailer": "^6.9.7"
+  },
+  "keywords": [
+    "saku",
+    "store",
+    "notifications",
+    "email"
+  ],
+  "author": "Alexis Aguirre",
+  "license": "MIT"
+}

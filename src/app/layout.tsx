@@ -3,7 +3,8 @@ import { Inter, Marcellus } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
-import { ConsentBanner } from "@/components/consent-banner";
+import { ConsentProvider } from "@/components/consent/consent-provider";
+import { CookieBanner } from "@/components/consent/cookie-banner";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { MetaPixel } from "@/components/analytics/meta-pixel";
 import { MainLayout } from "@/components/layout/main-layout";
@@ -44,12 +45,14 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <QueryProvider>
-            <MainLayout>{children}</MainLayout>
-            <ConsentBanner />
+            <ConsentProvider>
+              <MainLayout>{children}</MainLayout>
+              <CookieBanner />
+              <GoogleAnalytics />
+              <MetaPixel />
+            </ConsentProvider>
           </QueryProvider>
         </ThemeProvider>
-        <GoogleAnalytics />
-        <MetaPixel />
       </body>
     </html>
   );

@@ -3,6 +3,7 @@
 import Script from "next/script";
 import { useEffect } from "react";
 import { AnalyticsItem } from "@/types/content";
+import { useConsentGuard } from "@/components/consent/consent-provider";
 
 interface GoogleAnalyticsProps {
   measurementId?: string;
@@ -10,6 +11,7 @@ interface GoogleAnalyticsProps {
 
 export function GoogleAnalytics({ measurementId }: GoogleAnalyticsProps) {
   const GA_MEASUREMENT_ID = measurementId || process.env.NEXT_PUBLIC_GA4_ID;
+  const { canUseAnalytics } = useConsentGuard();
 
   useEffect(() => {
     if (typeof window !== "undefined" && GA_MEASUREMENT_ID) {
@@ -23,22 +25,15 @@ export function GoogleAnalytics({ measurementId }: GoogleAnalyticsProps) {
           gtagWithQueue.q.push(args);
         };
 
-      // Set default consent to denied
-      window.gtag("consent", "default", {
-        analytics_storage: "denied",
-        ad_storage: "denied",
-        ad_user_data: "denied",
-        ad_personalization: "denied",
-        wait_for_update: 500,
-      });
-
-      // Configure Google Analytics
-      window.gtag("config", GA_MEASUREMENT_ID, {
-        page_title: document.title,
-        page_location: window.location.href,
-      });
+      // Configure Google Analytics only if consent is given
+      if (canUseAnalytics) {
+        window.gtag("config", GA_MEASUREMENT_ID, {
+          page_title: document.title,
+          page_location: window.location.href,
+        });
+      }
     }
-  }, [GA_MEASUREMENT_ID]);
+  }, [GA_MEASUREMENT_ID, canUseAnalytics]);
 
   if (!GA_MEASUREMENT_ID) {
     return null;
@@ -71,7 +66,18 @@ export const trackEvent = (
   parameters?: Record<string, unknown>
 ) => {
   if (typeof window !== "undefined" && window.gtag) {
-    window.gtag("event", eventName, parameters);
+    // Check consent before tracking
+    const consentEvent = new CustomEvent('checkConsent', { detail: 'analytics' });
+    window.dispatchEvent(consentEvent);
+    
+    // Only track if analytics consent is granted
+    const hasConsent = localStorage.getItem('saku-consent-settings');
+    if (hasConsent) {
+      const settings = JSON.parse(hasConsent);
+      if (settings.analytics) {
+        window.gtag("event", eventName, parameters);
+      }
+    }
   }
 };
 

@@ -21,8 +21,14 @@ E-commerce de lencería femenina desarrollado con Next.js 15 + Supabase, enfocad
 
 #### Autenticación y Usuarios
 - **Google OAuth**: Implementado completamente
-- **Páginas**: Login, registro, callback, cuenta de usuario
+- **Páginas**: Login, registro, callback, cuenta de usuario, forgot password
 - **Configuración**: Supabase Auth configurado
+- **Dashboard**: Página de cuenta básica implementada
+
+#### Páginas Legales
+- **Términos y Condiciones**: Implementado con contenido dinámico desde DB
+- **Política de Privacidad**: Implementado con contenido dinámico desde DB
+- **Política de Cookies**: Implementado con contenido dinámico desde DB
 
 #### Optimizaciones
 - **Imágenes**: Hero convertida a WebP (89KB vs 484KB PNG)
