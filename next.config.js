@@ -76,6 +76,14 @@ const nextConfig = {
     optimizePackageImports: ["lucide-react"],
   },
 
+  // Configuración para suprimir warnings de Supabase en Edge Runtime
+  onDemandEntries: {
+    // Período de tiempo en ms para mantener las páginas en memoria
+    maxInactiveAge: 25 * 1000,
+    // Número de páginas que deben mantenerse simultáneamente
+    pagesBufferLength: 2,
+  },
+
   // Configuración de webpack para desarrollo seguro
   webpack: (config, { dev, isServer }) => {
     if (dev && !isServer) {
@@ -87,6 +95,19 @@ const nextConfig = {
         host: "localhost",
       };
     }
+
+    // Configuración para suprimir warnings de Supabase en Edge Runtime
+    config.ignoreWarnings = [
+      // Ignorar warnings específicos de Supabase en Edge Runtime
+      {
+        module: /node_modules\/@supabase\/realtime-js\/dist\/module\/lib\/websocket-factory\.js/,
+        message: /A Node\.js API is used \(process\.versions at line: 35\)/,
+      },
+      {
+        module: /node_modules\/@supabase\/supabase-js\/dist\/module\/index\.js/,
+        message: /A Node\.js API is used \(process\.version at line: 24\)/,
+      },
+    ];
 
     return config;
   },
