@@ -99,7 +99,7 @@ export default function HomePage() {
             </div>
             <div className="relative">
               <Image
-                src="/hero-image.svg"
+                src="/hero-1.webp"
                 alt="Lencería Sakú"
                 width={600}
                 height={400}
