@@ -36,7 +36,7 @@ export function Footer() {
           <div className="space-y-4">
             <Link href="/" className="flex items-center space-x-2">
               <Image
-                src="/logo.svg"
+                src="/logo.png"
                 alt="Sakú Lencería"
                 width={120}
                 height={40}

@@ -26,8 +26,35 @@ E-commerce de lencería femenina desarrollado con Next.js 15 + Supabase, enfocad
 
 #### Optimizaciones
 - **Imágenes**: Hero convertida a WebP (89KB vs 484KB PNG)
-- **Favicon**: Corregido usando logo.png
+- **Assets**: Logo y favicon corregidos para usar exclusivamente assets proporcionados
 - **SEO**: Sitemap configurado con next-sitemap
+
+## Problemas Críticos Resueltos
+
+### 1. Assets Inconsistentes (Resuelto)
+- **Problema**: Archivos SVG generados automáticamente (`favicon.svg`, `logo.svg`) no correspondían con assets reales proporcionados
+- **Impacto**: Logo y favicon incorrectos en toda la aplicación
+- **Solución**: 
+  - Corregido navbar para usar `logo.png`
+  - Actualizado metadata para usar `favicon.ico`
+  - Eliminados archivos SVG conflictivos
+- **Archivos modificados**: `src/components/layout/navbar.tsx`, `src/app/layout.tsx`
+- **Archivos eliminados**: `public/favicon.svg`, `public/logo.svg`
+- **Estado**: ✅ Resuelto y verificado en preview
+
+### 2. Estructura de Archivos Desorganizada (Resuelto)
+- **Problema**: Múltiples archivos de prueba y debug en raíz del proyecto
+- **Impacto**: Estructura desordenada, dificulta mantenimiento y navegación
+- **Solución**: Reorganización completa de archivos de testing
+- **Archivos movidos a `scripts/`**:
+  - `test-cart-trigger-after-add.js`
+  - `test-cart-trigger.js`
+  - `test-full-cart-flow.js`
+  - `test-link-behavior.js`
+  - `test-navigation.js`
+  - `test-product-ids.js`
+  - `debug-productos.js`
+- **Estado**: ✅ Resuelto - Estructura limpia y organizada
 
 #### Workflow de Desarrollo
 - **Ramas**: Estructura main/develop/feature/* establecida

@@ -47,7 +47,7 @@ export function Header() {
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
           <Image
-            src="/logo.svg"
+            src="/logo.png"
             alt="Sakú Lencería"
             width={120}
             height={40}

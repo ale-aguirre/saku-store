@@ -1,12 +1,12 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
-import { useRouter } from 'next/navigation'
-import { useAuth } from '@/hooks/use-auth'
-import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/use-auth";
+import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,37 +14,37 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Badge } from '@/components/ui/badge'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { 
-  User, 
-  ShoppingCart, 
-  Menu, 
-  LogOut, 
-  Package, 
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  User,
+  ShoppingCart,
+  Menu,
+  LogOut,
+  Package,
   Heart,
-  Search
-} from 'lucide-react'
-import { ThemeToggle } from '@/components/theme-toggle'
+  Search,
+} from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function Navbar() {
-  const { user, loading } = useAuth()
-  const router = useRouter()
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    router.push('/')
-  }
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/");
+  };
 
   const navigation = [
-    { name: 'Inicio', href: '/' },
-    { name: 'Productos', href: '/products' },
-    { name: 'Ofertas', href: '/offers' },
-    { name: 'Contacto', href: '/contact' },
-  ]
+    { name: "Inicio", href: "/" },
+    { name: "Productos", href: "/products" },
+    { name: "Ofertas", href: "/offers" },
+    { name: "Contacto", href: "/contact" },
+  ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -88,8 +88,8 @@ export function Navbar() {
           {/* Cart */}
           <Button variant="ghost" size="icon" className="relative">
             <ShoppingCart className="h-4 w-4" />
-            <Badge 
-              variant="destructive" 
+            <Badge
+              variant="destructive"
               className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center text-xs"
             >
               0
@@ -139,7 +139,7 @@ export function Navbar() {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={handleLogout}
                   className="cursor-pointer text-red-600"
                 >
@@ -179,13 +179,13 @@ export function Navbar() {
                     {item.name}
                   </Link>
                 ))}
-                
+
                 {!user && (
                   <>
                     <div className="border-t pt-4 mt-4">
                       <div className="flex flex-col space-y-2">
                         <Button variant="ghost" asChild>
-                          <Link 
+                          <Link
                             href="/auth/login"
                             onClick={() => setMobileMenuOpen(false)}
                           >
@@ -193,7 +193,7 @@ export function Navbar() {
                           </Link>
                         </Button>
                         <Button asChild>
-                          <Link 
+                          <Link
                             href="/auth/register"
                             onClick={() => setMobileMenuOpen(false)}
                           >
@@ -210,5 +210,5 @@ export function Navbar() {
         </div>
       </div>
     </header>
-  )
+  );
 }
