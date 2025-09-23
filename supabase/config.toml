@@ -119,6 +119,15 @@ template = "Your code is {{ .Code }} ."
 # Use an external OAuth provider. The full list of providers are: `apple`, `azure`, `bitbucket`,
 # `discord`, `facebook`, `github`, `gitlab`, `google`, `keycloak`, `linkedin`, `notion`, `twitch`,
 # `twitter`, `slack`, `spotify`, `workos`, `zoom`.
+
+# Google OAuth configuration
+[auth.external.google]
+enabled = true
+client_id = "env(GOOGLE_CLIENT_ID)"
+secret = "env(GOOGLE_CLIENT_SECRET)"
+# Overrides the default auth redirectURL.
+redirect_uri = "http://localhost:54321/auth/v1/callback"
+
 # [auth.external.apple]
 # enabled = true
 # client_id = "env(APPLE_CLIENT_ID)"
