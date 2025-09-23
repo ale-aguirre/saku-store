@@ -1,0 +1,90 @@
+{
+  "timestamp": "2025-09-23T23:27:30.473Z",
+  "stats": {
+    "startTime": {
+      "date": "23/9/2025",
+      "time": "08:26:13",
+      "iso": "2025-09-23T23:26:13.600Z"
+    },
+    "endTime": {
+      "date": "23/9/2025",
+      "time": "08:27:30",
+      "iso": "2025-09-23T23:27:30.473Z"
+    },
+    "duration": "1m 17s",
+    "durationSeconds": 77,
+    "total": 5,
+    "completed": 3,
+    "withErrors": 2,
+    "pending": 0
+  },
+  "tasks": [
+    {
+      "command": "npm run lint",
+      "category": "testing",
+      "status": "completed",
+      "output": "> saku-store-clean@0.1.0 lint\n> next lint\n\n✔ No ESLint warnings or errors",
+      "timestamp": "2025-09-23T23:26:22.903Z",
+      "success": true
+    },
+    {
+      "command": "npm run type-check",
+      "category": "testing",
+      "status": "completed",
+      "output": "> saku-store-clean@0.1.0 type-check\n> tsc --noEmit",
+      "timestamp": "2025-09-23T23:26:28.978Z",
+      "success": true
+    },
+    {
+      "command": "npm run build",
+      "category": "testing",
+      "status": "error",
+      "error": "spawnSync C:\\WINDOWS\\system32\\cmd.exe ETIMEDOUT",
+      "output": "\n> saku-store-clean@0.1.0 build\n> next build\n\n   ▲ Next.js 15.5.3\n   - Environments: .env.local, .env\n   - Experiments (use with caution):\n     · optimizePackageImports\n\n   Creating an optimized production build ...\n   Linting and checking validity of types ...\n",
+      "timestamp": "2025-09-23T23:26:59.003Z",
+      "success": false
+    },
+    {
+      "command": "npx supabase status",
+      "category": "testing",
+      "status": "error",
+      "error": "spawnSync C:\\WINDOWS\\system32\\cmd.exe ETIMEDOUT",
+      "output": "",
+      "timestamp": "2025-09-23T23:27:29.016Z",
+      "success": false
+    },
+    {
+      "command": "npm ls --depth=0",
+      "category": "testing",
+      "status": "completed",
+      "output": "saku-store-clean@0.1.0 D:\\Disco C\\PROYECTOS\\01-PROYECTOS\\Saku\\saku-store\n├── @emnapi/runtime@1.5.0 extraneous\n├── @eslint/eslintrc@3.3.1\n├── @hookform/resolvers@5.2.2\n├── @playwright/test@1.55.1\n├── @radix-ui/react-checkbox@1.3.3\n├── @radix-ui/react-dialog@1.1.15\n├── @radix-ui/react-dropdown-menu@2.1.16\n├── @radix-ui/react-label@2.1.7\n├── @radix-ui/react-radio-group@1.3.8\n├── @radix-ui/react-select@2.2.6\n├── @radix-ui/react-separator@1.1.7\n├── @radix-ui/react-slot@1.2.3\n├── @radix-ui/react-switch@1.2.6\n├── @radix-ui/react-tabs@1.1.13\n├── @supabase/ssr@0.7.0\n├── @supabase/supabase-js@2.57.4\n├── @tanstack/react-query-devtools@5.90.2\n├── @tanstack/react-query@5.90.2\n├── @types/node@20.19.17\n├── @types/nodemailer@7.0.1\n├── @types/react-dom@19.1.9\n├── @types/react@19.1.13\n├── autoprefixer@10.4.21\n├── class-variance-authority@0.7.1\n├── clsx@2.1.1\n├── dotenv@17.2.2\n├── eslint-config-next@15.5.3\n├── eslint@9.36.0\n├── lucide-react@0.544.0\n├── next-sitemap@4.2.3\n├── next-themes@0.4.6\n├── next@15.5.3\n├── nodemailer@7.0.6\n├── react-dom@19.1.0\n├── react-hook-form@7.63.0\n├── react@19.1.0\n├── sonner@2.0.7\n├── tailwind-merge@3.3.1\n├── tailwindcss@3.4.17\n├── typescript@5.9.2\n├── zod@4.1.11\n└── zustand@5.0.8",
+      "timestamp": "2025-09-23T23:27:30.447Z",
+      "success": true
+    }
+  ],
+  "errors": [
+    {
+      "command": "npm run build",
+      "category": "testing",
+      "status": "error",
+      "error": "spawnSync C:\\WINDOWS\\system32\\cmd.exe ETIMEDOUT",
+      "output": "\n> saku-store-clean@0.1.0 build\n> next build\n\n   ▲ Next.js 15.5.3\n   - Environments: .env.local, .env\n   - Experiments (use with caution):\n     · optimizePackageImports\n\n   Creating an optimized production build ...\n   Linting and checking validity of types ...\n",
+      "timestamp": "2025-09-23T23:26:59.003Z",
+      "success": false
+    },
+    {
+      "command": "npx supabase status",
+      "category": "testing",
+      "status": "error",
+      "error": "spawnSync C:\\WINDOWS\\system32\\cmd.exe ETIMEDOUT",
+      "output": "",
+      "timestamp": "2025-09-23T23:27:29.016Z",
+      "success": false
+    }
+  ],
+  "config": {
+    "name": "Sakú Store",
+    "description": "Sakú Lencería E-commerce",
+    "emoji": "🚀"
+  }
+}

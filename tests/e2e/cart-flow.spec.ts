@@ -8,37 +8,41 @@ test.describe('Flujo básico del carrito', () => {
 
   test('debe permitir agregar un producto al carrito desde PDP', async ({ page }) => {
     // Navegar directamente a una PDP específica
-    await page.goto('http://localhost:3003/productos/1')
+    await page.goto('/productos/1')
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(3000)
 
     // Verificar que estamos en la PDP
     await expect(page.locator('h1')).toBeVisible({ timeout: 10000 })
 
-    // Seleccionar variantes si están disponibles (con timeout más largo)
+    // Seleccionar variantes específicas que sabemos que tienen stock
     try {
-      const sizeSelector = page.locator('[data-testid="size-selector"]')
-      await sizeSelector.first().waitFor({ state: 'visible', timeout: 5000 })
-      await sizeSelector.first().click()
+      // Seleccionar talle 85 (sabemos que tiene stock en mock data)
+      const sizeSelector = page.locator('[data-testid="size-selector"]').filter({ hasText: '85' })
+      await sizeSelector.waitFor({ state: 'visible', timeout: 5000 })
+      await sizeSelector.click()
       await page.waitForTimeout(500)
+      console.log('Talle 85 seleccionado')
     } catch (e) {
-      console.log('No size selector found or not visible')
+      console.log('No se pudo seleccionar talle 85:', e)
     }
 
     try {
-      const colorSelector = page.locator('[data-testid="color-selector"]')
-      await colorSelector.first().waitFor({ state: 'visible', timeout: 5000 })
-      await colorSelector.first().click()
+      // Seleccionar color negro (sabemos que tiene stock en mock data)
+      const colorSelector = page.locator('[data-testid="color-selector"]').first()
+      await colorSelector.waitFor({ state: 'visible', timeout: 5000 })
+      await colorSelector.click()
       await page.waitForTimeout(500)
+      console.log('Color seleccionado')
     } catch (e) {
-      console.log('No color selector found or not visible')
+      console.log('No se pudo seleccionar color:', e)
     }
 
     // Esperar un poco más para que se actualice el estado
     await page.waitForTimeout(2000)
 
     // Verificar que el botón está habilitado antes de hacer clic
-    const addToCartButton = page.locator('[data-testid="add-to-cart"]')
+    const addToCartButton = page.locator('[data-testid="add-to-cart-button"]')
     await expect(addToCartButton).toBeVisible({ timeout: 10000 })
     
     // Esperar hasta que el botón esté habilitado (máximo 10 segundos)

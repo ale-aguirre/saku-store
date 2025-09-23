@@ -1,86 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
-import { Badge } from '@/components/ui/badge'
+import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { SlidersHorizontal, Grid, List } from 'lucide-react'
-import { useProducts, useProductCategories, useProductSizes, useProductColors, type Product, type ProductFilters } from '@/hooks/use-products'
-
-function ProductCard({ product }: { product: Product }) {
-  // Get the minimum and maximum prices from variants
-  const activeVariants = product.product_variants.filter(v => v.is_active && v.stock_quantity > 0)
-  const prices = activeVariants.map(v => v.price)
-  const comparePrices = activeVariants.map(v => v.compare_at_price).filter(Boolean) as number[]
-  
-  const minPrice = Math.min(...prices)
-  const maxPrice = Math.max(...prices)
-  const hasComparePrice = comparePrices.length > 0
-  const minComparePrice = hasComparePrice ? Math.min(...comparePrices) : null
-  
-  const isOnSale = hasComparePrice && minComparePrice! > minPrice
-  const isNew = new Date(product.created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // 7 days
-  
-  const priceDisplay = minPrice === maxPrice 
-    ? `$${minPrice.toLocaleString()}` 
-    : `$${minPrice.toLocaleString()} - $${maxPrice.toLocaleString()}`
-
-  return (
-    <Link href={`/productos/${product.id}`} className="group" data-testid="product-card">
-      <Card className="overflow-hidden border-0 shadow-sm hover:shadow-md transition-shadow">
-        <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
-          {product.image_url ? (
-            <Image
-              src={product.image_url}
-              alt={product.name}
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-300"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-400">
-              Sin imagen
-            </div>
-          )}
-          <div className="absolute top-3 left-3 flex flex-col gap-2">
-            {isNew && (
-              <Badge className="bg-black text-white text-xs">
-                Nuevo
-              </Badge>
-            )}
-            {isOnSale && (
-              <Badge variant="destructive" className="text-xs">
-                Oferta
-              </Badge>
-            )}
-          </div>
-        </div>
-        <CardContent className="p-4">
-          <h3 className="font-medium text-sm mb-2 line-clamp-2 group-hover:text-[#d8ceb5] transition-colors">
-            {product.name}
-          </h3>
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-lg">
-              {priceDisplay}
-            </span>
-            {isOnSale && minComparePrice && (
-              <>
-                <span className="text-sm text-muted-foreground line-through">
-                  ${minComparePrice.toLocaleString()}
-                </span>
-                <Badge variant="outline" className="text-xs">
-                  {Math.round(((minComparePrice - minPrice) / minComparePrice) * 100)}% OFF
-                </Badge>
-              </>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
-  )
-}
+import { ProductCard } from '@/components/product/product-card'
+import { getProducts, getCategories } from '@/lib/supabase/products'
+import type { ProductFilters, SortOption } from '@/types/catalog'
 
 function ProductFilters({ 
   filters, 
@@ -89,9 +16,13 @@ function ProductFilters({
   filters: ProductFilters
   onFiltersChange: (filters: ProductFilters) => void 
 }) {
-  const { data: categories } = useProductCategories()
-  const { data: sizes } = useProductSizes()
-  const { data: colors } = useProductColors()
+  const { data: categories } = useQuery({
+    queryKey: ['categories'],
+    queryFn: getCategories
+  })
+
+  const availableSizes = ['85', '90', '95', '100']
+  const availableColors = ['negro', 'rojo', 'blanco']
 
   return (
     <div className="space-y-6">
@@ -104,9 +35,9 @@ function ProductFilters({
         <div>
           <label className="text-sm font-medium mb-2 block">Categoría</label>
           <Select 
-            value={filters.category || 'all'} 
+            value={filters.category_id || 'all'} 
             onValueChange={(value) => 
-              onFiltersChange({ ...filters, category: value === 'all' ? undefined : value })
+              onFiltersChange({ ...filters, category_id: value === 'all' ? undefined : value })
             }
           >
             <SelectTrigger>
@@ -115,7 +46,7 @@ function ProductFilters({
             <SelectContent>
               <SelectItem value="all">Todas las categorías</SelectItem>
               {categories?.map((category) => (
-                <SelectItem key={category.id} value={category.id}>
+                <SelectItem key={category.id} value={category.slug}>
                   {category.name}
                 </SelectItem>
               ))}
@@ -136,9 +67,9 @@ function ProductFilters({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos los talles</SelectItem>
-              {sizes?.map((size) => (
-                <SelectItem key={size.id} value={size.id}>
-                  {size.name}
+              {availableSizes.map((size) => (
+                <SelectItem key={size} value={size}>
+                  {size}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -158,9 +89,9 @@ function ProductFilters({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos los colores</SelectItem>
-              {colors?.map((color) => (
-                <SelectItem key={color.id} value={color.id}>
-                  {color.name}
+              {availableColors.map((color) => (
+                <SelectItem key={color} value={color}>
+                  {color.charAt(0).toUpperCase() + color.slice(1)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -171,23 +102,23 @@ function ProductFilters({
            <label className="text-sm font-medium mb-2 block">Precio</label>
            <Select 
              value={
-               filters.minPrice === 0 && filters.maxPrice === 10000 ? '0-10000' :
-               filters.minPrice === 10000 && filters.maxPrice === 15000 ? '10000-15000' :
-               filters.minPrice === 15000 && filters.maxPrice === 20000 ? '15000-20000' :
-               filters.minPrice === 20000 ? '20000+' :
+               filters.min_price === 0 && filters.max_price === 10000 ? '0-10000' :
+               filters.min_price === 10000 && filters.max_price === 15000 ? '10000-15000' :
+               filters.min_price === 15000 && filters.max_price === 20000 ? '15000-20000' :
+               filters.min_price === 20000 ? '20000+' :
                'all'
              }
              onValueChange={(value) => {
                if (value === 'all') {
-                 onFiltersChange({ ...filters, minPrice: undefined, maxPrice: undefined })
+                 onFiltersChange({ ...filters, min_price: undefined, max_price: undefined })
                } else if (value === '0-10000') {
-                 onFiltersChange({ ...filters, minPrice: 0, maxPrice: 10000 })
+                 onFiltersChange({ ...filters, min_price: 0, max_price: 10000 })
                } else if (value === '10000-15000') {
-                 onFiltersChange({ ...filters, minPrice: 10000, maxPrice: 15000 })
+                 onFiltersChange({ ...filters, min_price: 10000, max_price: 15000 })
                } else if (value === '15000-20000') {
-                 onFiltersChange({ ...filters, minPrice: 15000, maxPrice: 20000 })
+                 onFiltersChange({ ...filters, min_price: 15000, max_price: 20000 })
                } else if (value === '20000+') {
-                 onFiltersChange({ ...filters, minPrice: 20000, maxPrice: undefined })
+                 onFiltersChange({ ...filters, min_price: 20000, max_price: undefined })
                }
              }}
            >
@@ -210,10 +141,13 @@ function ProductFilters({
 
 export default function ProductsPage() {
   const [filters, setFilters] = useState<ProductFilters>({})
-  const [sortBy, setSortBy] = useState('featured')
+  const [sortBy, setSortBy] = useState<SortOption>('featured')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   
-  const { data: products, isLoading, error } = useProducts(filters, sortBy)
+  const { data: products, isLoading, error } = useQuery({
+    queryKey: ['products', filters, sortBy],
+    queryFn: () => getProducts(filters, sortBy)
+  })
 
   if (error) {
     return (
@@ -245,14 +179,14 @@ export default function ProductsPage() {
         </div>
         
         <div className="flex items-center gap-4">
-          <Select value={sortBy} onValueChange={setSortBy}>
+          <Select value={sortBy} onValueChange={(value: SortOption) => setSortBy(value)}>
             <SelectTrigger className="w-48">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="featured">Destacados</SelectItem>
-              <SelectItem value="price-low">Precio: Menor a Mayor</SelectItem>
-              <SelectItem value="price-high">Precio: Mayor a Menor</SelectItem>
+              <SelectItem value="price_asc">Precio: Menor a Mayor</SelectItem>
+              <SelectItem value="price_desc">Precio: Mayor a Menor</SelectItem>
               <SelectItem value="newest">Más Nuevos</SelectItem>
               <SelectItem value="name">Nombre A-Z</SelectItem>
             </SelectContent>

@@ -16,8 +16,8 @@ const { chromium } = require('playwright');
   });
   
   try {
-    console.log('Navegando a http://localhost:3003/productos...');
-    await page.goto('http://localhost:3003/productos');
+    console.log('Navegando a http://localhost:3000/productos...');
+    await page.goto('http://localhost:3000/productos');
     await page.waitForLoadState('networkidle');
     
     console.log('Página cargada. Verificando elementos...');

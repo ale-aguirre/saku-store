@@ -1,0 +1,46 @@
+{
+  "startTime": "2025-09-23T14:00:42.269Z",
+  "endTime": "2025-09-23T14:00:42.274Z",
+  "tasks": [
+    {
+      "name": "Configuración inicial",
+      "status": "completada",
+      "details": "Proyecto configurado correctamente",
+      "error": null,
+      "timestamp": "2025-09-23T14:00:42.269Z"
+    },
+    {
+      "name": "Instalación de dependencias",
+      "status": "completada",
+      "details": "npm install ejecutado sin errores",
+      "error": null,
+      "timestamp": "2025-09-23T14:00:42.272Z"
+    },
+    {
+      "name": "Configuración de base de datos",
+      "status": "error",
+      "details": "Error de conexión",
+      "error": {},
+      "timestamp": "2025-09-23T14:00:42.272Z"
+    },
+    {
+      "name": "Deploy a producción",
+      "status": "pendiente",
+      "details": "Esperando aprobación",
+      "error": null,
+      "timestamp": "2025-09-23T14:00:42.273Z"
+    }
+  ],
+  "errors": [
+    {
+      "task": "Configuración de base de datos",
+      "error": "Connection timeout"
+    }
+  ],
+  "summary": {
+    "total": 4,
+    "completed": 2,
+    "errors": 1,
+    "pending": 1
+  }
+}

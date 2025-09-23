@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { mockProducts } from '@/lib/mock-data'
+import { getProductBySlug } from '@/lib/supabase/products'
 
 export interface Product {
   id: string
@@ -45,6 +46,16 @@ export function useProducts(filters: ProductFilters = {}, sortBy: string = 'crea
   return useQuery({
     queryKey: ['products', filters, sortBy],
     queryFn: async () => {
+      // Check if Supabase is properly configured
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      
+      if (!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes('placeholder')) {
+        // Use mock data when Supabase is not configured
+        console.warn('Supabase not configured, using mock data')
+        return mockProducts
+      }
+
       let query = supabase
         .from('products')
         .select(`
@@ -133,6 +144,20 @@ export function useProduct(id: string) {
   return useQuery({
     queryKey: ['product', id],
     queryFn: async () => {
+      // Check if Supabase is properly configured
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      
+      if (!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes('placeholder')) {
+        // Use mock data when Supabase is not configured
+        console.warn('Supabase not configured, using mock data')
+        const mockProduct = mockProducts.find(p => p.id === id)
+        if (!mockProduct) {
+          throw new Error('Product not found')
+        }
+        return mockProduct
+      }
+
       const { data, error } = await supabase
         .from('products')
         .select(`
@@ -164,6 +189,14 @@ export function useProduct(id: string) {
       return data as Product
     },
     enabled: !!id,
+  })
+}
+
+export function useProductBySlug(slug: string) {
+  return useQuery({
+    queryKey: ['product', 'slug', slug],
+    queryFn: () => getProductBySlug(slug),
+    enabled: !!slug,
   })
 }
 

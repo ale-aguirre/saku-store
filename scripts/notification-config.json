@@ -1,0 +1,170 @@
+{
+  "email": {
+    "recipient": "aguirrealexis.cba@gmail.com",
+    "sender": "noreply@sakulenceria.com",
+    "subject": "[Sakú Store] Reporte de Tareas Completadas"
+  },
+  "project": {
+    "name": "Sakú Store",
+    "description": "Sakú Lencería E-commerce",
+    "emoji": "🚀"
+  },
+  "texts": {
+    "header": {
+      "title": "🚀 Sakú Store - Reporte de Tareas",
+      "subtitle": "Resumen de actividades completadas"
+    },
+    "summary": {
+      "title": "📊 Resumen Ejecutivo",
+      "labels": {
+        "start": "Inicio:",
+        "end": "Finalización:",
+        "duration": "Duración:",
+        "total": "Total de tareas:",
+        "completed": "Completadas:",
+        "errors": "Con errores:",
+        "pending": "Pendientes:"
+      }
+    },
+    "sections": {
+      "completed": "✅ Tareas Completadas",
+      "errors": "❌ Tareas con Errores", 
+      "pending": "⏳ Tareas Pendientes",
+      "errorDetails": "🔍 Detalles de Errores"
+    },
+    "footer": {
+      "generated": "Este reporte fue generado automáticamente por el sistema de Sakú Store",
+      "project": "Proyecto: Sakú Lencería E-commerce"
+    },
+    "console": {
+      "finishing": "🏁 Finalizando proceso y enviando notificación...",
+      "emailSent": "✅ Email enviado exitosamente:",
+      "emailError": "❌ Error enviando email:",
+      "reportSaved": "📄 Reporte guardado en:",
+      "reportError": "❌ Error guardando reporte:",
+      "processComplete": "✅ Proceso completado exitosamente",
+      "processWarning": "⚠️ Proceso completado pero falló el envío del email"
+    }
+  },
+  "taskCategories": {
+    "setup": {
+      "name": "Configuración",
+      "emoji": "⚙️",
+      "color": "#007bff"
+    },
+    "database": {
+      "name": "Base de Datos",
+      "emoji": "🗄️",
+      "color": "#28a745"
+    },
+    "frontend": {
+      "name": "Frontend",
+      "emoji": "🎨",
+      "color": "#6f42c1"
+    },
+    "backend": {
+      "name": "Backend",
+      "emoji": "🔧",
+      "color": "#fd7e14"
+    },
+    "testing": {
+      "name": "Testing",
+      "emoji": "🧪",
+      "color": "#20c997"
+    },
+    "deployment": {
+      "name": "Deploy",
+      "emoji": "🚀",
+      "color": "#dc3545"
+    },
+    "maintenance": {
+      "name": "Mantenimiento",
+      "emoji": "🔨",
+      "color": "#6c757d"
+    }
+  },
+  "autoDetection": {
+    "checks": {
+      "eslint": {
+        "command": "npm run lint",
+        "successPatterns": [
+          "✓",
+          "No ESLint warnings or errors",
+          "0 errors",
+          "0 warnings"
+        ],
+        "failurePatterns": [
+          "error",
+          "✖",
+          "failed",
+          "Error:"
+        ]
+      },
+      "typescript": {
+        "command": "npm run type-check",
+        "successPatterns": [
+          "Found 0 errors",
+          "No errors found",
+          "✓"
+        ],
+        "failurePatterns": [
+          "error TS",
+          "Found 1 error",
+          "Found \\d+ errors",
+          "Type error"
+        ]
+      },
+      "build": {
+        "command": "npm run build",
+        "successPatterns": [
+          "Compiled successfully",
+          "✓ Compiled",
+          "Build completed",
+          "Export successful"
+        ],
+        "failurePatterns": [
+          "Failed to compile",
+          "Build failed",
+          "Error:",
+          "✖",
+          "Module not found"
+        ]
+      },
+      "supabase": {
+        "command": "npx supabase status",
+        "successPatterns": [
+          "API URL",
+          "Connected",
+          "Running",
+          "http://127.0.0.1"
+        ],
+        "failurePatterns": [
+          "Not running",
+          "Error",
+          "Failed",
+          "Connection refused"
+        ]
+      },
+      "dependencies": {
+        "command": "npm ls --depth=0",
+        "successPatterns": [
+          "├──",
+          "└──"
+        ],
+        "failurePatterns": [
+          "UNMET DEPENDENCY",
+          "missing:",
+          "invalid:",
+          "extraneous:"
+        ]
+      }
+    }
+  },
+  "templates": {
+    "taskCompleted": "✅ {name}: {status} - {details}",
+    "taskError": "❌ {name}: {status} - {error}",
+    "taskPending": "⏳ {name}: {status} - {details}",
+    "duration": "{seconds} segundos",
+    "timestamp": "{date} {time}"
+  }
+}

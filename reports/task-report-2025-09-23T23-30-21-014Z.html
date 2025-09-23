@@ -1,0 +1,126 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Sakú Store - Reporte de Tareas</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background-color: #f8f9fa; }
+        .container { max-width: 800px; margin: 0 auto; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #d8ceb5, #f5f1e8); padding: 30px; border-radius: 8px 8px 0 0; text-align: center; }
+        .header h1 { margin: 0; color: #333; font-size: 28px; }
+        .header p { margin: 10px 0 0; color: #666; font-size: 16px; }
+        .content { padding: 30px; }
+        .stats { background: #f8f9fa; padding: 20px; border-radius: 6px; margin-bottom: 30px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
+        .stat-item { text-align: center; }
+        .stat-value { font-size: 24px; font-weight: bold; color: #007bff; }
+        .stat-label { font-size: 14px; color: #666; margin-top: 5px; }
+        .section { margin-bottom: 30px; }
+        .section h2 { color: #333; border-bottom: 2px solid #d8ceb5; padding-bottom: 10px; }
+        .task-category { margin-bottom: 25px; }
+        .category-header { display: flex; align-items: center; margin-bottom: 15px; }
+        .category-emoji { font-size: 20px; margin-right: 10px; }
+        .category-name { font-size: 18px; font-weight: 600; color: #333; }
+        .task-list { list-style: none; padding: 0; }
+        .task-item { background: #f8f9fa; margin: 8px 0; padding: 15px; border-radius: 6px; border-left: 4px solid #28a745; }
+        .task-item.error { border-left-color: #dc3545; background: #fff5f5; }
+        .task-item.pending { border-left-color: #ffc107; background: #fffbf0; }
+        .task-name { font-weight: 600; color: #333; }
+        .task-details { color: #666; font-size: 14px; margin-top: 5px; }
+        .task-timestamp { color: #999; font-size: 12px; margin-top: 5px; }
+        .footer { background: #f8f9fa; padding: 20px; border-radius: 0 0 8px 8px; text-align: center; color: #666; font-size: 14px; }
+        .error-details { background: #fff5f5; border: 1px solid #f5c6cb; border-radius: 4px; padding: 10px; margin-top: 10px; font-family: monospace; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Sakú Store - Reporte de Tareas</h1>
+            <p>Resumen de actividades completadas</p>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <h2>📊 Resumen Ejecutivo</h2>
+                <div class="stats">
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">4</div>
+                            <div class="stat-label">Total de tareas:</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" style="color: #28a745;">4</div>
+                            <div class="stat-label">Completadas:</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" style="color: #dc3545;">0</div>
+                            <div class="stat-label">Con errores:</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" style="color: #007bff;">1m 16s</div>
+                            <div class="stat-label">Duración:</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; text-align: center; color: #666;">
+                        <strong>Inicio::</strong> 23/9/2025 08:29:04<br>
+                        <strong>Finalización::</strong> 23/9/2025 08:30:20
+                    </div>
+                </div>
+            </div>
+            <div class="section">
+                <div class="task-category">
+                    <div class="category-header">
+                        <span class="category-emoji">⚙️</span>
+                        <span class="category-name">Configuración</span>
+                    </div>
+                    <ul class="task-list">
+                        <li class="task-item ">
+                            <div class="task-name">✅ Configuración de Supabase CLI</div>
+                            <div class="task-details">CLI configurado y conectado</div>
+                            <div class="task-timestamp">23/9/2025, 08:30:20</div></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="section">
+                <div class="task-category">
+                    <div class="category-header">
+                        <span class="category-emoji">🗄️</span>
+                        <span class="category-name">Base de Datos</span>
+                    </div>
+                    <ul class="task-list">
+                        <li class="task-item ">
+                            <div class="task-name">✅ Migraciones de base de datos</div>
+                            <div class="task-details">Esquema aplicado correctamente</div>
+                            <div class="task-timestamp">23/9/2025, 08:30:20</div></li>
+                        <li class="task-item ">
+                            <div class="task-name">✅ Verificación de datos</div>
+                            <div class="task-details">Datos de prueba presentes</div>
+                            <div class="task-timestamp">23/9/2025, 08:30:20</div></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="section">
+                <div class="task-category">
+                    <div class="category-header">
+                        <span class="category-emoji">🧪</span>
+                        <span class="category-name">Testing</span>
+                    </div>
+                    <ul class="task-list">
+                        <li class="task-item ">
+                            <div class="task-name">✅ Corrección de errores de lint</div>
+                            <div class="task-details">Código sin errores de ESLint</div>
+                            <div class="task-timestamp">23/9/2025, 08:30:20</div></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Este reporte fue generado automáticamente por el sistema de Sakú Store</p>
+            <p><strong>Proyecto: Sakú Lencería E-commerce</strong></p>
+        </div>
+    </div>
+</body>
+</html>

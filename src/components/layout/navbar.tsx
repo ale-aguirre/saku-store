@@ -41,7 +41,7 @@ export function Navbar() {
 
   const navigation = [
     { name: "Inicio", href: "/" },
-    { name: "Productos", href: "/products" },
+    { name: "Productos", href: "/productos" },
     { name: "Ofertas", href: "/offers" },
     { name: "Contacto", href: "/contact" },
   ];
