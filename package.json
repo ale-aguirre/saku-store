@@ -11,7 +11,7 @@
     "lint:fix": "next lint --fix",
     "type-check": "tsc --noEmit",
     "preview": "next build && next start",
-    "postbuild": "next-sitemap",
+
     "security:enable": "powershell -ExecutionPolicy Bypass -File .\\scripts\\setup-dev-firewall.ps1 -Enable",
     "security:disable": "powershell -ExecutionPolicy Bypass -File .\\scripts\\setup-dev-firewall.ps1 -Disable",
     "security:status": "powershell -ExecutionPolicy Bypass -File .\\scripts\\setup-dev-firewall.ps1 -Status",
