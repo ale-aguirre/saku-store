@@ -85,3 +85,14 @@
 - **Branch**: `docs/roadmap-learning-log-setup`
 - **Status**: 🔄 In Progress
 - **Files**: `/docs/ROADMAP.md`, `/docs/LEARNING_LOG.md`
+
+### 2025-09-23 — SMTP Configuration & Error Fixes
+- **Task**: Configuración SMTP y corrección de errores de build
+- **Branch**: `fix/smtp-config-and-build-errors`
+- **Status**: ✅ Completed
+- **What was done**:
+  - Script notify:done configurado y funcionando con sintaxis CommonJS
+  - Configuración SMTP para Brevo (SMTP_SECURE=false, dominio verificado)
+  - Corrección de error de build: GoogleAnalytics y MetaPixel movidos dentro de ConsentProvider
+  - Documentación de errores y soluciones en LEARNING_LOG.md
+  - Build, ESLint y TypeScript verificados sin errores
