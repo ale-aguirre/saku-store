@@ -81,7 +81,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       productId: product.id,
       name: product.name,
       price: finalPrice,
-      image: product.image_url || '/placeholder-product.jpg',
+      image: product.image_url || '/images/placeholder-product.svg',
       size: selectedSize,
       color: selectedColor,
       quantity: quantity,

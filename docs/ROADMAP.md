@@ -14,7 +14,82 @@
 - **F3 Optimization** — Status: **Planned** — Owner: Agente Saku
   - Scope: Bricks, filtros/búsqueda, wishlist, reseñas, bundles, A/B, CWV, reportes
 
-## Today: 2025-09-23
+## Today: 2025-09-24
+
+### Task 8: Corrección de errores 500 y navegación
+- **Branch**: `fix/navigation-and-pages`
+- **What was done**:
+  - Investigados y resueltos errores 500 en rutas (no se encontraron errores reales)
+  - Corregidos enlaces de navegación en header.tsx (/profile → /cuenta, /orders → /cuenta/pedidos)
+  - Eliminado enlace a /wishlist no existente
+  - Creadas páginas faltantes del footer: /cambios-devoluciones, /envios, /metodos-pago
+  - Corregidos todos los errores de ESLint (variables no utilizadas, enlaces <a> → Link)
+- **How it was done**:
+  - Verificación manual de todas las rutas existentes (todas responden 200)
+  - Corrección de enlaces en src/components/layout/header.tsx para apuntar a rutas existentes
+  - Creación de páginas completas con contenido relevante para políticas de la tienda
+  - Reemplazo sistemático de etiquetas <a> por componentes Link de Next.js
+  - Eliminación de imports no utilizados en múltiples archivos
+- **Checks**:
+  - ✅ Navegación: Todos los enlaces apuntan a rutas existentes
+  - ✅ Páginas: Todas las rutas del footer existen y cargan correctamente
+  - ✅ ESLint: Sin warnings ni errores (✔ No ESLint warnings or errors)
+  - ✅ TypeScript: Sin errores de tipos
+  - ✅ Servidor: Compilación exitosa de todas las páginas nuevas
+- **Status**: ✅ Completado
+
+## Yesterday: 2025-09-23
+
+### Task 7: Corrección de errores en página /productos
+- **Branch**: `fix/supabase-multiple-instances`
+- **What was done**:
+  - Resuelto problema de múltiples instancias de GoTrueClient implementando patrón singleton en Supabase client
+  - Agregada columna `sort_order` faltante en tabla `categories` mediante migración SQL
+  - Corregidas referencias a imagen placeholder inexistente (placeholder-product.jpg → placeholder-product.svg)
+  - Verificado funcionamiento completo de página /productos sin errores
+- **How it was done**:
+  - Modificado `src/lib/supabase/client.ts` para implementar singleton que reutiliza instancia de Supabase
+  - Eliminado archivo duplicado `src/lib/supabase.ts` no utilizado
+  - Corregidos hooks `useProducts`, `useAuth` y componentes `navbar`, `header` para usar instancia singleton
+  - Creada migración `20250123000008_add_sort_order_to_categories.sql` con valores por defecto e índice
+  - Aplicada migración con `npx supabase db push`
+  - Corregidas referencias en `page.tsx` y `product-card.tsx` para usar archivo SVG existente
+- **Checks**:
+  - ✅ Supabase: Una sola instancia de GoTrueClient en toda la aplicación
+  - ✅ DB: Columna sort_order agregada exitosamente con valores por defecto
+  - ✅ Imágenes: Referencias corregidas a archivos existentes
+  - ✅ Página: /productos carga sin errores 400 o de consola
+  - ✅ Lint: Sin warnings ni errores de ESLint
+  - ✅ Types: Sin errores de TypeScript
+- **Status**: ✅ Completado
+
+## Yesterday: 2025-09-24
+
+### Task 6: Corrección del script de notificación - comandos undefined
+- **Branch**: `fix/notification-script`
+- **What was done**:
+  - Corregido timeout en comando build (aumentado a 120s)
+  - Eliminados comandos `undefined` que se ejecutaban incorrectamente
+  - Mejorados patrones de éxito/fallo para ESLint, TypeScript y Build
+  - Hecha opcional la verificación de Supabase local
+  - Creada función `executeSimpleCommand` para comandos git sin agregar tareas
+  - Corregido parsing de argumentos en función `main`
+- **How it was done**:
+  - Análisis del output del script para identificar problemas
+  - Actualización de `notification-config.json` con timeouts y flags opcionales
+  - Modificación de `autoDetectProjectStatus` para manejar comandos undefined y timeouts
+  - Corrección de `runAutoDetection` para evitar ejecución duplicada
+  - Separación de comandos git en función independiente
+  - Mejora de patrones regex para detección más precisa
+- **Checks**:
+  - ✅ Script: Ejecuta sin comandos undefined
+  - ✅ Timeouts: Manejados correctamente para build y supabase
+  - ✅ Patrones: Detección mejorada de éxito/fallo
+  - ✅ Git: Comandos ejecutados sin agregar tareas fantasma
+  - ✅ Email: Enviado exitosamente con reporte correcto
+- **Status**: ✅ Completado
+
+## Yesterday: 2025-09-23
 
 ### Task 5: Mejora del script de notificación dinámico
 - **Branch**: `develop` (mejora directa)
@@ -85,6 +160,25 @@
   - ✅ Supabase: 3 productos, 10 variantes, 3 cupones creados
   - ✅ Puerto 3000: Solo proceso activo
 - **Status**: ✅ Completado
+
+### Task 5: Resolución de warnings de build Supabase/Edge Runtime
+- **Branch**: `feature/f1-catalogo-productos` (commit 4eee249)
+- **What was done**:
+  - Configurado middleware.ts para usar Node.js runtime en lugar de Edge Runtime
+  - Agregado ignoreWarnings en next.config.js para suprimir warnings específicos de Supabase
+  - Configurado onDemandEntries para optimizar manejo de páginas en memoria
+  - Build exitoso sin warnings de process.versions y process.version
+- **How it was done**:
+  - Análisis de warnings: APIs de Node.js (process.versions/process.version) no soportadas en Edge Runtime
+  - Solución 1: Agregado `export const runtime = 'nodejs'` en middleware.ts
+  - Solución 2: Configurado webpack ignoreWarnings para módulos específicos de Supabase
+  - Solución 3: Optimizado onDemandEntries para mejor manejo de memoria
+- **Checks**:
+  - ✅ Build: OK (sin warnings)
+  - ✅ ESLint: OK (sin errores)
+  - ✅ Type-check: OK (sin errores)
+  - ✅ Git: Push exitoso a feature/f1-catalogo-productos
+- **Status**: ✅ Completado - 2025-09-23 20:58
 
 ## Previous: 2025-09-23
 

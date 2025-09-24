@@ -18,7 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Menu, ShoppingBag, User, Search, LogOut, Package, Heart } from 'lucide-react'
+import { Menu, ShoppingBag, User, Search, LogOut, Package } from 'lucide-react'
 import { useState } from 'react'
 
 const navigation = [
@@ -28,6 +28,9 @@ const navigation = [
   { name: 'Contacto', href: '/contacto' },
 ]
 
+// Create singleton instance outside component
+const supabase = createClient()
+
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const { getTotalItems } = useCart()
@@ -36,7 +39,6 @@ export function Header() {
   const totalItems = getTotalItems()
 
   const handleLogout = async () => {
-    const supabase = createClient()
     await supabase.auth.signOut()
     router.push('/')
   }
@@ -103,21 +105,15 @@ export function Header() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/profile" className="cursor-pointer">
+                  <Link href="/cuenta" className="cursor-pointer">
                     <User className="mr-2 h-4 w-4" />
-                    Perfil
+                    Mi Cuenta
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/orders" className="cursor-pointer">
+                  <Link href="/cuenta/pedidos" className="cursor-pointer">
                     <Package className="mr-2 h-4 w-4" />
                     Mis Pedidos
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/wishlist" className="cursor-pointer">
-                    <Heart className="mr-2 h-4 w-4" />
-                    Lista de Deseos
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -180,15 +176,15 @@ export function Header() {
                   {user ? (
                     <>
                       <Link
-                        href="/profile"
+                        href="/cuenta"
                         className="text-lg font-medium transition-colors hover:text-primary flex items-center space-x-2"
                         onClick={() => setIsOpen(false)}
                       >
                         <User className="h-4 w-4" />
-                        <span>Mi Perfil</span>
+                        <span>Mi Cuenta</span>
                       </Link>
                       <Link
-                        href="/orders"
+                        href="/cuenta/pedidos"
                         className="text-lg font-medium transition-colors hover:text-primary flex items-center space-x-2 mt-4"
                         onClick={() => setIsOpen(false)}
                       >
