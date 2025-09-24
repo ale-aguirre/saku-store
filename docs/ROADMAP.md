@@ -16,6 +16,51 @@
 
 ## Today: 2025-09-24
 
+### Task 11: Implementación de catálogo y carrito con selección de variantes y cálculo de envío
+- **Branch**: `feature/f1-catalog-cart`
+- **What was done**:
+  - Implementado sistema de carrito con selección de variantes y cálculo de envío
+  - Agregado componente Accordion para organizar opciones de cupón y envío
+  - Implementada funcionalidad de cálculo de envío basado en código postal
+  - Mejorado el hook de carrito para manejar cupones y envío
+  - Corregidos errores de tipo y pruebas end-to-end
+- **How it was done**:
+  - Extendido el hook useCart para soportar cupones y envío
+  - Implementado sistema de cálculo de envío basado en código postal (nacional vs Córdoba)
+  - Agregado componente Accordion para organizar opciones de cupón y envío
+  - Corregidos errores de tipo en comparaciones de números literales
+  - Actualizadas pruebas end-to-end para verificar el funcionamiento correcto
+- **Checks**:
+  - ✅ Carrito: Funciona correctamente con selección de variantes
+  - ✅ Cupones: Se aplican correctamente y afectan el precio final
+  - ✅ Envío: Cálculo correcto basado en código postal y umbral de envío gratis
+  - ✅ ESLint: Sin warnings ni errores
+  - ✅ TypeScript: Sin errores de tipos
+  - ✅ Tests: Pruebas end-to-end pasando correctamente
+- **Status**: ✅ Completado
+
+### Task 10: Implementación de página de inicio con productos destacados dinámicos
+- **Branch**: `feature/f1-home-page`
+- **What was done**:
+  - Implementada página de inicio con productos destacados dinámicos desde Supabase
+  - Reemplazados datos hardcodeados por componente FeaturedProducts que obtiene productos reales
+  - Agregado componente de carga (skeleton) para mejorar UX durante la carga de productos
+  - Mejorado el diseño con contenedores y espaciado adecuado
+  - Enlazado botón de registro a la página de registro
+- **How it was done**:
+  - Creado componente asíncrono FeaturedProducts que utiliza getFeaturedProducts de Supabase
+  - Implementado Suspense con fallback para mostrar skeleton durante la carga
+  - Utilizado ProductCard existente para mostrar productos de manera consistente
+  - Corregidos errores de ESLint (importaciones no utilizadas)
+  - Verificados tipos TypeScript y funcionamiento correcto
+- **Checks**:
+  - ✅ Productos: Se muestran correctamente desde Supabase
+  - ✅ Diseño: Responsive y consistente con el resto del sitio
+  - ✅ ESLint: Sin warnings ni errores
+  - ✅ TypeScript: Sin errores de tipos
+  - ✅ Funcionamiento: Carga y muestra productos correctamente
+- **Status**: ✅ Completado
+
 ### Task 9: Merge unificado de navegación y páginas del footer
 - **Branch**: `feature/f1-navigation-and-pages-unified`
 - **What was done**:
@@ -240,21 +285,17 @@
 
 ## Upcoming (next 3)
 
-1) **F1 - Catálogo de productos**: Implementar PLP/PDP con variantes (talle × color)
-2) **F1 - Sistema de carrito**: Cart drawer con cupones y cálculo de envío
-3) **F1 - Checkout MVP**: Integración con Mercado Pago Checkout Pro
+1) **F1 - Checkout MVP**: Integración con Mercado Pago Checkout Pro
+2) **F1 - Order Management**: Sistema de gestión de órdenes (pending → paid → fulfilled)
+3) **F1 - Admin Panel**: Panel de administración básico (productos, stock, órdenes, cupones)
 
 ## Backlog
 
 - **F1 MVP Sales**:
-  - Home page con hero y productos destacados
-  - Product Listing Page (PLP) con filtros básicos
-  - Product Detail Page (PDP) con selector de variantes
-  - Cart drawer con cupones y shipping calculator
   - Checkout flow con Mercado Pago Checkout Pro
   - Order management (pending → paid → fulfilled)
   - Admin panel básico (productos, stock, órdenes, cupones)
-  - Emails transaccionales (confirmación, tracking)
+  - Emails transaccionales (confirmación de orden, pago recibido, envío, tracking)
 
 - **F2 Ops & CRM**:
   - Webhook de Mercado Pago para actualizar órdenes
