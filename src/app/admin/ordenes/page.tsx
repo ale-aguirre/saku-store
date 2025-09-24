@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
 import { 
   Select,
   SelectContent,
@@ -29,10 +30,22 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  Filter
+  Filter,
+  Calendar,
+  RefreshCw,
+  ArrowUpDown,
+  Download
 } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/hooks/use-auth'
+import { 
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import { Calendar as CalendarComponent } from '@/components/ui/calendar'
+import { format } from 'date-fns'
+import { es } from 'date-fns/locale'
 
 interface Order {
   id: string
@@ -69,18 +82,31 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [dateRange, setDateRange] = useState<{
+    from: Date | undefined
+    to: Date | undefined
+  }>({
+    from: undefined,
+    to: undefined
+  })
+  const [sortField, setSortField] = useState<string>('created_at')
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
+  const [totalOrders, setTotalOrders] = useState<number>(0)
+  const [totalRevenue, setTotalRevenue] = useState<number>(0)
 
   useEffect(() => {
     if (user) {
       fetchOrders()
     }
-  }, [user])
+  }, [user, statusFilter, dateRange, sortField, sortDirection])
 
   const fetchOrders = async () => {
+    setLoading(true)
     try {
       const supabase = createClient()
       
-      const { data, error } = await supabase
+      // Construir la consulta base
+      let query = supabase
         .from('orders')
         .select(`
           *,
@@ -88,16 +114,68 @@ export default function OrdersPage() {
             email,
             full_name
           )
-        `)
-        .order('created_at', { ascending: false })
-
+        `, { count: 'exact' })
+      
+      // Aplicar filtros
+      if (statusFilter !== 'all') {
+        query = query.eq('status', statusFilter)
+      }
+      
+      // Filtro de fecha
+      if (dateRange.from) {
+        const fromDate = new Date(dateRange.from)
+        fromDate.setHours(0, 0, 0, 0)
+        query = query.gte('created_at', fromDate.toISOString())
+      }
+      
+      if (dateRange.to) {
+        const toDate = new Date(dateRange.to)
+        toDate.setHours(23, 59, 59, 999)
+        query = query.lte('created_at', toDate.toISOString())
+      }
+      
+      // Ordenamiento
+      query = query.order(sortField, { ascending: sortDirection === 'asc' })
+      
+      // Ejecutar la consulta
+      const { data, error, count } = await query
+      
       if (error) throw error
-
+      
       setOrders(data || [])
+      
+      // Actualizar el contador total
+      if (count !== null) {
+        setTotalOrders(count)
+      }
+      
+      // Calcular ingresos totales
+      if (data && data.length > 0) {
+        const revenue = data.reduce((sum, order) => {
+          // Solo contar órdenes pagadas o entregadas
+          if (['paid', 'processing', 'shipped', 'delivered'].includes(order.status)) {
+            return sum + order.total_amount
+          }
+          return sum
+        }, 0)
+        
+        setTotalRevenue(revenue)
+      }
     } catch (error) {
       console.error('Error fetching orders:', error)
     } finally {
       setLoading(false)
+    }
+  }
+  
+  const handleSort = (field: string) => {
+    if (field === sortField) {
+      // Cambiar dirección si es el mismo campo
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+    } else {
+      // Nuevo campo, establecer dirección predeterminada
+      setSortField(field)
+      setSortDirection('desc')
     }
   }
 
@@ -179,11 +257,66 @@ export default function OrdersPage() {
           <h1 className="text-3xl font-bold">Gestión de Órdenes</h1>
           <p className="text-gray-600">Administra todas las órdenes de tu tienda</p>
         </div>
+        <Button 
+          variant="outline" 
+          size="sm"
+          onClick={fetchOrders}
+          disabled={loading}
+        >
+          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+          Actualizar
+        </Button>
       </div>
 
-      {/* Filters */}
+      {/* Estadísticas */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Total de órdenes</CardDescription>
+            <CardTitle className="text-2xl">{totalOrders}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              {orders.filter(o => o.status === 'pending').length} pendientes
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Ingresos totales</CardDescription>
+            <CardTitle className="text-2xl">${(totalRevenue / 100).toLocaleString('es-AR')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              De órdenes pagadas y procesadas
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Ticket promedio</CardDescription>
+            <CardTitle className="text-2xl">
+              {orders.filter(o => ['paid', 'processing', 'shipped', 'delivered'].includes(o.status)).length > 0 
+                ? `$${(totalRevenue / orders.filter(o => ['paid', 'processing', 'shipped', 'delivered'].includes(o.status)).length / 100).toLocaleString('es-AR')}` 
+                : '$0'}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Basado en órdenes completadas
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Filtros */}
       <Card className="mb-6">
-        <CardContent className="pt-6">
+        <CardHeader>
+          <CardTitle>Filtros</CardTitle>
+        </CardHeader>
+        <CardContent>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
@@ -196,6 +329,7 @@ export default function OrdersPage() {
                 />
               </div>
             </div>
+            
             <div className="w-full sm:w-48">
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger>
@@ -206,11 +340,62 @@ export default function OrdersPage() {
                   <SelectItem value="all">Todos los estados</SelectItem>
                   {ORDER_STATUSES.map((status) => (
                     <SelectItem key={status.value} value={status.value}>
-                      {status.label}
+                      <div className="flex items-center">
+                        <status.icon className="h-4 w-4 mr-2" />
+                        {status.label}
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+            
+            <div className="w-full sm:w-auto">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="w-full justify-start text-left font-normal">
+                    <Calendar className="mr-2 h-4 w-4" />
+                    {dateRange.from ? (
+                      dateRange.to ? (
+                        <>
+                          {format(dateRange.from, 'dd/MM/yyyy')} - {format(dateRange.to, 'dd/MM/yyyy')}
+                        </>
+                      ) : (
+                        format(dateRange.from, 'dd/MM/yyyy')
+                      )
+                    ) : (
+                      "Seleccionar fechas"
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <CalendarComponent
+                    initialFocus
+                    mode="range"
+                    defaultMonth={dateRange.from}
+                    selected={dateRange}
+                    onSelect={setDateRange}
+                    numberOfMonths={2}
+                    locale={es}
+                  />
+                  <div className="p-3 border-t border-border">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full"
+                      onClick={() => setDateRange({ from: undefined, to: undefined })}
+                    >
+                      Limpiar
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
+            
+            <div className="w-full sm:w-auto">
+              <Button variant="outline" size="icon" className="ml-auto">
+                <Download className="h-4 w-4" />
+              </Button>
             </div>
           </div>
         </CardContent>
@@ -226,92 +411,165 @@ export default function OrdersPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Número</TableHead>
+                  <TableHead 
+                    className="cursor-pointer hover:bg-gray-50"
+                    onClick={() => handleSort('order_number')}
+                  >
+                    <div className="flex items-center">
+                      Número
+                      {sortField === 'order_number' && (
+                        <ArrowUpDown className={`ml-2 h-4 w-4 ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
+                      )}
+                    </div>
+                  </TableHead>
                   <TableHead>Cliente</TableHead>
-                  <TableHead>Estado</TableHead>
-                  <TableHead>Total</TableHead>
-                  <TableHead>Fecha</TableHead>
+                  <TableHead 
+                    className="cursor-pointer hover:bg-gray-50"
+                    onClick={() => handleSort('status')}
+                  >
+                    <div className="flex items-center">
+                      Estado
+                      {sortField === 'status' && (
+                        <ArrowUpDown className={`ml-2 h-4 w-4 ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
+                      )}
+                    </div>
+                  </TableHead>
+                  <TableHead 
+                    className="cursor-pointer hover:bg-gray-50"
+                    onClick={() => handleSort('total_amount')}
+                  >
+                    <div className="flex items-center">
+                      Total
+                      {sortField === 'total_amount' && (
+                        <ArrowUpDown className={`ml-2 h-4 w-4 ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
+                      )}
+                    </div>
+                  </TableHead>
+                  <TableHead 
+                    className="cursor-pointer hover:bg-gray-50"
+                    onClick={() => handleSort('created_at')}
+                  >
+                    <div className="flex items-center">
+                      Fecha
+                      {sortField === 'created_at' && (
+                        <ArrowUpDown className={`ml-2 h-4 w-4 ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
+                      )}
+                    </div>
+                  </TableHead>
                   <TableHead>Seguimiento</TableHead>
                   <TableHead>Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredOrders.map((order) => {
-                  const statusConfig = getStatusConfig(order.status)
-                  const StatusIcon = statusConfig.icon
-                  
-                  return (
-                    <TableRow key={order.id}>
-                      <TableCell className="font-medium">
-                        #{order.order_number}
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <div className="font-medium">
-                            {order.profiles?.full_name || 'Sin nombre'}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {order.profiles?.email}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={statusConfig.color}>
-                          <StatusIcon className="h-3 w-3 mr-1" />
-                          {statusConfig.label}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        ${(order.total / 100).toFixed(2)}
-                      </TableCell>
-                      <TableCell>
-                        {new Date(order.created_at).toLocaleDateString('es-AR')}
-                      </TableCell>
-                      <TableCell>
-                        {order.tracking_code ? (
-                          <Badge variant="outline">
-                            {order.tracking_code}
-                          </Badge>
-                        ) : (
-                          <span className="text-gray-400">Sin código</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Link href={`/admin/ordenes/${order.id}`}>
-                            <Button variant="outline" size="sm">
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </Link>
-                          
-                          <Select
-                            value={order.status}
-                            onValueChange={(value) => updateOrderStatus(order.id, value)}
-                          >
-                            <SelectTrigger className="w-32">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {ORDER_STATUSES.map((status) => (
-                                <SelectItem key={status.value} value={status.value}>
-                                  {status.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
+                {loading ? (
+                  // Filas de carga
+                  Array.from({ length: 5 }).map((_, index) => (
+                    <TableRow key={`skeleton-${index}`}>
+                      <TableCell colSpan={7}>
+                        <div className="h-10 bg-gray-100 animate-pulse rounded"></div>
                       </TableCell>
                     </TableRow>
-                  )
-                })}
+                  ))
+                ) : filteredOrders.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-8">
+                      <p className="text-gray-500">No se encontraron órdenes</p>
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredOrders.map((order) => {
+                    const statusConfig = getStatusConfig(order.status)
+                    const StatusIcon = statusConfig.icon
+                    
+                    return (
+                      <TableRow key={order.id}>
+                        <TableCell className="font-medium">
+                          <Link href={`/admin/ordenes/${order.id}`} className="hover:underline">
+                            #{order.order_number}
+                          </Link>
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            <div className="font-medium">
+                              {order.profiles?.full_name || 'Sin nombre'}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {order.profiles?.email}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={statusConfig.color}>
+                            <StatusIcon className="h-3 w-3 mr-1" />
+                            {statusConfig.label}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          ${(order.total / 100).toLocaleString('es-AR')}
+                        </TableCell>
+                        <TableCell>
+                          <div className="whitespace-nowrap">
+                            {format(new Date(order.created_at), 'dd/MM/yyyy')}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {format(new Date(order.created_at), 'HH:mm')}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {order.tracking_code ? (
+                            <div>
+                              <Badge variant="outline">
+                                {order.tracking_code}
+                              </Badge>
+                              {order.tracking_url && (
+                                <a 
+                                  href={order.tracking_url} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="text-xs text-blue-600 hover:underline block mt-1"
+                                >
+                                  Ver seguimiento
+                                </a>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-gray-400">Sin código</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Link href={`/admin/ordenes/${order.id}`}>
+                              <Button variant="outline" size="sm">
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                            </Link>
+                            
+                            <Select
+                              value={order.status}
+                              onValueChange={(value) => updateOrderStatus(order.id, value)}
+                            >
+                              <SelectTrigger className="w-32">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {ORDER_STATUSES.map((status) => (
+                                  <SelectItem key={status.value} value={status.value}>
+                                    <div className="flex items-center">
+                                      <status.icon className="h-4 w-4 mr-2" />
+                                      {status.label}
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })
+                )}
               </TableBody>
             </Table>
-            
-            {filteredOrders.length === 0 && (
-              <div className="text-center py-8">
-                <p className="text-gray-500">No se encontraron órdenes</p>
-              </div>
-            )}
           </div>
         </CardContent>
       </Card>

@@ -16,6 +16,35 @@
 
 ## Today: 2025-09-24
 
+### Task 13: Implementación del sistema de gestión de órdenes
+- **Branch**: `feature/f1-order-management`
+- **What was done**:
+  - Creación de componentes reutilizables para la gestión de órdenes
+  - Mejora de la interfaz de usuario para la visualización y gestión de órdenes
+  - Implementación de filtros avanzados y ordenamiento
+  - Visualización de estadísticas de órdenes
+  - Mejora del sistema de seguimiento de envíos
+- **How it was done**:
+  - Creación de componentes modulares:
+    - `OrderEventTimeline`: Visualización cronológica de eventos de la orden
+    - `OrderShippingManager`: Gestión de información de envío y seguimiento
+    - `OrderSummary`: Resumen de la orden con acciones rápidas
+  - Mejora de la página de listado de órdenes con:
+    - Filtros por estado, fecha y búsqueda
+    - Ordenamiento por diferentes campos
+    - Estadísticas de órdenes y ventas
+  - Mejora de la página de detalle de orden con:
+    - Visualización más clara de la información
+    - Acciones contextuales según el estado
+    - Historial de eventos mejorado
+- **Checks**:
+  - ✅ Visualización de órdenes: Interfaz mejorada y más informativa
+  - ✅ Filtros y ordenamiento: Funcionan correctamente
+  - ✅ Gestión de estados: Actualización correcta con eventos
+  - ✅ Gestión de envíos: Seguimiento y notificaciones
+  - ✅ Estadísticas: Cálculos correctos de totales y promedios
+- **Status**: ✅ Completado
+
 ### Task 12: Integración con Mercado Pago Checkout Pro
 - **Branch**: `feature/f1-mercadopago-checkout`
 - **What was done**:
@@ -307,16 +336,16 @@
 
 ## Upcoming (next 3)
 
-1) **F1 - Order Management**: Sistema de gestión de órdenes (pending → paid → fulfilled)
-2) **F1 - Admin Panel**: Panel de administración básico (productos, stock, órdenes, cupones)
-3) **F1 - Emails Transaccionales**: Emails de confirmación, pago recibido, envío y tracking
+1) **F1 - Admin Panel**: Panel de administración básico (productos, stock, cupones)
+2) **F1 - Emails Transaccionales**: Emails de confirmación, pago recibido, envío y tracking
+3) **F1 - Home Page**: Implementación de la página principal con hero y productos destacados
 
 ## Backlog
 
 - **F1 MVP Sales**:
-  - Order management (pending → paid → fulfilled)
-  - Admin panel básico (productos, stock, órdenes, cupones)
+  - Admin panel básico (productos, stock, cupones)
   - Emails transaccionales (confirmación de orden, pago recibido, envío, tracking)
+  - Home page con hero y productos destacados
 
 - **F2 Ops & CRM**:
   - Webhook de Mercado Pago para actualizar órdenes
