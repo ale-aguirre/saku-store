@@ -85,30 +85,53 @@ export const useCheckout = () => {
     setError(null)
 
     try {
+      console.log('Creando preferencia de pago con Mercado Pago...')
+      console.log('Datos de envío:', shippingData)
+      
+      const payload = {
+        items,
+        shippingData,
+        shippingCost: getShippingCost(shippingData.shippingMethod),
+        total: getTotalWithShipping(shippingData.shippingMethod)
+      }
+      
+      console.log('Enviando datos al servidor:', JSON.stringify(payload, null, 2))
+      
       const response = await fetch('/api/checkout/create-preference', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          items,
-          shippingData,
-          shippingCost: getShippingCost(shippingData.shippingMethod),
-          total: getTotalWithShipping(shippingData.shippingMethod)
-        }),
+        body: JSON.stringify(payload),
       })
 
+      const responseData = await response.json()
+      
       if (!response.ok) {
-        throw new Error('Error al crear la preferencia de pago')
+        console.error('Error en la respuesta del servidor:', responseData)
+        throw new Error(responseData.error || 'Error al crear la preferencia de pago')
       }
 
-      const { preferenceId, initPoint } = await response.json()
+      const { preferenceId, initPoint, debug } = responseData
+      
+      console.log('Preferencia creada exitosamente:', preferenceId)
+      console.log('Información de debug:', debug)
+      
+      // Guardar información del pedido en localStorage para recuperarla después
+      localStorage.setItem('lastCheckout', JSON.stringify({
+        items,
+        shippingData,
+        preferenceId,
+        timestamp: new Date().toISOString()
+      }))
       
       // Redirigir a Mercado Pago
+      console.log('Redirigiendo a Mercado Pago:', initPoint)
       window.location.href = initPoint
       
       return { preferenceId, initPoint }
     } catch (error) {
+      console.error('Error al crear preferencia:', error)
       const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
       setError(errorMessage)
       throw error

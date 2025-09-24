@@ -36,15 +36,23 @@ export async function POST(request: NextRequest) {
     const { items, shippingData, shippingCost } = validatedData
 
     // Verificar que tenemos el token de Mercado Pago
-    const accessToken = process.env.MP_ACCESS_TOKEN
+    // Usar el token de producción o de prueba según el entorno
+    const accessToken = process.env.NODE_ENV === 'production' 
+      ? process.env.MP_ACCESS_TOKEN 
+      : process.env.MP_ACCESS_TOKEN_TEST
+      
     if (!accessToken) {
       return NextResponse.json(
         { error: 'Token de Mercado Pago no configurado' },
         { status: 500 }
       )
     }
+    
+    console.log(`Usando token de Mercado Pago para entorno: ${process.env.NODE_ENV}`)
+    
 
     // Preparar items para Mercado Pago
+    // Asegurarse de que los precios estén en el formato correcto (números con decimales)
     const mpItems = items.map(item => ({
       id: item.id,
       title: `${item.name} - ${item.size} - ${item.color}`,
@@ -52,7 +60,7 @@ export async function POST(request: NextRequest) {
       category_id: 'fashion',
       quantity: item.quantity,
       currency_id: 'ARS',
-      unit_price: item.price
+      unit_price: item.price / 100 // Convertir de centavos a pesos
     }))
 
     // Agregar costo de envío como item
@@ -63,8 +71,10 @@ export async function POST(request: NextRequest) {
       category_id: 'services',
       quantity: 1,
       currency_id: 'ARS',
-      unit_price: shippingCost
+      unit_price: shippingCost / 100 // Convertir de centavos a pesos
     })
+    
+    console.log('Items para Mercado Pago:', JSON.stringify(mpItems, null, 2))
 
     // Crear preferencia en Mercado Pago
     const preferenceData = {
@@ -95,7 +105,11 @@ export async function POST(request: NextRequest) {
         pending: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/checkout/pending`
       },
       auto_return: 'approved',
-      notification_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/webhooks/mercadopago`,
+      // En desarrollo, usamos ngrok o similar para recibir webhooks
+      // En producción, usamos la URL del sitio
+      notification_url: process.env.NODE_ENV === 'production'
+        ? `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/mercadopago`
+        : process.env.MP_WEBHOOK_URL || `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/webhooks/mercadopago`,
       external_reference: `order_${Date.now()}`,
       metadata: {
         shipping_method: shippingData.shippingMethod,
@@ -104,30 +118,51 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(preferenceData)
-    })
-
-    if (!response.ok) {
-      const errorData = await response.text()
-      console.error('Error de Mercado Pago:', errorData)
+    try {
+      console.log('Enviando solicitud a Mercado Pago...')
+      
+      const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(preferenceData)
+      })
+  
+      if (!response.ok) {
+        const errorData = await response.text()
+        console.error('Error de Mercado Pago:', errorData)
+        return NextResponse.json(
+          { error: 'Error al crear la preferencia de pago', details: errorData },
+          { status: 500 }
+        )
+      }
+  
+      const preference = await response.json()
+      console.log('Preferencia creada exitosamente:', preference.id)
+      
+      // Determinar qué URL usar según el entorno
+      const checkoutUrl = process.env.NODE_ENV === 'production'
+        ? preference.init_point  // URL de producción
+        : preference.sandbox_init_point || preference.init_point // URL de sandbox o fallback a producción
+      
+      return NextResponse.json({
+        preferenceId: preference.id,
+        initPoint: checkoutUrl,
+        // Incluir datos adicionales para debugging
+        debug: {
+          environment: process.env.NODE_ENV,
+          timestamp: new Date().toISOString()
+        }
+      })
+    } catch (error) {
+      console.error('Error al comunicarse con Mercado Pago:', error)
       return NextResponse.json(
-        { error: 'Error al crear la preferencia de pago' },
+        { error: 'Error de comunicación con el servicio de pagos', details: String(error) },
         { status: 500 }
       )
     }
-
-    const preference = await response.json()
-
-    return NextResponse.json({
-      preferenceId: preference.id,
-      initPoint: preference.init_point
-    })
 
   } catch (error) {
     console.error('Error en create-preference:', error)

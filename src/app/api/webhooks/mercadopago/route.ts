@@ -20,25 +20,34 @@ const webhookSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  console.log('Webhook de Mercado Pago recibido:', new Date().toISOString())
+  
   try {
     const body = await request.json();
+    console.log('Cuerpo del webhook:', JSON.stringify(body, null, 2))
 
     // Validar el webhook
     const webhook = webhookSchema.parse(body);
+    console.log('Webhook validado correctamente')
 
     // Solo procesar pagos
     if (webhook.type !== "payment") {
+      console.log(`Tipo de evento no soportado: ${webhook.type}`)
       return NextResponse.json(
         { message: "Event type not supported" },
         { status: 200 }
       );
     }
+    
+    console.log(`Procesando pago con ID: ${webhook.data.id}`)
+    
 
     // Obtener información del pago desde Mercado Pago
     let payment;
     
     // En entorno de testing, usar datos mockeados
     if (process.env.NODE_ENV === 'test' || webhook.data.id === '12345678901' || webhook.data.id === '12345678902') {
+      console.log('Usando datos de pago mockeados para testing')
       const external_ref = webhook.data.id === '12345678901' ? 'TEST_ORDER_123' : 'TEST_ORDER_456'
       payment = {
         id: webhook.data.id,
@@ -54,20 +63,34 @@ export async function POST(request: NextRequest) {
         }
       };
     } else {
+      console.log('Obteniendo información del pago desde Mercado Pago API')
+      
+      // Usar el token correcto según el entorno
+      const accessToken = process.env.NODE_ENV === 'production' 
+        ? process.env.MP_ACCESS_TOKEN 
+        : process.env.MP_ACCESS_TOKEN_TEST
+        
+      if (!accessToken) {
+        throw new Error("Token de Mercado Pago no configurado");
+      }
+      
       const paymentResponse = await fetch(
         `https://api.mercadopago.com/v1/payments/${webhook.data.id}`,
         {
           headers: {
-            Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+            Authorization: `Bearer ${accessToken}`,
           },
         }
       );
 
       if (!paymentResponse.ok) {
-        throw new Error("Failed to fetch payment from MercadoPago");
+        const errorText = await paymentResponse.text();
+        console.error('Error al obtener información del pago:', errorText);
+        throw new Error(`Failed to fetch payment from MercadoPago: ${errorText}`);
       }
 
       payment = await paymentResponse.json();
+      console.log('Información del pago obtenida:', JSON.stringify(payment, null, 2));
     }
 
     // Buscar la orden por external_reference
@@ -237,14 +260,37 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    console.log('Webhook procesado exitosamente')
     return NextResponse.json(
-      { message: "Webhook processed successfully" },
+      { 
+        message: "Webhook processed successfully",
+        payment_id: webhook.data.id,
+        timestamp: new Date().toISOString()
+      },
       { status: 200 }
     );
   } catch (error) {
     console.error("Webhook error:", error);
+    
+    // Si es un error de validación de Zod, devolver un error 400
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { 
+          message: "Invalid webhook payload", 
+          details: error.issues,
+          timestamp: new Date().toISOString()
+        },
+        { status: 400 }
+      );
+    }
+    
+    // Para otros errores, devolver un 500
     return NextResponse.json(
-      { message: "Internal server error" },
+      { 
+        message: "Internal server error",
+        error: error instanceof Error ? error.message : String(error),
+        timestamp: new Date().toISOString()
+      },
       { status: 500 }
     );
   }

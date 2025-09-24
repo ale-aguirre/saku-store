@@ -16,6 +16,28 @@
 
 ## Today: 2025-09-24
 
+### Task 12: Integración con Mercado Pago Checkout Pro
+- **Branch**: `feature/f1-mercadopago-checkout`
+- **What was done**:
+  - Mejorada la integración con Mercado Pago Checkout Pro
+  - Optimizado el endpoint de creación de preferencia de pago
+  - Mejorado el webhook para recibir notificaciones de pagos
+  - Implementado manejo de errores robusto
+  - Creado script de prueba para verificar la integración
+- **How it was done**:
+  - Actualizado el endpoint `/api/checkout/create-preference` para usar el token correcto según el entorno
+  - Mejorado el manejo de precios para convertir de centavos a pesos
+  - Implementado logging detallado para facilitar la depuración
+  - Mejorado el webhook para procesar correctamente las notificaciones
+  - Creado script `test-mercadopago.js` para probar la integración
+- **Checks**:
+  - ✅ Creación de preferencia: Funciona correctamente
+  - ✅ Webhook: Procesa correctamente las notificaciones
+  - ✅ Manejo de errores: Implementado de manera robusta
+  - ✅ Entornos: Soporta tanto desarrollo como producción
+  - ✅ Logging: Implementado para facilitar la depuración
+- **Status**: ✅ Completado
+
 ### Task 11: Implementación de catálogo y carrito con selección de variantes y cálculo de envío
 - **Branch**: `feature/f1-catalog-cart`
 - **What was done**:
@@ -285,14 +307,13 @@
 
 ## Upcoming (next 3)
 
-1) **F1 - Checkout MVP**: Integración con Mercado Pago Checkout Pro
-2) **F1 - Order Management**: Sistema de gestión de órdenes (pending → paid → fulfilled)
-3) **F1 - Admin Panel**: Panel de administración básico (productos, stock, órdenes, cupones)
+1) **F1 - Order Management**: Sistema de gestión de órdenes (pending → paid → fulfilled)
+2) **F1 - Admin Panel**: Panel de administración básico (productos, stock, órdenes, cupones)
+3) **F1 - Emails Transaccionales**: Emails de confirmación, pago recibido, envío y tracking
 
 ## Backlog
 
 - **F1 MVP Sales**:
-  - Checkout flow con Mercado Pago Checkout Pro
   - Order management (pending → paid → fulfilled)
   - Admin panel básico (productos, stock, órdenes, cupones)
   - Emails transaccionales (confirmación de orden, pago recibido, envío, tracking)

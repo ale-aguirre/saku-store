@@ -77,7 +77,7 @@ test.describe('Flujo básico del carrito', () => {
 
   test('debe permitir aplicar un cupón de descuento', async ({ page }) => {
     // Navegar directamente a una PDP específica para mayor confiabilidad
-    await page.goto('http://localhost:3003/productos/1')
+    await page.goto('/productos/1')
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(3000)
 
@@ -97,7 +97,7 @@ test.describe('Flujo básico del carrito', () => {
     await page.waitForTimeout(1000)
 
     // Esperar a que el botón esté habilitado
-    const addToCartButton = page.locator('[data-testid="add-to-cart"]')
+    const addToCartButton = page.locator('[data-testid="add-to-cart-button"]')
     await expect(addToCartButton).toBeVisible({ timeout: 10000 })
     await expect(addToCartButton).toBeEnabled({ timeout: 10000 })
     
@@ -127,9 +127,13 @@ test.describe('Flujo básico del carrito', () => {
     // Obtener el precio original
     const originalPrice = await page.locator('[data-testid="cart-total"]').textContent()
     
+    // Abrir el acordeón de cupón
+    await page.click('text=Cupón de descuento')
+    await page.waitForTimeout(1000)
+    
     // Aplicar cupón de descuento (usar un cupón válido)
     const couponInput = page.locator('[data-testid="coupon-input"]')
-    await expect(couponInput).toBeVisible()
+    await expect(couponInput).toBeVisible({ timeout: 10000 })
     
     await couponInput.fill('BIENVENIDA10')
     await page.click('[data-testid="apply-coupon"]')
@@ -144,7 +148,7 @@ test.describe('Flujo básico del carrito', () => {
 
   test('debe mostrar el flujo completo hasta checkout', async ({ page }) => {
     // Navegar directamente a una PDP específica para mayor confiabilidad
-    await page.goto('http://localhost:3003/productos/1')
+    await page.goto('/productos/1')
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(3000)
 
@@ -164,7 +168,7 @@ test.describe('Flujo básico del carrito', () => {
     await page.waitForTimeout(1000)
 
     // Esperar a que el botón esté habilitado
-    const addToCartButton = page.locator('[data-testid="add-to-cart"]')
+    const addToCartButton = page.locator('[data-testid="add-to-cart-button"]')
     await expect(addToCartButton).toBeVisible({ timeout: 10000 })
     await expect(addToCartButton).toBeEnabled({ timeout: 10000 })
     
@@ -196,7 +200,7 @@ test.describe('Flujo básico del carrito', () => {
 
   test('debe calcular correctamente los costos de envío', async ({ page }) => {
     // Navegar directamente a una PDP específica para mayor confiabilidad
-    await page.goto('http://localhost:3003/productos/1')
+    await page.goto('/productos/1')
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(3000)
 
@@ -216,7 +220,7 @@ test.describe('Flujo básico del carrito', () => {
     await page.waitForTimeout(1000)
 
     // Esperar a que el botón esté habilitado
-    const addToCartButton = page.locator('[data-testid="add-to-cart"]')
+    const addToCartButton = page.locator('[data-testid="add-to-cart-button"]')
     await expect(addToCartButton).toBeVisible({ timeout: 10000 })
     await expect(addToCartButton).toBeEnabled({ timeout: 10000 })
     
