@@ -16,6 +16,12 @@ function Calendar({
   showOutsideDays = true,
   ...props
 }: CalendarProps) {
+  // Definir los componentes de iconos por separado para evitar problemas de tipo
+  const customComponents = {
+    IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+    IconRight: () => <ChevronRight className="h-4 w-4" />,
+  };
+
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
@@ -55,11 +61,7 @@ function Calendar({
         day_hidden: "invisible",
         ...classNames,
       }}
-      // @ts-ignore - Radix UI types are not compatible with react-day-picker
-      components={{
-        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
-        IconRight: () => <ChevronRight className="h-4 w-4" />,
-      }}
+      components={customComponents as any}
       {...props}
     />
   )

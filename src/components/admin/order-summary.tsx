@@ -91,7 +91,8 @@ export function OrderSummary({ order, onUpdate }: OrderSummaryProps) {
       
       const { error } = await supabase
         .from('orders')
-        .update({ status: newStatus } as any)
+        // @ts-expect-error - Supabase types are not matching our schema
+        .update({ status: newStatus })
         .eq('id', order.id)
 
       if (error) throw error
@@ -99,6 +100,7 @@ export function OrderSummary({ order, onUpdate }: OrderSummaryProps) {
       // Create order event
       await supabase
         .from('order_events')
+        // @ts-expect-error - Supabase types are not matching our schema
         .insert({
           order_id: order.id,
           type: 'status_change',
@@ -106,7 +108,7 @@ export function OrderSummary({ order, onUpdate }: OrderSummaryProps) {
             old_status: order.status,
             new_status: newStatus 
           }
-        } as any)
+        })
 
       onUpdate()
     } catch (error) {

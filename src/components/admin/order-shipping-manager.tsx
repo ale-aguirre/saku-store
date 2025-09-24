@@ -74,13 +74,14 @@ export function OrderShippingManager({ order, onUpdate }: OrderShippingManagerPr
       // Actualizar la orden
       const { error } = await supabase
         .from('orders')
+        // @ts-expect-error - Supabase types are not matching our schema
         .update({
           tracking_number: trackingNumber,
           tracking_url: finalTrackingUrl,
           shipping_method: carrier,
           // Si hay número de seguimiento y el estado es 'paid' o 'processing', actualizar a 'shipped'
           ...(trackingNumber && ['paid', 'processing'].includes(order.status) ? { status: 'shipped' } : {})
-        } as any)
+        })
         .eq('id', order.id)
       
       if (error) throw error
@@ -88,6 +89,7 @@ export function OrderShippingManager({ order, onUpdate }: OrderShippingManagerPr
       // Crear evento de seguimiento
       await supabase
         .from('order_events')
+        // @ts-expect-error - Supabase types are not matching our schema
         .insert({
           order_id: order.id,
           type: 'tracking_added',
@@ -97,7 +99,7 @@ export function OrderShippingManager({ order, onUpdate }: OrderShippingManagerPr
             tracking_url: finalTrackingUrl,
             carrier
           }
-        } as any)
+        })
       
       // Notificar al usuario si se cambió a 'shipped'
       if (trackingNumber && ['paid', 'processing'].includes(order.status)) {
@@ -130,6 +132,7 @@ export function OrderShippingManager({ order, onUpdate }: OrderShippingManagerPr
       // Enviar email
       sendEmail({
         orderId: order.id,
+        // @ts-expect-error - Supabase types are not matching our schema
         customerEmail: userData.email
       }, {
         onSuccess: () => {
@@ -139,15 +142,17 @@ export function OrderShippingManager({ order, onUpdate }: OrderShippingManagerPr
           const supabase = createClient()
           supabase
             .from('order_events')
+            // @ts-expect-error - Supabase types are not matching our schema
             .insert({
               order_id: order.id,
               type: 'email_sent',
               description: 'Email de envío enviado',
               metadata: {
                 email_type: 'shipping_notification',
+                // @ts-expect-error - Supabase types are not matching our schema
                 recipient: userData.email
               }
-            } as any)
+            })
             .then(() => onUpdate())
         }
       })

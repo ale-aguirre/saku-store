@@ -376,8 +376,7 @@ export default function OrdersPage() {
                     mode="range"
                     defaultMonth={dateRange.from}
                     selected={dateRange}
-                    // @ts-ignore - Type mismatch between react-day-picker and our state
-                    onSelect={setDateRange}
+                    onSelect={setDateRange as any}
                     numberOfMonths={2}
                     locale={es}
                   />
