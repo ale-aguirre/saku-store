@@ -58,7 +58,7 @@ export function OrderShippingManager({ order, onUpdate }: OrderShippingManagerPr
   const [isUpdating, setIsUpdating] = useState(false)
   const [showNotification, setShowNotification] = useState(false)
   
-  const { mutate: sendEmail, isLoading: isSendingEmail } = useOrderConfirmationEmail()
+  const { mutate: sendEmail, isPending: isSendingEmail } = useOrderConfirmationEmail()
   
   const updateShippingInfo = async () => {
     setIsUpdating(true)
@@ -80,7 +80,7 @@ export function OrderShippingManager({ order, onUpdate }: OrderShippingManagerPr
           shipping_method: carrier,
           // Si hay número de seguimiento y el estado es 'paid' o 'processing', actualizar a 'shipped'
           ...(trackingNumber && ['paid', 'processing'].includes(order.status) ? { status: 'shipped' } : {})
-        })
+        } as any)
         .eq('id', order.id)
       
       if (error) throw error
@@ -97,7 +97,7 @@ export function OrderShippingManager({ order, onUpdate }: OrderShippingManagerPr
             tracking_url: finalTrackingUrl,
             carrier
           }
-        })
+        } as any)
       
       // Notificar al usuario si se cambió a 'shipped'
       if (trackingNumber && ['paid', 'processing'].includes(order.status)) {
@@ -147,7 +147,7 @@ export function OrderShippingManager({ order, onUpdate }: OrderShippingManagerPr
                 email_type: 'shipping_notification',
                 recipient: userData.email
               }
-            })
+            } as any)
             .then(() => onUpdate())
         }
       })
@@ -276,8 +276,8 @@ export function OrderShippingManager({ order, onUpdate }: OrderShippingManagerPr
               placeholder="URL para seguimiento del envío"
             />
             <p className="text-xs text-gray-500 mt-1">
-              Si no se proporciona, se generará automáticamente para transportistas conocidos
-            </p>
+                Si no se proporciona, se generará automáticamente para transportistas conocidos
+              </p>
           </div>
           
           <Button 
@@ -295,7 +295,7 @@ export function OrderShippingManager({ order, onUpdate }: OrderShippingManagerPr
           <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
             <h4 className="font-medium text-green-800">¿Notificar al cliente?</h4>
             <p className="text-sm text-green-700 mb-3">
-              El estado del pedido ha cambiado a "Enviado". ¿Deseas enviar una notificación por email al cliente?
+              El estado del pedido ha cambiado a &quot;Enviado&quot;. ¿Deseas enviar una notificación por email al cliente?
             </p>
             <div className="flex gap-2">
               <Button

@@ -1,12 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 import { 
   Select,
   SelectContent,
@@ -52,6 +51,7 @@ interface Order {
   order_number: string
   status: string
   total: number
+  total_amount: number
   created_at: string
   shipping_address: {
     street: string
@@ -61,6 +61,8 @@ interface Order {
     country: string
   }
   tracking_code: string | null
+  tracking_url: string | null
+  shipping_method: string | null
   profiles: {
     email: string
     full_name: string | null
@@ -94,13 +96,7 @@ export default function OrdersPage() {
   const [totalOrders, setTotalOrders] = useState<number>(0)
   const [totalRevenue, setTotalRevenue] = useState<number>(0)
 
-  useEffect(() => {
-    if (user) {
-      fetchOrders()
-    }
-  }, [user, statusFilter, dateRange, sortField, sortDirection])
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     setLoading(true)
     try {
       const supabase = createClient()
@@ -151,7 +147,7 @@ export default function OrdersPage() {
       
       // Calcular ingresos totales
       if (data && data.length > 0) {
-        const revenue = data.reduce((sum, order) => {
+        const revenue = data.reduce((sum, order: any) => {
           // Solo contar órdenes pagadas o entregadas
           if (['paid', 'processing', 'shipped', 'delivered'].includes(order.status)) {
             return sum + order.total_amount
@@ -166,7 +162,13 @@ export default function OrdersPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [statusFilter, dateRange, sortField, sortDirection])
+
+  useEffect(() => {
+    if (user) {
+      fetchOrders()
+    }
+  }, [user, fetchOrders])
   
   const handleSort = (field: string) => {
     if (field === sortField) {
@@ -374,6 +376,7 @@ export default function OrdersPage() {
                     mode="range"
                     defaultMonth={dateRange.from}
                     selected={dateRange}
+                    // @ts-ignore - Type mismatch between react-day-picker and our state
                     onSelect={setDateRange}
                     numberOfMonths={2}
                     locale={es}

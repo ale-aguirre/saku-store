@@ -6,8 +6,6 @@ import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 import { 
   ArrowLeft,
   Package,
@@ -29,7 +27,9 @@ interface OrderDetail {
   subtotal: number
   shipping_cost: number
   discount_amount: number
+  tax_amount: number
   created_at: string
+  updated_at: string
   shipping_address: {
     street: string
     city: string
@@ -38,8 +38,14 @@ interface OrderDetail {
     country: string
   }
   tracking_code: string | null
+  tracking_number: string | null
+  tracking_url: string | null
+  shipping_method: string | null
   payment_method: string
   payment_status: string
+  payment_id: string | null
+  user_id: string
+  notes: string | null
   profiles: {
     email: string
     full_name: string | null
@@ -61,8 +67,9 @@ interface OrderDetail {
   }>
   order_events: Array<{
     id: string
-    event_type: string
-    event_data: Record<string, unknown>
+    type: string
+    description: string | null
+    metadata: Record<string, unknown> | null
     created_at: string
   }>
 }
@@ -127,7 +134,6 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
       }
 
       setOrder(data as OrderDetail)
-      setTrackingCode((data as OrderDetail).tracking_code || '')
     } catch (error) {
       console.error('Error:', error)
     } finally {

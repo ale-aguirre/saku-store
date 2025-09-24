@@ -91,7 +91,7 @@ export function OrderSummary({ order, onUpdate }: OrderSummaryProps) {
       
       const { error } = await supabase
         .from('orders')
-        .update({ status: newStatus })
+        .update({ status: newStatus } as any)
         .eq('id', order.id)
 
       if (error) throw error
@@ -106,7 +106,7 @@ export function OrderSummary({ order, onUpdate }: OrderSummaryProps) {
             old_status: order.status,
             new_status: newStatus 
           }
-        })
+        } as any)
 
       onUpdate()
     } catch (error) {

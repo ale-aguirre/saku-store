@@ -156,7 +156,7 @@ export function OrderEventTimeline({ events, className = '' }: OrderEventTimelin
   
   return (
     <div className={`space-y-4 ${className}`}>
-      {displayEvents.map((event, index) => (
+      {displayEvents.map((event) => (
         <div key={event.id} className="flex gap-3">
           <div className="flex-shrink-0 mt-1">
             {getEventIcon(event.type)}
