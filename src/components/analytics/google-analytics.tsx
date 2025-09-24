@@ -67,11 +67,13 @@ export const trackEvent = (
 ) => {
   if (typeof window !== "undefined" && window.gtag) {
     // Check consent before tracking
-    const consentEvent = new CustomEvent('checkConsent', { detail: 'analytics' });
+    const consentEvent = new CustomEvent("checkConsent", {
+      detail: "analytics",
+    });
     window.dispatchEvent(consentEvent);
-    
+
     // Only track if analytics consent is granted
-    const hasConsent = localStorage.getItem('saku-consent-settings');
+    const hasConsent = localStorage.getItem("saku-consent-settings");
     if (hasConsent) {
       const settings = JSON.parse(hasConsent);
       if (settings.analytics) {

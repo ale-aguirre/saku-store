@@ -13,19 +13,14 @@ Esta guía te ayudará a configurar el entorno de desarrollo local para Sakú St
    npm --version   # Debe estar instalado
    ```
 
-2. **Docker Desktop** (para Supabase local)
-
-   - Descargar desde: https://www.docker.com/products/docker-desktop/
-   - Asegúrate de que esté ejecutándose
-
-3. **Git** (para control de versiones)
+2. **Git** (para control de versiones)
    ```bash
    git --version
    ```
 
 ### Herramientas Opcionales
 
-- **Supabase CLI** (para desarrollo local)
+- **Supabase CLI** (para gestión de migraciones)
 
   ```bash
   npm install -g supabase
@@ -51,36 +46,25 @@ npm install
 ### 3. Configurar Variables de Entorno
 
 ```bash
-# Copiar archivo de ejemplo
-cp .env.example .env.local
-
-# Editar .env.local con tus valores
+# Crear archivo de variables de entorno
+# Editar .env con tus valores
 # Ver sección "Variables de Entorno" más abajo
 ```
 
 ### 4. Configurar Supabase
 
-#### Opción A: Supabase Cloud (Recomendado para inicio)
-
 1. Crear proyecto en [supabase.com](https://supabase.com)
 2. Obtener URL y claves del proyecto
-3. Configurar en `.env.local`:
+3. Configurar en `.env`:
    ```env
    NEXT_PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=tu-clave-anonima
    SUPABASE_SERVICE_ROLE=tu-clave-de-servicio
    ```
-
-#### Opción B: Supabase Local (Para desarrollo avanzado)
-
-```bash
-# Inicializar Supabase local
-npm run supabase:start
-
-# O manualmente:
-supabase init
-supabase start
-```
+4. Aplicar migraciones (si las hay):
+   ```bash
+   npm run db:migrate
+   ```
 
 ### 5. Configurar Seguridad (Opcional)
 
@@ -164,10 +148,6 @@ npm run type-check       # Verificar tipos TypeScript
 ### Base de Datos
 
 ```bash
-npm run supabase:start   # Iniciar Supabase local
-npm run supabase:stop    # Detener Supabase local
-npm run supabase:status  # Ver estado
-npm run supabase:reset   # Resetear DB local
 npm run db:migrate       # Aplicar migraciones
 npm run db:seed          # Aplicar migraciones + seed
 ```
@@ -260,16 +240,6 @@ taskkill /PID <PID> /F
 npm run dev -- -p 3001
 ```
 
-### Docker No Disponible
-
-```bash
-# Verificar Docker
-docker --version
-
-# Iniciar Docker Desktop
-# Buscar "Docker Desktop" en el menú de inicio
-```
-
 ### Supabase CLI No Funciona
 
 ```bash
@@ -283,7 +253,7 @@ supabase --version
 
 ### Variables de Entorno No Se Cargan
 
-1. Verificar que el archivo se llame `.env.local` (no `.env`)
+1. Verificar que el archivo se llame `.env` y esté en la raíz del proyecto
 2. Reiniciar el servidor de desarrollo
 3. Verificar que no haya espacios en las variables
 4. Las variables públicas deben empezar con `NEXT_PUBLIC_`
@@ -313,3 +283,9 @@ Para dudas o problemas:
 2. Buscar en issues del repositorio
 3. Crear nuevo issue con detalles del problema
 4. Contactar al equipo de desarrollo
+
+## Shell / Terminal (Bash required)
+
+- **Todos los comandos están escritos para _Bash/sh_**.
+- En **Windows**, usar **Git Bash** o **WSL**.
+- Los bloques de comandos en la doc usan fence con lenguaje `bash` y se ejecutan tal cual en Bash.
