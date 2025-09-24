@@ -3,47 +3,9 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ArrowRight, Star, Truck, Shield, Heart } from 'lucide-react'
-
-// Datos temporales para productos destacados
-const featuredProducts = [
-  {
-    id: 1,
-    name: 'Conjunto Elegance',
-    price: 15900,
-    originalPrice: 19900,
-    image: '/products/conjunto-elegance.svg',
-    rating: 4.8,
-    reviews: 24,
-    isNew: true,
-  },
-  {
-    id: 2,
-    name: 'Brasier Comfort Plus',
-    price: 8900,
-    image: '/products/brasier-comfort.svg',
-    rating: 4.9,
-    reviews: 18,
-    isNew: false,
-  },
-  {
-    id: 3,
-    name: 'Conjunto Romantic',
-    price: 17500,
-    image: '/products/conjunto-romantic.svg',
-    rating: 4.7,
-    reviews: 31,
-    isNew: true,
-  },
-  {
-    id: 4,
-    name: 'Brasier Push-Up',
-    price: 9900,
-    image: '/products/brasier-pushup.svg',
-    rating: 4.6,
-    reviews: 15,
-    isNew: false,
-  },
-]
+import { ProductCard } from '@/components/product/product-card'
+import { getFeaturedProducts } from '@/lib/supabase/products'
+import { Suspense } from 'react'
 
 const features = [
   {
@@ -62,6 +24,47 @@ const features = [
     description: 'Materiales de primera calidad',
   },
 ]
+
+// Componente para cargar productos destacados
+async function FeaturedProducts() {
+  // Obtener productos destacados desde Supabase
+  const featuredProducts = await getFeaturedProducts(4)
+  
+  return (
+    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {featuredProducts.length > 0 ? (
+        featuredProducts.map((product) => (
+          <ProductCard key={product.id} product={product} />
+        ))
+      ) : (
+        // Fallback para cuando no hay productos destacados
+        <div className="col-span-full text-center py-8">
+          <p className="text-muted-foreground">
+            No hay productos destacados disponibles en este momento.
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Componente de carga para productos destacados
+function FeaturedProductsSkeleton() {
+  return (
+    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className="rounded-lg bg-muted animate-pulse">
+          <div className="aspect-square w-full bg-muted-foreground/10"></div>
+          <div className="p-4 space-y-3">
+            <div className="h-4 bg-muted-foreground/10 rounded w-3/4"></div>
+            <div className="h-4 bg-muted-foreground/10 rounded w-1/2"></div>
+            <div className="h-4 bg-muted-foreground/10 rounded w-1/4"></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
 
 export default function HomePage() {
   return (
@@ -112,7 +115,7 @@ export default function HomePage() {
       </section>
 
       {/* Features */}
-      <section>
+      <section className="container px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-3 gap-8">
           {features.map((feature, index) => {
             const Icon = feature.icon
@@ -130,7 +133,7 @@ export default function HomePage() {
       </section>
 
       {/* Featured Products */}
-      <section className="space-y-8">
+      <section className="space-y-8 container px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-4">
           <h2 className="text-3xl font-serif font-normal font-marcellus">Productos Destacados</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -138,49 +141,9 @@ export default function HomePage() {
           </p>
         </div>
         
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuredProducts.map((product) => (
-            <div key={product.id} className="group cursor-pointer">
-              <div className="relative overflow-hidden rounded-lg bg-muted">
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  width={300}
-                  height={400}
-                  className="object-cover w-full h-80 group-hover:scale-105 transition-transform duration-300"
-                />
-                {product.isNew && (
-                  <Badge className="absolute top-2 left-2">
-                    Nuevo
-                  </Badge>
-                )}
-                {product.originalPrice && (
-                  <Badge variant="destructive" className="absolute top-2 right-2">
-                    -{Math.round((1 - product.price / product.originalPrice) * 100)}%
-                  </Badge>
-                )}
-              </div>
-              <div className="space-y-2 mt-4">
-                <h3 className="font-semibold group-hover:text-primary transition-colors">
-                  {product.name}
-                </h3>
-                <div className="flex items-center space-x-1">
-                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  <span className="text-sm">{product.rating}</span>
-                  <span className="text-sm text-muted-foreground">({product.reviews})</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="font-bold">${product.price.toLocaleString()}</span>
-                  {product.originalPrice && (
-                    <span className="text-sm text-muted-foreground line-through">
-                      ${product.originalPrice.toLocaleString()}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <Suspense fallback={<FeaturedProductsSkeleton />}>
+          <FeaturedProducts />
+        </Suspense>
 
         <div className="text-center">
           <Button asChild size="lg" className="bg-[#d8ceb5] text-black hover:bg-[#d8ceb5]/90">
@@ -198,8 +161,10 @@ export default function HomePage() {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Regístrate y recibe un 15% de descuento en tu primera compra. Además, mantente al día con nuestras últimas colecciones y ofertas exclusivas.
           </p>
-          <Button size="lg">
-            Registrarse Ahora
+          <Button size="lg" asChild>
+            <Link href="/auth/register">
+              Registrarse Ahora
+            </Link>
           </Button>
         </div>
       </section>
