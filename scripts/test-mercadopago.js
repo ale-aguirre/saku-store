@@ -10,7 +10,8 @@
  * - node test-mercadopago.js simulate-webhook
  */
 
-const fetch = require('node-fetch');
+// Importar node-fetch de manera compatible con ESM y CommonJS
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 require('dotenv').config();
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
