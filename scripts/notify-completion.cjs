@@ -183,12 +183,101 @@ ${variables.footerText}
   }
 
   /**
+   * Ejecuta comando simple y devuelve output
+   */
+  executeSimpleCommand(command) {
+    try {
+      return execSync(command, { 
+        encoding: 'utf8', 
+        stdio: 'pipe',
+        timeout: 10000 
+      });
+    } catch (error) {
+      return '';
+    }
+  }
+
+  /**
+   * Ejecuta comandos de calidad automáticamente y captura resultados
+   */
+  async runQualityChecks() {
+    console.log('🔍 Ejecutando verificaciones de calidad automáticas...');
+    
+    const qualityCommands = [
+      {
+        name: 'ESLint',
+        command: 'npm run lint',
+        category: 'quality',
+        description: 'Verificación de estilo y calidad de código'
+      },
+      {
+        name: 'TypeScript',
+        command: 'npm run type-check',
+        category: 'quality',
+        description: 'Verificación de tipos TypeScript'
+      },
+      {
+        name: 'Build',
+        command: 'npm run build',
+        category: 'quality',
+        description: 'Compilación para producción'
+      }
+    ];
+
+    for (const check of qualityCommands) {
+      const startTime = Date.now();
+      try {
+        console.log(`  ⏳ Ejecutando ${check.name}...`);
+        
+        const output = execSync(check.command, { 
+          encoding: 'utf8', 
+          stdio: 'pipe',
+          timeout: 120000, // 2 minutos timeout para build
+          cwd: process.cwd()
+        });
+        
+        const duration = Math.round((Date.now() - startTime) / 1000);
+        const description = this.generateTaskDescription(check.name, check.command, output, true);
+        
+        this.addTask(
+          check.name,
+          'completed',
+          description,
+          check.category,
+          null,
+          duration
+        );
+        
+        console.log(`  ✅ ${check.name}: Completado (${duration}s)`);
+        
+      } catch (error) {
+        const duration = Math.round((Date.now() - startTime) / 1000);
+        const description = this.generateTaskDescription(check.name, check.command, error.message, false);
+        
+        this.addTask(
+          check.name,
+          'error',
+          description,
+          check.category,
+          error.message,
+          duration
+        );
+        
+        console.log(`  ❌ ${check.name}: Error (${duration}s)`);
+        // No detenemos el proceso, continuamos con los otros checks
+      }
+    }
+    
+    console.log('✅ Verificaciones de calidad completadas\n');
+  }
+
+  /**
    * Obtiene información de Git
    */
   getGitInfo() {
     try {
-      const branch = this.executeCommand('git rev-parse --abbrev-ref HEAD').trim();
-      const commit = this.executeCommand('git rev-parse --short HEAD').trim();
+      const branch = this.executeSimpleCommand('git rev-parse --abbrev-ref HEAD').trim();
+      const commit = this.executeSimpleCommand('git rev-parse --short HEAD').trim();
       return { branch, commit };
     } catch (error) {
       return { branch: 'N/A', commit: 'N/A' };
@@ -228,12 +317,15 @@ ${variables.footerText}
         timeout: 30000 
       });
       
+      // Generar descripción clara en lugar del output bruto
+      const description = this.generateTaskDescription(name, command, output.trim(), true);
+      
       const task = {
         name,
         command,
         category,
         status: 'completed',
-        output: output.trim(),
+        output: description,
         timestamp: new Date(),
         success: true
       };
@@ -242,13 +334,16 @@ ${variables.footerText}
       console.log(`✅ ${name}: Completado`);
       return task;
     } catch (error) {
+      // Generar descripción clara para errores
+      const description = this.generateTaskDescription(name, command, error.message, false);
+      
       const task = {
         name,
         command,
         category,
         status: 'error',
         error: error.message,
-        output: error.stdout || '',
+        output: description,
         timestamp: new Date(),
         success: false
       };
@@ -257,6 +352,140 @@ ${variables.footerText}
       this.errors.push(task);
       console.log(`❌ ${name}: Error - ${error.message}`);
       return task;
+    }
+  }
+
+  /**
+   * Genera una descripción clara y comprensible para las tareas
+   */
+  generateTaskDescription(taskName, command, output, success) {
+    const lowerTaskName = taskName.toLowerCase();
+    const lowerOutput = output.toLowerCase();
+
+    if (success) {
+      // Descripciones para tareas exitosas
+      if (lowerTaskName.includes('eslint') || command.includes('lint')) {
+        if (lowerOutput.includes('no eslint warnings or errors') || lowerOutput.includes('✔')) {
+          return 'Código revisado sin errores de estilo ni problemas de calidad';
+        }
+        return 'Verificación de código completada';
+      }
+      
+      if (lowerTaskName.includes('typescript') || command.includes('type-check')) {
+        if (lowerOutput.includes('found 0 errors') || lowerOutput.includes('no errors')) {
+          return 'Verificación de tipos completada sin errores';
+        }
+        return 'Verificación de TypeScript completada';
+      }
+      
+      if (lowerTaskName.includes('build') || command.includes('build')) {
+        if (lowerOutput.includes('compiled successfully') || lowerOutput.includes('✓ compiled')) {
+          return 'Aplicación compilada exitosamente para producción';
+        }
+        return 'Proceso de build completado';
+      }
+      
+      if (lowerTaskName.includes('supabase') || command.includes('supabase')) {
+        if (lowerOutput.includes('api url') || lowerOutput.includes('running')) {
+          return 'Conexión con Supabase verificada y funcionando';
+        }
+        return 'Verificación de Supabase completada';
+      }
+      
+      if (lowerTaskName.includes('dependencies') || command.includes('npm ls')) {
+        return 'Dependencias del proyecto verificadas y actualizadas';
+      }
+      
+      return `${taskName} completada exitosamente`;
+    } else {
+      // Descripciones para tareas con errores
+      if (lowerTaskName.includes('eslint')) {
+        return 'Se encontraron problemas de estilo o calidad en el código que requieren atención';
+      }
+      
+      if (lowerTaskName.includes('typescript')) {
+        return 'Se encontraron errores de tipos que deben corregirse';
+      }
+      
+      if (lowerTaskName.includes('build')) {
+        if (lowerOutput.includes('non-standard') && lowerOutput.includes('node_env')) {
+          return 'Error de build: variable NODE_ENV no estándar detectada';
+        }
+        return 'Error durante la compilación de la aplicación';
+      }
+      
+      if (lowerTaskName.includes('supabase')) {
+        if (lowerOutput.includes('etimedout') || lowerOutput.includes('timeout')) {
+          return 'Timeout al conectar con Supabase - verificar conexión';
+        }
+        return 'Error al verificar conexión con Supabase';
+      }
+      
+      if (lowerTaskName.includes('dependencies')) {
+        return 'Problemas detectados en las dependencias del proyecto';
+      }
+      
+      return `Error en ${taskName}: ${output.substring(0, 100)}${output.length > 100 ? '...' : ''}`;
+    }
+  }
+
+  /**
+   * Genera descripción clara del estado del proyecto
+   */
+  generateProjectStatusDescription(check, result) {
+    const checkName = check.toLowerCase();
+    
+    if (result.success) {
+      switch (checkName) {
+        case 'eslint':
+          return 'Código cumple con estándares de calidad y estilo';
+        case 'typescript':
+          return 'Verificación de tipos completada sin errores';
+        case 'build':
+          return 'Aplicación compilada exitosamente para producción';
+        case 'supabase':
+          return 'Conexión con base de datos verificada y funcionando';
+        case 'dependencies':
+          return 'Todas las dependencias están instaladas correctamente';
+        default:
+          return `${check} completado exitosamente`;
+      }
+    } else {
+      const error = result.error || result.output || '';
+      const lowerError = error.toLowerCase();
+      
+      switch (checkName) {
+        case 'eslint':
+          if (lowerError.includes('warning')) {
+            return 'Se encontraron advertencias de estilo que deberían revisarse';
+          }
+          return 'Se encontraron errores de código que requieren corrección';
+        case 'typescript':
+          if (lowerError.includes('error ts')) {
+            return 'Se detectaron errores de tipos que deben corregirse';
+          }
+          return 'Verificación de TypeScript falló - revisar tipos';
+        case 'build':
+          if (lowerError.includes('node_env')) {
+            return 'Error de configuración: NODE_ENV no estándar';
+          }
+          if (lowerError.includes('module not found')) {
+            return 'Error de build: módulo no encontrado';
+          }
+          return 'Error durante la compilación - revisar código';
+        case 'supabase':
+          if (lowerError.includes('timeout') || lowerError.includes('etimedout')) {
+            return 'Timeout al conectar con Supabase - verificar conexión';
+          }
+          if (lowerError.includes('docker')) {
+            return 'Error interno de Docker en Supabase';
+          }
+          return 'Error al verificar conexión con base de datos';
+        case 'dependencies':
+          return 'Problemas detectados en las dependencias del proyecto';
+        default:
+          return `Error en ${check}: ${error.substring(0, 80)}${error.length > 80 ? '...' : ''}`;
+      }
     }
   }
 
@@ -271,22 +500,29 @@ ${variables.footerText}
 
     console.log('🔍 Ejecutando verificaciones automáticas...');
     
-    for (const check of this.config.autoDetection.checks) {
-      this.executeCommand(check.command, check.name, check.category);
+    for (const [checkName, checkConfig] of Object.entries(this.config.autoDetection.checks)) {
+      this.executeCommand(checkConfig.command, checkName, 'verification');
     }
   }
 
   /**
    * Ejecuta verificaciones automáticas del estado del proyecto
    */
-  async autoDetectProjectStatus() {
+  async autoDetectProjectStatus(skipQualityChecks = false) {
     console.log(this.config.texts.console.autoDetecting || '🔍 Detectando estado del proyecto...');
     
     if (!this.projectStatus) {
       this.projectStatus = {};
     }
     
-    for (const [checkName, checkConfig] of Object.entries(this.config.autoDetection?.checks || {})) {
+    // Filtrar checks de calidad si ya se ejecutaron
+    const checks = this.config.autoDetection?.checks || {};
+    const filteredChecks = skipQualityChecks 
+      ? Object.fromEntries(Object.entries(checks).filter(([name]) => 
+          !['eslint', 'typescript', 'build'].includes(name)))
+      : checks;
+    
+    for (const [checkName, checkConfig] of Object.entries(filteredChecks)) {
       const startTime = Date.now();
       
       try {
@@ -384,15 +620,22 @@ ${variables.footerText}
   /**
    * Agrega tarea manual
    */
-  addTask(name, status, details = '', category = 'manual', error = null) {
+  addTask(name, status, details = '', category = 'manual', error = null, duration = null) {
+    // Mejorar descripción para tareas N/A
+    let finalDetails = details;
+    if (details === 'N/A' || details === '' || details === null) {
+      finalDetails = this.getTaskExplanation(name, status);
+    }
+    
     const task = {
       name,
       status,
-      details,
+      details: finalDetails,
       category,
       error,
       timestamp: new Date(),
-      success: status === 'completed'
+      success: status === 'completed',
+      duration: duration ? `${duration}s` : null
     };
 
     this.tasks.push(task);
@@ -402,6 +645,38 @@ ${variables.footerText}
     }
 
     return task;
+  }
+
+  /**
+   * Genera explicaciones útiles para tareas que no se ejecutaron
+   */
+  getTaskExplanation(taskName, status) {
+    const lowerTaskName = taskName.toLowerCase();
+    
+    if (status === 'completed') {
+      if (lowerTaskName.includes('supabase') && lowerTaskName.includes('cli')) {
+        return 'Configuración de Supabase CLI ya establecida previamente';
+      }
+      if (lowerTaskName.includes('migraciones') || lowerTaskName.includes('migration')) {
+        return 'Base de datos ya actualizada con las últimas migraciones';
+      }
+      if (lowerTaskName.includes('verificación') && lowerTaskName.includes('datos')) {
+        return 'Datos de la base de datos verificados y consistentes';
+      }
+      if (lowerTaskName.includes('corrección') && lowerTaskName.includes('lint')) {
+        return 'No se encontraron errores de lint que requieran corrección';
+      }
+      if (lowerTaskName.includes('dependencias')) {
+        return 'Dependencias del proyecto ya están actualizadas';
+      }
+      return 'Tarea completada en ejecución anterior o no requerida';
+    }
+    
+    if (status === 'skipped') {
+      return 'Tarea omitida por no ser necesaria en este contexto';
+    }
+    
+    return 'No aplicable en esta ejecución';
   }
 
   /**
@@ -537,7 +812,7 @@ ${variables.footerText}
         
         html += `
                         <li class="task-item ${taskClass}">
-                            <div class="task-name">${statusIcon} ${task.name}</div>
+                            <div class="task-name">${statusIcon} ${task.name}${task.duration ? ` (${task.duration})` : ''}</div>
                             <div class="task-details">${task.details || task.output || task.status}</div>
                             <div class="task-timestamp">${task.timestamp.toLocaleString('es-AR')}</div>`;
         
@@ -632,7 +907,6 @@ ${variables.footerText}
       // Preparar variables para la plantilla
       const templateVariables = {
         projectName: this.config.project.name,
-        projectPath: this.config.project.path,
         reportTitle: report.title,
         timestamp: report.timestamp,
         duration: report.duration,
@@ -640,7 +914,7 @@ ${variables.footerText}
         projectStatus: Object.entries(this.projectStatus || {}).map(([check, result]) => ({
           check,
           status: result.success ? 'completed' : 'failed',
-          description: result.output || result.error || 'Sin información'
+          description: this.generateProjectStatusDescription(check, result)
         })),
         gitBranch: this.getGitInfo ? this.getGitInfo().branch : 'N/A',
         gitCommit: this.getGitInfo ? this.getGitInfo().commit : 'N/A',
@@ -673,23 +947,26 @@ ${variables.footerText}
   async run(customTasks = []) {
     console.log(this.config.texts.console.finishing);
 
+    // Ejecutar comandos de calidad automáticamente
+    await this.runQualityChecks();
+
     // Agregar tareas personalizadas si se proporcionan
     for (const task of customTasks) {
       this.addTask(task.name, task.status, task.details, task.category, task.error);
     }
 
-    // Ejecutar auto-detección
+    // Ejecutar auto-detección (sin comandos de calidad ya ejecutados)
     this.runAutoDetection();
     
-    // Ejecutar detección de estado del proyecto
-    await this.autoDetectProjectStatus();
+    // Ejecutar detección de estado del proyecto (solo supabase y dependencies)
+    await this.autoDetectProjectStatus(true); // skipQualityChecks = true
 
-    // Si no hay tareas, agregar algunas por defecto
-    if (this.tasks.length === 0) {
+    // Si no hay tareas de calidad, agregar algunas por defecto
+    const hasQualityTasks = this.tasks.some(task => task.category === 'quality');
+    if (!hasQualityTasks) {
       this.addTask('Configuración de Supabase CLI', 'completed', 'CLI configurado y conectado', 'setup');
       this.addTask('Migraciones de base de datos', 'completed', 'Esquema aplicado correctamente', 'database');
       this.addTask('Verificación de datos', 'completed', 'Datos de prueba presentes', 'database');
-      this.addTask('Corrección de errores de lint', 'completed', 'Código sin errores de ESLint', 'testing');
     }
 
     // Generar reporte

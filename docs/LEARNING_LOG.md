@@ -62,6 +62,18 @@
 - **Fix**: Eliminar imports no utilizados sistemáticamente antes de commit
 - **Prevention**: Usar extensión de VS Code que resalte imports no utilizados. Ejecutar `npm run lint` antes de cada commit para detectar temprano
 
+## 2025-01-15 — Script notify-completion ejecutando comandos npm desde subdirectorio
+
+- **Issue**: Confusión sobre si el script `notify-completion.cjs` puede ejecutar comandos `npm` desde su ubicación en `/scripts/` y si necesita moverse a la raíz del proyecto
+- **Cause**: Malentendido sobre cómo funciona `process.cwd()` y el directorio de trabajo cuando se ejecuta un script desde package.json
+- **Fix**: 
+  1. Confirmado que el script se ejecuta desde la raíz del proyecto (`npm run notify:done` → `node scripts/notify-completion.cjs`)
+  2. `execSync` ya usa `cwd: process.cwd()` que apunta a la raíz del proyecto
+  3. Implementada función `runQualityChecks()` que ejecuta ESLint, TypeScript y Build automáticamente
+  4. Optimizado `autoDetectProjectStatus()` para evitar duplicación de verificaciones de calidad
+  5. Agregado seguimiento de duración por comando y actualización de templates HTML
+- **Prevention**: Recordar que `process.cwd()` siempre apunta al directorio desde donde se ejecuta el comando npm, no donde está ubicado el archivo del script. Los scripts en subdirectorios pueden ejecutar comandos npm sin problemas si se configuran correctamente
+
 ---
 
 ## Template para futuras entradas

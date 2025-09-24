@@ -13,9 +13,11 @@ npm run notify:done
 ```
 
 **Funcionalidad:**
-- Envía email a aguirrealexis.cba@gmail.com con resumen de tareas
-- Genera reporte JSON en `/reports/`
+- **Verificaciones automáticas de calidad**: Ejecuta ESLint, TypeScript y Build automáticamente
+- Envía email a aguirrealexis.cba@gmail.com con resumen de tareas y resultados de calidad
+- Genera reporte HTML detallado en `/reports/` con duración de cada verificación
 - Usa configuración SMTP del proyecto principal (.env)
+- Detecta automáticamente el estado del proyecto (Supabase, dependencias, etc.)
 
 ### Otros scripts
 - `debug-productos.js` - Debug de productos en base de datos
@@ -78,15 +80,20 @@ await notifier.finish();
 
 ### Características
 
+- 🔍 **Verificaciones automáticas de calidad**: ESLint, TypeScript, Build
 - ✅ Envío de email HTML con resumen detallado
-- 📄 Respaldo local en formato JSON (`/reports/`)
+- 📄 Respaldo local en formato HTML (`/reports/`)
 - 🎨 Diseño responsive con colores de marca Sakú
-- ⏱️ Tracking de tiempo de ejecución
+- ⏱️ Tracking de tiempo de ejecución con duración por tarea
 - 🔍 Detalles de errores y logs
+- 📊 Estado del proyecto (Supabase, dependencias)
+- 🚀 Optimización: evita duplicación de verificaciones
 
 ### Estructura del email
 
-- **Resumen ejecutivo**: Estadísticas generales
+- **Resumen ejecutivo**: Estadísticas generales con duración total
+- **Verificaciones de calidad**: ESLint, TypeScript, Build (automáticas)
+- **Estado del proyecto**: Supabase, dependencias, etc.
 - **Tareas completadas**: Lista con detalles y timestamps
 - **Tareas con errores**: Información de fallos
 - **Tareas pendientes**: Items por completar
