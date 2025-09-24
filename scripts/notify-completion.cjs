@@ -67,11 +67,17 @@ class TaskNotificationSystem {
   }
 
   /**
-   * Aplica plantillas de texto con variables
+   * Aplica plantillas de texto con variables y bloques condicionales
    */
   applyTemplate(template, variables) {
-    return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
-      return variables[key] || match;
+    // Primero procesar bloques condicionales {{#if var}}...{{/if}}
+    let processedTemplate = template.replace(/\{\{#if\s+(\w+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (match, key, content) => {
+      return variables[key] ? content : '';
+    });
+    
+    // Luego reemplazar variables simples {{var}}
+    return processedTemplate.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+      return variables[key] !== undefined ? variables[key] : match;
     });
   }
 
@@ -92,10 +98,13 @@ class TaskNotificationSystem {
       processedVariables.taskListText = this.renderTaskList(variables.tasks, 'text');
     }
 
-    // Procesar estado del proyecto
-    if (variables.projectStatus && Array.isArray(variables.projectStatus)) {
-      processedVariables.projectStatus = this.renderProjectStatus(variables.projectStatus, 'html');
-      processedVariables.projectStatusText = this.renderProjectStatus(variables.projectStatus, 'text');
+    // Generar y procesar estado del proyecto
+    const projectStatusItems = this.generateProjectStatusSummary();
+    if (projectStatusItems && projectStatusItems.length > 0) {
+      processedVariables.projectStatus = this.renderProjectStatus(projectStatusItems, 'html');
+      processedVariables.projectStatusText = this.renderProjectStatus(projectStatusItems, 'text');
+      // Indicar que hay estado del proyecto para los condicionales
+      processedVariables.hasProjectStatus = true;
     }
 
     // Procesar métricas
@@ -487,6 +496,29 @@ ${variables.footerText}
           return `Error en ${check}: ${error.substring(0, 80)}${error.length > 80 ? '...' : ''}`;
       }
     }
+  }
+  
+  /**
+   * Genera un resumen detallado del estado del proyecto para el correo
+   */
+  generateProjectStatusSummary() {
+    if (!this.projectStatus) return null;
+    
+    const statusItems = [];
+    
+    for (const [checkName, result] of Object.entries(this.projectStatus)) {
+      const description = this.generateProjectStatusDescription(checkName, result);
+      const status = result.success ? 'completed' : 'failed';
+      const check = result.success ? '✅' : '❌';
+      
+      statusItems.push({
+        check,
+        status,
+        description
+      });
+    }
+    
+    return statusItems;
   }
 
   /**

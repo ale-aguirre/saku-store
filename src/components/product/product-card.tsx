@@ -5,8 +5,19 @@ import Image from 'next/image'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
-import { ShoppingCart, Heart } from 'lucide-react'
+import { ShoppingCart, Heart, Eye } from 'lucide-react'
 import type { ProductWithVariantsAndStock } from '@/types/catalog'
+import { useCart } from '@/hooks/use-cart'
+import { useState } from 'react'
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose
+} from '@/components/ui/dialog'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface ProductCardProps {
   product: ProductWithVariantsAndStock
@@ -14,6 +25,10 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, className }: ProductCardProps) {
+  const { addItem, openCart } = useCart()
+  const [selectedSize, setSelectedSize] = useState<string>('')
+  const [selectedColor, setSelectedColor] = useState<string>('')
+  const [quickAddOpen, setQuickAddOpen] = useState(false)
   const hasDiscount = product.compare_at_price && product.compare_at_price > product.base_price
   const discountPercentage = hasDiscount 
     ? Math.round(((product.compare_at_price! - product.base_price) / product.compare_at_price!) * 100)
@@ -151,18 +166,113 @@ export function ProductCard({ product, className }: ProductCardProps) {
             disabled={!isInStock}
           >
             <Link href={`/productos/${product.slug}`}>
+              <Eye className="h-4 w-4 mr-2" />
               Ver producto
             </Link>
           </Button>
           
-          <Button
-            variant="outline"
-            size="icon"
-            disabled={!isInStock}
-            aria-label="Agregar al carrito"
-          >
-            <ShoppingCart className="h-4 w-4" />
-          </Button>
+          <Dialog open={quickAddOpen} onOpenChange={setQuickAddOpen}>
+            <DialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                disabled={!isInStock}
+                aria-label="Agregar al carrito"
+              >
+                <ShoppingCart className="h-4 w-4" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Agregar al carrito</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <h3 className="font-medium">{product.name}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Selecciona talle y color para agregar al carrito
+                  </p>
+                </div>
+                
+                {/* Size Selection */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Talle</label>
+                  <Select value={selectedSize} onValueChange={setSelectedSize}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecciona un talle" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {product.available_sizes.map((size) => (
+                        <SelectItem key={size} value={size}>
+                          {size}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {/* Color Selection */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Color</label>
+                  <Select value={selectedColor} onValueChange={setSelectedColor}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecciona un color" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {product.available_colors.map((color) => (
+                        <SelectItem key={color} value={color}>
+                          {color.charAt(0).toUpperCase() + color.slice(1)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="flex justify-between pt-4">
+                  <DialogClose asChild>
+                    <Button variant="outline">Cancelar</Button>
+                  </DialogClose>
+                  <Button 
+                    disabled={!selectedSize || !selectedColor}
+                    onClick={() => {
+                      // Encontrar la variante seleccionada
+                      const variant = product.variants.find(
+                        v => v.size === selectedSize && v.color === selectedColor && v.is_active
+                      );
+                      
+                      if (variant && variant.is_in_stock) {
+                        // Calcular precio final
+                        const finalPrice = product.base_price + (variant.price_adjustment || 0);
+                        
+                        // Agregar al carrito
+                        addItem({
+                          productId: product.id,
+                          name: product.name,
+                          price: finalPrice,
+                          image: product.images?.[0]?.url || '/images/placeholder-product.svg',
+                          size: selectedSize,
+                          color: selectedColor,
+                          quantity: 1,
+                          maxStock: variant.stock_quantity
+                        });
+                        
+                        // Cerrar diálogo y abrir carrito
+                        setQuickAddOpen(false);
+                        openCart();
+                        
+                        // Resetear selecciones
+                        setSelectedSize('');
+                        setSelectedColor('');
+                      }
+                    }}
+                  >
+                    <ShoppingCart className="h-4 w-4 mr-2" />
+                    Agregar
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </CardFooter>
     </Card>
