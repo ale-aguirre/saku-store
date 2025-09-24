@@ -283,9 +283,3 @@ Para dudas o problemas:
 2. Buscar en issues del repositorio
 3. Crear nuevo issue con detalles del problema
 4. Contactar al equipo de desarrollo
-
-## Shell / Terminal (Bash required)
-
-- **Todos los comandos están escritos para _Bash/sh_**.
-- En **Windows**, usar **Git Bash** o **WSL**.
-- Los bloques de comandos en la doc usan fence con lenguaje `bash` y se ejecutan tal cual en Bash.
