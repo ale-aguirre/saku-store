@@ -16,6 +16,28 @@
 
 ## Today: 2025-09-24
 
+### Task 10: Implementación de página de inicio con productos destacados dinámicos
+- **Branch**: `feature/f1-home-page`
+- **What was done**:
+  - Implementada página de inicio con productos destacados dinámicos desde Supabase
+  - Reemplazados datos hardcodeados por componente FeaturedProducts que obtiene productos reales
+  - Agregado componente de carga (skeleton) para mejorar UX durante la carga de productos
+  - Mejorado el diseño con contenedores y espaciado adecuado
+  - Enlazado botón de registro a la página de registro
+- **How it was done**:
+  - Creado componente asíncrono FeaturedProducts que utiliza getFeaturedProducts de Supabase
+  - Implementado Suspense con fallback para mostrar skeleton durante la carga
+  - Utilizado ProductCard existente para mostrar productos de manera consistente
+  - Corregidos errores de ESLint (importaciones no utilizadas)
+  - Verificados tipos TypeScript y funcionamiento correcto
+- **Checks**:
+  - ✅ Productos: Se muestran correctamente desde Supabase
+  - ✅ Diseño: Responsive y consistente con el resto del sitio
+  - ✅ ESLint: Sin warnings ni errores
+  - ✅ TypeScript: Sin errores de tipos
+  - ✅ Funcionamiento: Carga y muestra productos correctamente
+- **Status**: ✅ Completado
+
 ### Task 9: Merge unificado de navegación y páginas del footer
 - **Branch**: `feature/f1-navigation-and-pages-unified`
 - **What was done**:
@@ -247,7 +269,6 @@
 ## Backlog
 
 - **F1 MVP Sales**:
-  - Home page con hero y productos destacados
   - Product Listing Page (PLP) con filtros básicos
   - Product Detail Page (PDP) con selector de variantes
   - Cart drawer con cupones y shipping calculator
