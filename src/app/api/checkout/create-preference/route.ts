@@ -104,7 +104,8 @@ export async function POST(request: NextRequest) {
         failure: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/checkout/failure`,
         pending: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/checkout/pending`
       },
-      auto_return: 'approved',
+      // Solo usar auto_return si tenemos una URL de éxito definida
+      ...(process.env.NEXT_PUBLIC_SITE_URL ? { auto_return: 'approved' } : {}),
       // En desarrollo, usamos ngrok o similar para recibir webhooks
       // En producción, usamos la URL del sitio
       notification_url: process.env.NODE_ENV === 'production'

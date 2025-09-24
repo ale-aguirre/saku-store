@@ -65,6 +65,10 @@ const testWebhookData = {
 async function createPreference() {
   console.log('Creando preferencia de pago de prueba...');
   
+  // Asegurarnos de que NEXT_PUBLIC_SITE_URL esté definido para el test
+  process.env.NEXT_PUBLIC_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  console.log(`Usando URL base: ${process.env.NEXT_PUBLIC_SITE_URL}`);
+  
   try {
     const response = await fetch(`${BASE_URL}/api/checkout/create-preference`, {
       method: 'POST',
