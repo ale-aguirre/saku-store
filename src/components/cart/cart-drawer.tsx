@@ -59,6 +59,9 @@ export function CartDrawer({ children }: CartDrawerProps) {
   const nationalShippingCost = 2500
   const cordobaShippingCost = 1500
   
+  // Función para determinar si el envío es gratis
+  const isShippingFree = (cost: number) => cost === 0
+  
   // Sincronizar estado local con el estado global del carrito
   useEffect(() => {
     if (shipping) {
@@ -116,7 +119,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
     // Actualizar el estado global
     setCoupon({
       code: foundCoupon.code,
-      type: foundCoupon.type,
+      type: foundCoupon.type as 'percentage' | 'fixed',
       value: foundCoupon.discount
     })
     
@@ -379,7 +382,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
                                   <div className="text-xs text-muted-foreground">Entrega en 24-48hs</div>
                                 </div>
                                 <div className="font-medium">
-                                  {cordobaShippingCost === 0 ? 'Gratis' : `$${cordobaShippingCost.toLocaleString()}`}
+                                  {isShippingFree(cordobaShippingCost) ? 'Gratis' : `$${cordobaShippingCost.toLocaleString()}`}
                                 </div>
                               </div>
                               <div 
@@ -393,7 +396,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
                                   <div className="text-xs text-muted-foreground">Entrega en 3-5 días</div>
                                 </div>
                                 <div className="font-medium">
-                                  {nationalShippingCost === 0 ? 'Gratis' : `$${nationalShippingCost.toLocaleString()}`}
+                                  {isShippingFree(nationalShippingCost) ? 'Gratis' : `$${nationalShippingCost.toLocaleString()}`}
                                 </div>
                               </div>
                             </>
@@ -409,7 +412,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
                                 <div className="text-xs text-muted-foreground">Entrega en 3-5 días</div>
                               </div>
                               <div className="font-medium">
-                                {nationalShippingCost === 0 ? 'Gratis' : `$${nationalShippingCost.toLocaleString()}`}
+                                {isShippingFree(nationalShippingCost) ? 'Gratis' : `$${nationalShippingCost.toLocaleString()}`}
                               </div>
                             </div>
                           )}
@@ -440,7 +443,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
                 <span>
                   {!shippingMethod ? (
                     <span className="text-muted-foreground">No calculado</span>
-                  ) : shippingCost === 0 ? (
+                  ) : isShippingFree(shippingCost) ? (
                     <span className="text-green-600">Gratis</span>
                   ) : (
                     `$${shippingCost.toLocaleString()}`
