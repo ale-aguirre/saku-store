@@ -130,21 +130,6 @@
           "Module not found"
         ]
       },
-      "supabase": {
-        "command": "npx supabase status",
-        "successPatterns": [
-          "API URL",
-          "Connected",
-          "Running",
-          "http://127.0.0.1"
-        ],
-        "failurePatterns": [
-          "Not running",
-          "Error",
-          "Failed",
-          "Connection refused"
-        ]
-      },
       "dependencies": {
         "command": "npm ls --depth=0",
         "successPatterns": [
