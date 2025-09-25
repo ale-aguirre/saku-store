@@ -36,6 +36,30 @@
   - ✅ Estado: develop actualizado y sincronizado con origin
 - **Status**: ✅ Completado - Develop actualizado con todas las correcciones
 
+### Task 10: Implementación de página de inicio con productos destacados dinámicos
+- **Branch**: `feature/f1-home-page` → `develop` (mergeado)
+- **What was done**:
+  - Implementada página de inicio con productos destacados dinámicos desde Supabase
+  - Reemplazados datos hardcodeados por componente FeaturedProducts que obtiene productos reales
+  - Agregado componente de carga (skeleton) para mejorar UX durante la carga de productos
+  - Mejorado el diseño con contenedores y espaciado adecuado
+  - Enlazado botón de registro a la página de registro
+- **How it was done**:
+  - Creado componente asíncrono FeaturedProducts que utiliza getFeaturedProducts de Supabase
+  - Implementado Suspense con fallback para mostrar skeleton durante la carga
+  - Utilizado ProductCard existente para mostrar productos de manera consistente
+  - Corregidos errores de ESLint (importaciones no utilizadas)
+  - Verificados tipos TypeScript y funcionamiento correcto
+  - Resuelto conflicto de merge en ROADMAP.md manteniendo información completa
+- **Checks**:
+  - ✅ Productos: Se muestran correctamente desde Supabase
+  - ✅ Diseño: Responsive y consistente con el resto del sitio
+  - ✅ ESLint: Sin warnings ni errores
+  - ✅ TypeScript: Sin errores de tipos
+  - ✅ Funcionamiento: Carga y muestra productos correctamente
+  - ✅ Merge: Conflicto resuelto exitosamente en develop
+- **Status**: ✅ Completado y Mergeado
+
 ### Task 19: Corrección de errores de despliegue por fetch failed durante prerenderizado
 - **Branch**: `fix/product-images-and-types` (continuación)
 - **What was done**:
@@ -253,6 +277,28 @@
   - ✅ ESLint: Sin warnings ni errores
   - ✅ TypeScript: Sin errores de tipos
   - ✅ Tests: Pruebas end-to-end pasando correctamente
+- **Status**: ✅ Completado
+
+### Task 10: Implementación de página de inicio con productos destacados dinámicos
+- **Branch**: `feature/f1-home-page`
+- **What was done**:
+  - Implementada página de inicio con productos destacados dinámicos desde Supabase
+  - Reemplazados datos hardcodeados por componente FeaturedProducts que obtiene productos reales
+  - Agregado componente de carga (skeleton) para mejorar UX durante la carga de productos
+  - Mejorado el diseño con contenedores y espaciado adecuado
+  - Enlazado botón de registro a la página de registro
+- **How it was done**:
+  - Creado componente asíncrono FeaturedProducts que utiliza getFeaturedProducts de Supabase
+  - Implementado Suspense con fallback para mostrar skeleton durante la carga
+  - Utilizado ProductCard existente para mostrar productos de manera consistente
+  - Corregidos errores de ESLint (importaciones no utilizadas)
+  - Verificados tipos TypeScript y funcionamiento correcto
+- **Checks**:
+  - ✅ Productos: Se muestran correctamente desde Supabase
+  - ✅ Diseño: Responsive y consistente con el resto del sitio
+  - ✅ ESLint: Sin warnings ni errores
+  - ✅ TypeScript: Sin errores de tipos
+  - ✅ Funcionamiento: Carga y muestra productos correctamente
 - **Status**: ✅ Completado
 
 ### Task 10: Implementación de página de inicio con productos destacados dinámicos
@@ -508,7 +554,12 @@
 ## Backlog
 
 - **F1 MVP Sales**:
-  - Admin panel básico (productos, stock, cupones)
+  - Product Listing Page (PLP) con filtros básicos
+  - Product Detail Page (PDP) con selector de variantes
+  - Cart drawer con cupones y shipping calculator
+  - Checkout flow con Mercado Pago Checkout Pro
+  - Order management (pending → paid → fulfilled)
+  - Admin panel básico (productos, stock, órdenes, cupones)
   - Emails transaccionales (confirmación de orden, pago recibido, envío, tracking)
   - Home page con hero y productos destacados
 
