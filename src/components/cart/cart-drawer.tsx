@@ -157,7 +157,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
       </SheetTrigger>
       
       <SheetContent className="w-full sm:max-w-lg flex flex-col">
-        <SheetHeader>
+        <SheetHeader className="px-4 md:px-6">
           <SheetTitle className="flex items-center gap-2">
             <ShoppingCart className="h-5 w-5" />
             Carrito ({itemCount} {itemCount === 1 ? 'producto' : 'productos'})
@@ -165,7 +165,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
         </SheetHeader>
 
         {cartItems.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center text-center space-y-4">
+          <div className="flex-1 flex flex-col items-center justify-center text-center space-y-4 px-4 md:px-6">
             <ShoppingCart className="h-16 w-16 text-muted-foreground" />
             <div>
               <h3 className="font-medium mb-2">Tu carrito está vacío</h3>
@@ -180,7 +180,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
         ) : (
           <>
             {/* Cart Items */}
-            <div className="flex-1 overflow-y-auto space-y-safe-y py-safe-y">
+            <div className="flex-1 overflow-y-auto space-y-4 py-4 px-4 md:px-6">
               {cartItems.map((item) => (
                 <div key={item.id} data-testid="cart-item" className="flex gap-3 p-3 border rounded-lg">
                   <div className="relative w-16 h-20 flex-shrink-0">
@@ -249,7 +249,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
             </div>
 
             {/* Coupon and Shipping Section */}
-            <Accordion type="single" collapsible className="py-4 border-t">
+            <Accordion type="single" collapsible className="py-4 border-t px-4 md:px-6">
               <AccordionItem value="coupon">
                 <AccordionTrigger className="py-2">
                   <div className="flex items-center gap-2">
@@ -425,7 +425,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
             </Accordion>
 
             {/* Order Summary */}
-            <div className="space-y-3 py-4 border-t">
+            <div className="space-y-3 py-4 border-t px-4 md:px-6">
               <div className="flex justify-between text-sm">
                 <span>Subtotal</span>
                 <span>${subtotal.toLocaleString()}</span>
@@ -473,16 +473,18 @@ export function CartDrawer({ children }: CartDrawerProps) {
             </div>
 
             {/* Checkout Button */}
-            <Button 
-              size="lg" 
-              className="w-full bg-[#d8ceb5] text-black hover:bg-[#d8ceb5]/90"
-              asChild
-              disabled={!shippingMethod}
-            >
-              <Link href={shippingMethod ? "/checkout" : "#"}>
-                Finalizar Compra
-              </Link>
-            </Button>
+            <div className="px-4 md:px-6 pb-4">
+              <Button 
+                size="lg" 
+                className="w-full bg-[#d8ceb5] text-black hover:bg-[#d8ceb5]/90"
+                asChild
+                disabled={!shippingMethod}
+              >
+                <Link href={shippingMethod ? "/checkout" : "#"}>
+                  Finalizar Compra
+                </Link>
+              </Button>
+            </div>
           </>
         )}
       </SheetContent>
