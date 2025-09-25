@@ -16,7 +16,44 @@
 
 ## Today: 2025-09-25
 
-### Task 21: Consolidación y limpieza completa de ramas feature F1
+### Task 22: Corrección de márgenes seguros en cart-drawer
+
+**Fecha**: 2025-09-25 17:47
+
+**Estado**: ✅ Completada
+
+**Descripción**: Implementación de márgenes seguros en el componente cart-drawer según las reglas del proyecto.
+
+- **What was done**:
+  - Corregir clases inválidas `space-y-safe-y` y `py-safe-y` por clases válidas de Tailwind
+  - Implementar padding `px-4 md:px-6` en todas las secciones del drawer
+  - Aplicar espaciado de 8pt (`space-y-4`, `py-4`) según las reglas del proyecto
+  - Asegurar que ningún contenido esté flush a los bordes de pantalla
+  - Aplicar márgenes seguros en header, contenido, cupón, envío y botón de checkout
+
+- **How it was done**:
+  - Crear rama `fix/cart-drawer-safe-margins` desde `develop`
+  - Revisar implementación actual del cart-drawer y identificar problemas de spacing
+  - Aplicar padding consistente `px-4 md:px-6` en todas las secciones
+  - Corregir clases CSS inválidas por clases válidas de Tailwind
+  - Envolver botón de checkout en contenedor con padding para márgenes seguros
+  - Verificar build, ESLint y TypeScript
+  - Merge a `develop` y limpieza de rama
+
+- **Verificaciones**:
+  - ✅ Build exitoso sin errores
+  - ✅ ESLint sin warnings ni errores
+  - ✅ TypeScript sin errores de tipos
+  - ✅ Márgenes seguros implementados según project_rules.md
+  - ✅ Clases CSS válidas de Tailwind
+  - ✅ Espaciado de 8pt aplicado consistentemente
+
+- **Files modified**:
+  - `src/components/cart/cart-drawer.tsx`
+
+---
+
+## Task 21: Consolidación y limpieza completa de ramas feature F1
 - **Branch**: `develop` (consolidación)
 - **What was done**:
   - Mergeada rama `feature/f1-home-page` con implementación de página de inicio con productos destacados dinámicos
