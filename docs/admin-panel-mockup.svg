@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1440" height="900" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .bg-primary { fill: #ffffff; }
+      .bg-secondary { fill: #f8f9fa; }
+      .bg-sidebar { fill: #2c3e50; }
+      .bg-card { fill: #ffffff; }
+      .text-primary { fill: #2c3e50; font-family: Inter, sans-serif; }
+      .text-secondary { fill: #6c757d; font-family: Inter, sans-serif; }
+      .text-white { fill: #ffffff; font-family: Inter, sans-serif; }
+      .text-brand { fill: #d8ceb5; font-family: Inter, sans-serif; }
+      .border { stroke: #e9ecef; stroke-width: 1; fill: none; }
+      .shadow { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+      .btn-primary { fill: #d8ceb5; }
+      .btn-secondary { fill: #6c757d; }
+      .metric-positive { fill: #28a745; }
+      .metric-negative { fill: #dc3545; }
+    </style>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1440" height="900" class="bg-secondary"/>
+  
+  <!-- Sidebar -->
+  <rect x="0" y="0" width="280" height="900" class="bg-sidebar"/>
+  
+  <!-- Logo Area -->
+  <rect x="20" y="20" width="240" height="60" rx="8" fill="rgba(216, 206, 181, 0.1)"/>
+  <text x="40" y="45" class="text-brand" font-size="18" font-weight="bold">Sakú Lencería</text>
+  <text x="40" y="65" class="text-white" font-size="12" opacity="0.7">Panel de Administración</text>
+  
+  <!-- Main Navigation -->
+  <g transform="translate(20, 100)">
+    <!-- Dashboard -->
+    <rect x="0" y="0" width="240" height="40" rx="6" class="btn-primary"/>
+    <circle cx="15" cy="20" r="6" class="text-white"/>
+    <text x="30" y="25" class="text-primary" font-size="14" font-weight="500">Dashboard</text>
+    
+    <!-- Productos -->
+    <rect x="0" y="50" width="240" height="40" rx="6" fill="transparent"/>
+    <circle cx="15" cy="70" r="6" fill="#ffffff" opacity="0.7"/>
+    <text x="30" y="75" class="text-white" font-size="14">Productos</text>
+    
+    <!-- Pedidos -->
+    <rect x="0" y="100" width="240" height="40" rx="6" fill="transparent"/>
+    <circle cx="15" cy="120" r="6" fill="#ffffff" opacity="0.7"/>
+    <text x="30" y="125" class="text-white" font-size="14">Pedidos</text>
+    
+    <!-- Clientes -->
+    <rect x="0" y="150" width="240" height="40" rx="6" fill="transparent"/>
+    <circle cx="15" cy="170" r="6" fill="#ffffff" opacity="0.7"/>
+    <text x="30" y="175" class="text-white" font-size="14">Clientes</text>
+    
+    <!-- Cupones -->
+    <rect x="0" y="200" width="240" height="40" rx="6" fill="transparent"/>
+    <circle cx="15" cy="220" r="6" fill="#ffffff" opacity="0.7"/>
+    <text x="30" y="225" class="text-white" font-size="14">Cupones</text>
+    
+    <!-- Reportes -->
+    <rect x="0" y="250" width="240" height="40" rx="6" fill="transparent"/>
+    <circle cx="15" cy="270" r="6" fill="#ffffff" opacity="0.7"/>
+    <text x="30" y="275" class="text-white" font-size="14">Reportes</text>
+    
+    <!-- Automatizaciones (NUEVO) -->
+    <rect x="0" y="300" width="240" height="40" rx="6" fill="rgba(216, 206, 181, 0.2)"/>
+    <circle cx="15" cy="320" r="6" class="text-brand"/>
+    <text x="30" y="325" class="text-brand" font-size="14" font-weight="500">Automatizaciones</text>
+    <text x="200" y="325" class="text-brand" font-size="10">NUEVO</text>
+    
+    <!-- Configuración -->
+    <rect x="0" y="350" width="240" height="40" rx="6" fill="transparent"/>
+    <circle cx="15" cy="370" r="6" fill="#ffffff" opacity="0.7"/>
+    <text x="30" y="375" class="text-white" font-size="14">Configuración</text>
+  </g>
+  
+  <!-- User Info -->
+  <g transform="translate(20, 820)">
+    <rect x="0" y="0" width="240" height="60" rx="8" fill="rgba(255,255,255,0.1)"/>
+    <circle cx="20" cy="30" r="16" fill="#d8ceb5"/>
+    <text x="18" y="35" class="text-primary" font-size="12" font-weight="bold">A</text>
+    <text x="45" y="25" class="text-white" font-size="14" font-weight="500">Admin</text>
+    <text x="45" y="40" class="text-white" font-size="12" opacity="0.7">admin@saku.com</text>
+  </g>
+  
+  <!-- Main Content Area -->
+  <rect x="280" y="0" width="1160" height="900" class="bg-secondary"/>
+  
+  <!-- Header -->
+  <rect x="280" y="0" width="1160" height="80" class="bg-primary"/>
+  <rect x="280" y="79" width="1160" height="1" fill="#e9ecef"/>
+  
+  <!-- Header Content -->
+  <text x="320" y="35" class="text-primary" font-size="24" font-weight="bold">Dashboard</text>
+  <text x="320" y="55" class="text-secondary" font-size="14">Resumen general de tu tienda</text>
+  
+  <!-- Date Range Selector -->
+  <rect x="1200" y="25" width="200" height="30" rx="6" class="bg-secondary border"/>
+  <text x="1220" y="45" class="text-secondary" font-size="12">Últimos 30 días ▼</text>
+  
+  <!-- Main Dashboard Content -->
+  <g transform="translate(320, 100)">
+    
+    <!-- KPI Cards Row -->
+    <g>
+      <!-- Ventas Hoy -->
+      <rect x="0" y="0" width="260" height="120" rx="8" class="bg-card shadow"/>
+      <text x="20" y="30" class="text-secondary" font-size="12">VENTAS HOY</text>
+      <text x="20" y="55" class="text-primary" font-size="28" font-weight="bold">$45,230</text>
+      <text x="20" y="75" class="metric-positive" font-size="12">↗ +12.5%</text>
+      <text x="20" y="95" class="text-secondary" font-size="11">vs. ayer</text>
+      
+      <!-- Pedidos Pendientes -->
+      <rect x="280" y="0" width="260" height="120" rx="8" class="bg-card shadow"/>
+      <text x="300" y="30" class="text-secondary" font-size="12">PEDIDOS PENDIENTES</text>
+      <text x="300" y="55" class="text-primary" font-size="28" font-weight="bold">8</text>
+      <text x="300" y="75" class="metric-negative" font-size="12">↗ +2</text>
+      <text x="300" y="95" class="text-secondary" font-size="11">requieren atención</text>
+      
+      <!-- Stock Bajo -->
+      <rect x="560" y="0" width="260" height="120" rx="8" class="bg-card shadow"/>
+      <text x="580" y="30" class="text-secondary" font-size="12">STOCK BAJO</text>
+      <text x="580" y="55" class="text-primary" font-size="28" font-weight="bold">3</text>
+      <text x="580" y="75" class="metric-negative" font-size="12">productos</text>
+      <text x="580" y="95" class="text-secondary" font-size="11">necesitan restock</text>
+      
+      <!-- Conversión -->
+      <rect x="840" y="0" width="260" height="120" rx="8" class="bg-card shadow"/>
+      <text x="860" y="30" class="text-secondary" font-size="12">CONVERSIÓN</text>
+      <text x="860" y="55" class="text-primary" font-size="28" font-weight="bold">3.2%</text>
+      <text x="860" y="75" class="metric-positive" font-size="12">↗ +0.3%</text>
+      <text x="860" y="95" class="text-secondary" font-size="11">vs. mes anterior</text>
+    </g>
+    
+    <!-- Charts Section -->
+    <g transform="translate(0, 150)">
+      <!-- Ventas Chart -->
+      <rect x="0" y="0" width="540" height="300" rx="8" class="bg-card shadow"/>
+      <text x="20" y="30" class="text-primary" font-size="16" font-weight="600">Ventas de los últimos 7 días</text>
+      
+      <!-- Tabs -->
+      <rect x="20" y="45" width="60" height="25" rx="4" class="btn-primary"/>
+      <text x="35" y="60" class="text-primary" font-size="12" font-weight="500">Ventas</text>
+      <rect x="90" y="45" width="60" height="25" rx="4" fill="transparent" class="border"/>
+      <text x="105" y="60" class="text-secondary" font-size="12">Pedidos</text>
+      
+      <!-- Simple Chart Representation -->
+      <g transform="translate(40, 100)">
+        <line x1="0" y1="150" x2="460" y2="150" stroke="#e9ecef" stroke-width="1"/>
+        <line x1="0" y1="0" x2="0" y2="150" stroke="#e9ecef" stroke-width="1"/>
+        
+        <!-- Chart bars -->
+        <rect x="20" y="120" width="40" height="30" class="btn-primary"/>
+        <rect x="80" y="100" width="40" height="50" class="btn-primary"/>
+        <rect x="140" y="80" width="40" height="70" class="btn-primary"/>
+        <rect x="200" y="60" width="40" height="90" class="btn-primary"/>
+        <rect x="260" y="90" width="40" height="60" class="btn-primary"/>
+        <rect x="320" y="70" width="40" height="80" class="btn-primary"/>
+        <rect x="380" y="50" width="40" height="100" class="btn-primary"/>
+        
+        <!-- Labels -->
+        <text x="35" y="170" class="text-secondary" font-size="10">Lun</text>
+        <text x="95" y="170" class="text-secondary" font-size="10">Mar</text>
+        <text x="155" y="170" class="text-secondary" font-size="10">Mié</text>
+        <text x="215" y="170" class="text-secondary" font-size="10">Jue</text>
+        <text x="275" y="170" class="text-secondary" font-size="10">Vie</text>
+        <text x="335" y="170" class="text-secondary" font-size="10">Sáb</text>
+        <text x="395" y="170" class="text-secondary" font-size="10">Dom</text>
+      </g>
+      
+      <!-- Top Products -->
+      <rect x="560" y="0" width="540" height="300" rx="8" class="bg-card shadow"/>
+      <text x="580" y="30" class="text-primary" font-size="16" font-weight="600">Productos más vendidos</text>
+      
+      <!-- Product List -->
+      <g transform="translate(580, 60)">
+        <!-- Product 1 -->
+        <rect x="0" y="0" width="500" height="50" rx="4" fill="#f8f9fa"/>
+        <rect x="10" y="10" width="30" height="30" rx="4" fill="#d8ceb5"/>
+        <text x="55" y="20" class="text-primary" font-size="14" font-weight="500">Body Agatha Negro - Talle 90</text>
+        <text x="55" y="35" class="text-secondary" font-size="12">12 vendidos</text>
+        <text x="450" y="25" class="text-primary" font-size="14" font-weight="600">$8,500</text>
+        
+        <!-- Product 2 -->
+        <rect x="0" y="60" width="500" height="50" rx="4" fill="transparent"/>
+        <rect x="10" y="70" width="30" height="30" rx="4" fill="#d8ceb5"/>
+        <text x="55" y="80" class="text-primary" font-size="14" font-weight="500">Conjunto Valentina Rojo - Talle 85</text>
+        <text x="55" y="95" class="text-secondary" font-size="12">8 vendidos</text>
+        <text x="450" y="85" class="text-primary" font-size="14" font-weight="600">$12,300</text>
+        
+        <!-- Product 3 -->
+        <rect x="0" y="120" width="500" height="50" rx="4" fill="#f8f9fa"/>
+        <rect x="10" y="130" width="30" height="30" rx="4" fill="#d8ceb5"/>
+        <text x="55" y="140" class="text-primary" font-size="14" font-weight="500">Bralette Sofia Blanco - Talle 95</text>
+        <text x="55" y="155" class="text-secondary" font-size="12">6 vendidos</text>
+        <text x="450" y="145" class="text-primary" font-size="14" font-weight="600">$6,800</text>
+        
+        <!-- Product 4 -->
+        <rect x="0" y="180" width="500" height="50" rx="4" fill="transparent"/>
+        <rect x="10" y="190" width="30" height="30" rx="4" fill="#d8ceb5"/>
+        <text x="55" y="200" class="text-primary" font-size="14" font-weight="500">Corpiño Push-up Luna Negro - Talle 90</text>
+        <text x="55" y="215" class="text-secondary" font-size="12">5 vendidos</text>
+        <text x="450" y="205" class="text-primary" font-size="14" font-weight="600">$9,200</text>
+      </g>
+    </g>
+    
+    <!-- Quick Actions Section -->
+    <g transform="translate(0, 480)">
+      <text x="0" y="20" class="text-primary" font-size="18" font-weight="600">Acciones rápidas</text>
+      
+      <!-- Action Cards -->
+      <g transform="translate(0, 40)">
+        <!-- Nuevo Producto -->
+        <rect x="0" y="0" width="180" height="100" rx="8" class="bg-card shadow"/>
+        <circle cx="30" cy="30" r="12" class="btn-primary"/>
+        <text x="26" y="35" class="text-primary" font-size="16">+</text>
+        <text x="20" y="55" class="text-primary" font-size="14" font-weight="500">Nuevo Producto</text>
+        <text x="20" y="75" class="text-secondary" font-size="12">Agregar al catálogo</text>
+        
+        <!-- Ver Pedidos -->
+        <rect x="200" y="0" width="180" height="100" rx="8" class="bg-card shadow"/>
+        <circle cx="230" cy="30" r="12" fill="#6c757d"/>
+        <text x="226" y="35" class="text-white" font-size="12">📦</text>
+        <text x="220" y="55" class="text-primary" font-size="14" font-weight="500">Ver Pedidos</text>
+        <text x="220" y="75" class="text-secondary" font-size="12">Gestionar órdenes</text>
+        
+        <!-- Automatizaciones -->
+        <rect x="400" y="0" width="180" height="100" rx="8" class="bg-card shadow"/>
+        <circle cx="430" cy="30" r="12" class="btn-primary"/>
+        <text x="426" y="35" class="text-primary" font-size="12">⚡</text>
+        <text x="420" y="55" class="text-primary" font-size="14" font-weight="500">Automatizaciones</text>
+        <text x="420" y="75" class="text-secondary" font-size="12">Configurar n8n</text>
+        
+        <!-- Reportes -->
+        <rect x="600" y="0" width="180" height="100" rx="8" class="bg-card shadow"/>
+        <circle cx="630" cy="30" r="12" fill="#6c757d"/>
+        <text x="626" y="35" class="text-white" font-size="12">📊</text>
+        <text x="620" y="55" class="text-primary" font-size="14" font-weight="500">Reportes</text>
+        <text x="620" y="75" class="text-secondary" font-size="12">Ver estadísticas</text>
+        
+        <!-- Exportar Datos -->
+        <rect x="800" y="0" width="180" height="100" rx="8" class="bg-card shadow"/>
+        <circle cx="830" cy="30" r="12" fill="#6c757d"/>
+        <text x="826" y="35" class="text-white" font-size="12">⬇</text>
+        <text x="820" y="55" class="text-primary" font-size="14" font-weight="500">Exportar Datos</text>
+        <text x="820" y="75" class="text-secondary" font-size="12">CSV / Excel</text>
+      </g>
+    </g>
+    
+    <!-- Notifications/Alerts -->
+    <g transform="translate(0, 620)">
+      <rect x="0" y="0" width="1100" height="80" rx="8" fill="#fff3cd" stroke="#ffeaa7" stroke-width="1"/>
+      <circle cx="25" cy="40" r="8" fill="#f39c12"/>
+      <text x="21" y="45" fill="#ffffff" font-size="12">!</text>
+      <text x="50" y="30" fill="#856404" font-size="14" font-weight="500">Atención requerida</text>
+      <text x="50" y="50" fill="#856404" font-size="12">Tienes 3 productos con stock bajo y 2 pedidos pendientes de confirmación.</text>
+      <rect x="1000" y="25" width="80" height="30" rx="4" class="btn-primary"/>
+      <text x="1025" y="45" class="text-primary" font-size="12" font-weight="500">Ver detalles</text>
+    </g>
+    
+  </g>
+  
+</svg>
