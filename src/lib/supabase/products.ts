@@ -36,28 +36,35 @@ export async function getProducts(
   page = 1,
   limit = 12
 ): Promise<ProductWithVariantsAndStock[]> {
-  let query = supabase
-      .from('products')
-      .select(`
-        *,
-        product_variants (
-          id,
-          sku,
-          size,
-          color,
-          material,
-          price_adjustment,
-          stock_quantity,
-          low_stock_threshold,
-          is_active
-        ),
-        categories (
-          id,
-          name,
-          slug
-        )
-      `)
-      .eq('is_active', true)
+  try {
+    // Verificar si las variables de entorno están disponibles
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      console.log('Supabase environment variables not found, using placeholder values for build')
+      return []
+    }
+
+    let query = supabase
+        .from('products')
+        .select(`
+          *,
+          product_variants (
+            id,
+            sku,
+            size,
+            color,
+            material,
+            price_adjustment,
+            stock_quantity,
+            low_stock_threshold,
+            is_active
+          ),
+          categories (
+            id,
+            name,
+            slug
+          )
+        `)
+        .eq('is_active', true)
 
   // Aplicar filtros
   if (filters.category_id) {
@@ -147,41 +154,53 @@ export async function getProducts(
   })
 
   return processedProducts
+  } catch (error) {
+    console.error('Error fetching products:', error)
+    // Durante el build, retornar array vacío en lugar de fallar
+    return []
+  }
 }
 
 /**
  * Obtiene un producto específico por slug con sus variantes
  */
 export async function getProductBySlug(slug: string): Promise<ProductWithVariantsAndStock | null> {
-  const { data, error } = await supabase
-    .from('products')
-    .select(`
-      *,
-      product_variants (
-        id,
-        sku,
-        size,
-        color,
-        material,
-        price_adjustment,
-        stock_quantity,
-        low_stock_threshold,
-        is_active
-      ),
-      categories (
-        id,
-        name,
-        slug
-      )
-    `)
-    .eq('slug', slug)
-    .eq('is_active', true)
-    .single()
+  try {
+    // Verificar si las variables de entorno están disponibles
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      console.log('Supabase environment variables not found, using placeholder values for build')
+      return null
+    }
 
-  if (error) {
-    console.error('Error fetching product by slug:', error)
-    return null
-  }
+    const { data, error } = await supabase
+      .from('products')
+      .select(`
+        *,
+        product_variants (
+          id,
+          sku,
+          size,
+          color,
+          material,
+          price_adjustment,
+          stock_quantity,
+          low_stock_threshold,
+          is_active
+        ),
+        categories (
+          id,
+          name,
+          slug
+        )
+      `)
+      .eq('slug', slug)
+      .eq('is_active', true)
+      .single()
+
+    if (error) {
+      console.error('Error fetching product by slug:', error)
+      return null
+    }
 
   if (!data) return null
 
@@ -210,33 +229,48 @@ export async function getProductBySlug(slug: string): Promise<ProductWithVariant
     },
     total_stock: variants.reduce((sum, v) => sum + v.stock_quantity, 0)
   }
+  } catch (error) {
+    console.error('Error fetching product by slug:', error)
+    return null
+  }
 }
 
 /**
  * Obtiene una variante específica por ID
  */
 export async function getVariantById(variantId: string): Promise<VariantWithStock | null> {
-  const { data: variant, error } = await supabase
-    .from('product_variants')
-    .select('*')
-    .eq('id', variantId)
-    .eq('is_active', true)
-    .single()
+  try {
+    // Verificar si las variables de entorno están disponibles
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      console.log('Supabase environment variables not found, using placeholder values for build')
+      return null
+    }
 
-  if (error) {
-    console.error('Error fetching variant:', error)
+    const { data: variant, error } = await supabase
+      .from('product_variants')
+      .select('*')
+      .eq('id', variantId)
+      .eq('is_active', true)
+      .single()
+
+    if (error) {
+      console.error('Error fetching variant:', error)
+      return null
+    }
+
+    if (!variant) {
+      return null
+    }
+
+    const variantWithStock = variant as VariantQuery
+    return {
+      ...variantWithStock,
+      is_in_stock: variantWithStock.stock_quantity > 0,
+      is_low_stock: variantWithStock.stock_quantity <= variantWithStock.low_stock_threshold && variantWithStock.stock_quantity > 0
+    }
+  } catch (error) {
+    console.error('Error fetching variant by ID:', error)
     return null
-  }
-
-  if (!variant) {
-    return null
-  }
-
-  const variantWithStock = variant as VariantQuery
-  return {
-    ...variantWithStock,
-    is_in_stock: variantWithStock.stock_quantity > 0,
-    is_low_stock: variantWithStock.stock_quantity <= variantWithStock.low_stock_threshold && variantWithStock.stock_quantity > 0
   }
 }
 
@@ -249,32 +283,43 @@ export async function findVariantByAttributes(
   color?: string,
   material?: string
 ): Promise<VariantWithStock | null> {
-  let query = supabase
-    .from('product_variants')
-    .select('*')
-    .eq('product_id', productId)
-    .eq('is_active', true)
+  try {
+    // Verificar si las variables de entorno están disponibles
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      console.log('Supabase environment variables not found, using placeholder values for build')
+      return null
+    }
 
-  if (size) query = query.eq('size', size)
-  if (color) query = query.eq('color', color)
-  if (material) query = query.eq('material', material)
+    let query = supabase
+      .from('product_variants')
+      .select('*')
+      .eq('product_id', productId)
+      .eq('is_active', true)
 
-  const { data: variant, error } = await query.single()
+    if (size) query = query.eq('size', size)
+    if (color) query = query.eq('color', color)
+    if (material) query = query.eq('material', material)
 
-  if (error) {
+    const { data: variant, error } = await query.single()
+
+    if (error) {
+      console.error('Error finding variant by attributes:', error)
+      return null
+    }
+
+    if (!variant) {
+      return null
+    }
+
+    const variantWithStock = variant as VariantQuery
+    return {
+      ...variantWithStock,
+      is_in_stock: variantWithStock.stock_quantity > 0,
+      is_low_stock: variantWithStock.stock_quantity <= variantWithStock.low_stock_threshold && variantWithStock.stock_quantity > 0
+    }
+  } catch (error) {
     console.error('Error finding variant by attributes:', error)
     return null
-  }
-
-  if (!variant) {
-    return null
-  }
-
-  const variantWithStock = variant as VariantQuery
-  return {
-    ...variantWithStock,
-    is_in_stock: variantWithStock.stock_quantity > 0,
-    is_low_stock: variantWithStock.stock_quantity <= variantWithStock.low_stock_threshold && variantWithStock.stock_quantity > 0
   }
 }
 
@@ -282,30 +327,53 @@ export async function findVariantByAttributes(
  * Obtiene todas las categorías activas
  */
 export async function getCategories(): Promise<Category[]> {
-  const { data: categories, error } = await supabase
-    .from('categories')
-    .select('*')
-    .eq('is_active', true)
-    .order('sort_order', { ascending: true })
+  try {
+    // Verificar si las variables de entorno están disponibles
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      console.log('Supabase environment variables not found, using placeholder values for build')
+      return []
+    }
 
-  if (error) {
+    const { data: categories, error } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('is_active', true)
+      .order('sort_order', { ascending: true })
+
+    if (error) {
+      console.error('Error fetching categories:', error)
+      return []
+    }
+
+    return categories || []
+  } catch (error) {
     console.error('Error fetching categories:', error)
-    throw error
+    return []
   }
-
-  return categories || []
 }
 
 /**
  * Obtiene productos destacados para la home
  */
 export async function getFeaturedProducts(limit: number = 8): Promise<ProductWithVariantsAndStock[]> {
-  const response = await getProducts(
-    { is_featured: true, in_stock_only: true },
-    'featured',
-    1,
-    limit
-  )
+  try {
+    // Verificar si las variables de entorno están disponibles
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      console.log('Supabase environment variables not found, using placeholder values for build')
+      return []
+    }
 
-  return response
+    const response = await getProducts(
+      { is_featured: true, in_stock_only: true },
+      'featured',
+      1,
+      limit
+    )
+
+    return response
+  } catch (error) {
+    console.error('Error fetching products:', error)
+    // Durante el build, retornar array vacío en lugar de fallar
+    return []
+  }
 }

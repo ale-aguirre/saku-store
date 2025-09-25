@@ -14,7 +14,36 @@
 - **F3 Optimization** — Status: **Planned** — Owner: Agente Saku
   - Scope: Bricks, filtros/búsqueda, wishlist, reseñas, bundles, A/B, CWV, reportes
 
-## Today: 2025-09-24
+## Today: 2025-09-25
+
+### Task 17: Corrección de errores de build y múltiples instancias de GoTrueClient
+- **Branch**: `fix/build-errors-and-gotrue-instances`
+- **What was done**:
+  - Resolución de múltiples instancias de GoTrueClient implementando patrón singleton
+  - Corrección de errores de build por fetch failed durante prerenderizado
+  - Implementación de manejo robusto de variables de entorno en funciones de Supabase
+  - Verificación completa de build y desarrollo sin errores
+- **How it was done**:
+  - Modificación de `src/lib/supabase/client.ts` para implementar patrón singleton que evita múltiples instancias de GoTrueClient
+  - Agregado de verificaciones de variables de entorno en todas las funciones de `src/lib/supabase/products.ts`:
+    - `getFeaturedProducts()`: Retorna array vacío si no hay variables de entorno durante build
+    - `getProducts()`: Manejo de errores con try-catch y verificación de env vars
+    - `getProductBySlug()`: Retorna null si no hay variables de entorno
+    - `getVariantById()`: Verificación de env vars y manejo de errores
+    - `findVariantByAttributes()`: Mismo patrón de verificación y manejo de errores
+    - `getCategories()`: Retorna array vacío en lugar de throw error
+  - Aplicación consistente de bloques try-catch en todas las funciones para evitar fallos durante build
+  - Verificación exitosa de `npm run build` y `npm run dev`
+- **Checks**:
+  - ✅ Build: `npm run build` ejecuta sin errores
+  - ✅ Development: `npm run dev` inicia correctamente en puerto 3001
+  - ✅ ESLint: `npm run lint` pasa sin warnings
+  - ✅ TypeScript: `npm run type-check` pasa sin errores
+  - ✅ Singleton: Una sola instancia de GoTrueClient se crea y reutiliza
+  - ✅ Prerenderizado: Páginas estáticas se generan sin errores de fetch
+- **Status**: ✅ Completado y Verificado
+
+## Previous: 2025-09-24
 
 ### Task 16: Resolución completa del trigger de autenticación de Supabase
 - **Branch**: `feature/auth-trigger-fix`
