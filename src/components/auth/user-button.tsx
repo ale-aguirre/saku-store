@@ -69,7 +69,7 @@ export function UserButton() {
         <DropdownMenuSeparator />
         
         <DropdownMenuItem asChild>
-          <Link href="/profile">
+          <Link href="/cuenta">
             <Settings className="mr-2 h-4 w-4" />
             <span>Mi Perfil</span>
           </Link>

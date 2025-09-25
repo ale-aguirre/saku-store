@@ -9,6 +9,7 @@ import { CookieBanner } from "@/components/consent/cookie-banner";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { MetaPixel } from "@/components/analytics/meta-pixel";
 import { MainLayout } from "@/components/layout/main-layout";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -52,6 +53,7 @@ export default function RootLayout({
                 <CookieBanner />
                 <GoogleAnalytics />
                 <MetaPixel />
+                <Toaster />
               </ConsentProvider>
             </AuthProvider>
           </QueryProvider>

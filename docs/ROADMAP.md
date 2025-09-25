@@ -16,6 +16,45 @@
 
 ## Today: 2025-09-25
 
+### Task 23: Implementación de sistema de loaders y mejora del manejo de errores
+
+**Fecha**: 2025-09-25 19:00
+
+**Estado**: ✅ Completada
+
+**Descripción**: Implementación completa de sistema de loaders durante solicitudes HTTP y mejora del manejo de errores con toasts claros en formularios de autenticación.
+
+- **What was done**:
+  - Crear componente `Loader` reutilizable con variantes `sm`, `md`, `lg`
+  - Implementar `FullPageLoader` para pantallas completas
+  - Crear `ButtonLoader` para estados de carga en botones
+  - Desarrollar hook `useAsync` para manejo de estados async con toasts automáticos
+  - Actualizar formularios de login y registro para usar el nuevo sistema
+  - Migrar a acciones de servidor (Server Actions) en lugar de cliente
+  - Implementar manejo de errores con toasts informativos
+  - Corregir errores de TypeScript relacionados con cookies y props
+  - Eliminar funcionalidad de autenticación con Google no utilizada
+
+- **How it was done**:
+  - Crear `src/components/ui/loader.tsx` con componentes de loader reutilizables
+  - Implementar `src/hooks/use-async.ts` con hooks para manejo async
+  - Actualizar `src/app/auth/login/page.tsx` para usar nuevos loaders y toasts
+  - Actualizar `src/app/auth/register/page.tsx` con ButtonLoader y manejo de errores
+  - Corregir `src/app/auth/actions.ts` para usar `await cookies()` correctamente
+  - Corregir `src/app/auth/callback/route.ts` para cookies async
+  - Eliminar referencias a `googleLoading` y autenticación con Google
+  - Corregir props de `ButtonLoader` (loading → isLoading)
+  - Ejecutar tests de registro para verificar funcionalidad
+
+- **Verificaciones**:
+  - ✅ ESLint sin warnings ni errores
+  - ✅ TypeScript sin errores de tipos
+  - ✅ Test de registro exitoso con nuevos loaders
+  - ✅ Toasts funcionando correctamente para errores y éxito
+  - ✅ Server Actions implementadas correctamente
+  - ✅ Componentes de loader reutilizables y accesibles
+  - ✅ Manejo de errores mejorado con mensajes claros
+
 ### Task 22: Corrección de márgenes seguros en cart-drawer
 
 **Fecha**: 2025-09-25 17:47

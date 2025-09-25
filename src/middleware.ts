@@ -79,8 +79,8 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Protected user routes (profile, orders, etc.)
-  if (request.nextUrl.pathname.startsWith('/profile') || 
+  // Protected user routes (cuenta, orders, etc.)
+  if (request.nextUrl.pathname.startsWith('/cuenta') || 
       request.nextUrl.pathname.startsWith('/orders')) {
     if (!user) {
       return NextResponse.redirect(new URL('/auth/login?redirect=' + request.nextUrl.pathname, request.url))
