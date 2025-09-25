@@ -100,7 +100,29 @@ export interface ProductDetailResponse {
 // Constantes para el catálogo
 export const PRODUCT_SIZES = ['85', '90', '95', '100'] as const
 export const PRODUCT_COLORS = ['negro', 'rojo', 'blanco'] as const
+export const PRODUCT_CATEGORIES = ['brasiers', 'conjuntos', 'bodies', 'bombachas', 'ligueros'] as const
 export const PRODUCTS_PER_PAGE = 12
+
+// Categorías que requieren talles
+export const CATEGORIES_WITH_SIZES = ['brasiers', 'conjuntos', 'bodies'] as const
+// Categorías que no requieren talles
+export const CATEGORIES_WITHOUT_SIZES = ['bombachas', 'ligueros'] as const
 
 export type ProductSize = typeof PRODUCT_SIZES[number]
 export type ProductColor = typeof PRODUCT_COLORS[number]
+export type ProductCategory = typeof PRODUCT_CATEGORIES[number]
+
+// Función helper para determinar si una categoría requiere talles
+export const categoryRequiresSizes = (category: string): boolean => {
+  return CATEGORIES_WITH_SIZES.includes(category as typeof CATEGORIES_WITH_SIZES[number])
+}
+
+// Función helper para obtener las variantes válidas según la categoría
+export const getValidVariantsForCategory = (category: string) => {
+  const requiresSizes = categoryRequiresSizes(category)
+  return {
+    requiresSizes,
+    sizes: requiresSizes ? PRODUCT_SIZES : [],
+    colors: PRODUCT_COLORS
+  }
+}

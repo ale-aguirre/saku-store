@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { ShoppingCart, Heart, Eye } from 'lucide-react'
 import type { ProductWithVariantsAndStock } from '@/types/catalog'
+import { categoryRequiresSizes } from '@/types/catalog'
 import { useCart } from '@/hooks/use-cart'
 import { useState } from 'react'
 import { 
@@ -29,6 +30,9 @@ export function ProductCard({ product, className }: ProductCardProps) {
   const [selectedSize, setSelectedSize] = useState<string>('')
   const [selectedColor, setSelectedColor] = useState<string>('')
   const [quickAddOpen, setQuickAddOpen] = useState(false)
+  
+  // Determinar si el producto requiere talles
+  const requiresSizes = categoryRequiresSizes(product.category || '')
   const hasDiscount = product.compare_at_price && product.compare_at_price > product.base_price
   const discountPercentage = hasDiscount 
     ? Math.round(((product.compare_at_price! - product.base_price) / product.compare_at_price!) * 100)
@@ -104,13 +108,15 @@ export function ProductCard({ product, className }: ProductCardProps) {
         </Link>
 
         {/* Available variants info */}
-        <div className="flex flex-wrap gap-1 mb-3">
-          {product.available_sizes.length > 0 && (
-            <div className="text-xs text-muted-foreground">
-              Talles: {product.available_sizes.join(', ')}
-            </div>
-          )}
-        </div>
+        {requiresSizes && (
+          <div className="flex flex-wrap gap-1 mb-3">
+            {product.available_sizes.length > 0 && (
+              <div className="text-xs text-muted-foreground">
+                Talles: {product.available_sizes.join(', ')}
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="flex flex-wrap gap-1 mb-3">
           {product.available_colors.length > 0 && (
@@ -190,26 +196,31 @@ export function ProductCard({ product, className }: ProductCardProps) {
                 <div className="space-y-2">
                   <h3 className="font-medium">{product.name}</h3>
                   <p className="text-sm text-muted-foreground">
-                    Selecciona talle y color para agregar al carrito
+                    {requiresSizes 
+                      ? 'Selecciona talle y color para agregar al carrito'
+                      : 'Selecciona color para agregar al carrito'
+                    }
                   </p>
                 </div>
                 
-                {/* Size Selection */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Talle</label>
-                  <Select value={selectedSize} onValueChange={setSelectedSize}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona un talle" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {product.available_sizes.map((size) => (
-                        <SelectItem key={size} value={size}>
-                          {size}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                {/* Size Selection - Solo para productos que requieren talles */}
+                {requiresSizes && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Talle</label>
+                    <Select value={selectedSize} onValueChange={setSelectedSize}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona un talle" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {product.available_sizes.map((size) => (
+                          <SelectItem key={size} value={size}>
+                            {size}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
                 
                 {/* Color Selection */}
                 <div className="space-y-2">
@@ -233,11 +244,12 @@ export function ProductCard({ product, className }: ProductCardProps) {
                     <Button variant="outline">Cancelar</Button>
                   </DialogClose>
                   <Button 
-                    disabled={!selectedSize || !selectedColor}
+                    disabled={requiresSizes ? (!selectedSize || !selectedColor) : !selectedColor}
                     onClick={() => {
                       // Encontrar la variante seleccionada
                       const variant = product.variants.find(
-                        v => v.size === selectedSize && v.color === selectedColor && v.is_active
+                        v => (requiresSizes ? v.size === selectedSize : v.size === null) && 
+                             v.color === selectedColor && v.is_active
                       );
                       
                       if (variant && variant.is_in_stock) {
@@ -250,7 +262,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
                           name: product.name,
                           price: finalPrice,
                           image: product.images?.[0] || '/images/placeholder-product.svg',
-                          size: selectedSize,
+                          size: requiresSizes ? selectedSize : undefined,
                           color: selectedColor,
                           quantity: 1,
                           maxStock: variant.stock_quantity
