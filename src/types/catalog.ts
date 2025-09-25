@@ -9,18 +9,10 @@ export type Category = Database['public']['Tables']['categories']['Row']
 export interface ProductWithVariants extends Product {
   variants: ProductVariant[]
   category?: Category | null
-  images?: ProductImage[]
+  images?: string[]
 }
 
-export interface ProductImage {
-  id: string
-  product_id: string
-  variant_id?: string | null
-  url: string
-  alt_text?: string | null
-  sort_order: number
-  is_primary: boolean
-}
+
 
 export interface VariantWithStock extends ProductVariant {
   is_in_stock: boolean
@@ -30,7 +22,7 @@ export interface VariantWithStock extends ProductVariant {
 export interface ProductWithVariantsAndStock extends Product {
   variants: VariantWithStock[]
   category?: Category | null
-  images?: ProductImage[]
+  images?: string[]
   available_sizes: string[]
   available_colors: string[]
   price_range: {

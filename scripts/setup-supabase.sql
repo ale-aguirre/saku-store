@@ -187,9 +187,9 @@ ON CONFLICT (key) DO NOTHING;
 
 -- Insertar productos de ejemplo (datos mock)
 INSERT INTO products (id, name, description, category, image_url) VALUES
-('550e8400-e29b-41d4-a716-446655440001', 'Brasier Comfort', 'Brasier cómodo y elegante para uso diario. Confeccionado con materiales de alta calidad que brindan soporte y comodidad durante todo el día.', 'brasieres', '/products/brasier-comfort.svg'),
-('550e8400-e29b-41d4-a716-446655440002', 'Brasier Push-Up', 'Brasier con realce que resalta tu figura natural. Diseño moderno con encaje delicado y copas moldeadas.', 'brasieres', '/products/brasier-pushup.svg'),
-('550e8400-e29b-41d4-a716-446655440003', 'Conjunto Elegance', 'Conjunto completo de brasier y bombacha con encaje francés. Perfecto para ocasiones especiales.', 'conjuntos', '/products/conjunto-elegance.svg')
+('550e8400-e29b-41d4-a716-446655440001', 'Brasier Comfort', 'Brasier cómodo y elegante para uso diario. Confeccionado con materiales de alta calidad que brindan soporte y comodidad durante todo el día.', 'brasieres', '/productos/brasier-comfort.svg'),
+('550e8400-e29b-41d4-a716-446655440002', 'Brasier Push-Up', 'Brasier con realce que resalta tu figura natural. Diseño moderno con encaje delicado y copas moldeadas.', 'brasieres', '/productos/brasier-pushup.svg'),
+('550e8400-e29b-41d4-a716-446655440003', 'Conjunto Elegance', 'Conjunto completo de brasier y bombacha con encaje francés. Perfecto para ocasiones especiales.', 'conjuntos', '/productos/conjunto-elegance.svg')
 ON CONFLICT (id) DO NOTHING;
 
 -- Insertar variantes de productos

@@ -38,7 +38,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
   const isLowStock = product.variants.some(v => v.is_low_stock)
 
   // Usar la primera imagen disponible o una imagen placeholder
-  const primaryImage = product.images?.[0]?.url || '/images/placeholder-product.jpg'
+  const primaryImage = product.images?.[0] || '/images/placeholder-product.svg'
 
   return (
     <Card className={`group relative overflow-hidden transition-all duration-300 hover:shadow-lg ${className}`}>
@@ -249,7 +249,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
                           productId: product.id,
                           name: product.name,
                           price: finalPrice,
-                          image: product.images?.[0]?.url || '/images/placeholder-product.svg',
+                          image: product.images?.[0] || '/images/placeholder-product.svg',
                           size: selectedSize,
                           color: selectedColor,
                           quantity: 1,

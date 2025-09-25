@@ -66,94 +66,94 @@ export async function getProducts(
         `)
         .eq('is_active', true)
 
-  // Aplicar filtros
-  if (filters.category_id) {
-    query = query.eq('category_id', filters.category_id)
-  }
+    // Aplicar filtros
+    if (filters.category_id) {
+      query = query.eq('category_id', filters.category_id)
+    }
 
-  if (filters.is_featured) {
-    query = query.eq('is_featured', true)
-  }
+    if (filters.is_featured) {
+      query = query.eq('is_featured', true)
+    }
 
-  if (filters.search) {
-    query = query.or(`name.ilike.%${filters.search}%, description.ilike.%${filters.search}%`)
-  }
+    if (filters.search) {
+      query = query.or(`name.ilike.%${filters.search}%, description.ilike.%${filters.search}%`)
+    }
 
-  // Aplicar ordenamiento
-  switch (sortBy) {
-    case 'price_asc':
-      query = query.order('base_price', { ascending: true })
-      break
-    case 'price_desc':
-      query = query.order('base_price', { ascending: false })
-      break
-    case 'newest':
-      query = query.order('created_at', { ascending: false })
-      break
-    case 'name':
-      query = query.order('name', { ascending: true })
-      break
-    case 'featured':
-    default:
-      query = query.order('is_featured', { ascending: false }).order('created_at', { ascending: false })
-      break
-  }
+    // Aplicar ordenamiento
+    switch (sortBy) {
+      case 'price_asc':
+        query = query.order('base_price', { ascending: true })
+        break
+      case 'price_desc':
+        query = query.order('base_price', { ascending: false })
+        break
+      case 'newest':
+        query = query.order('created_at', { ascending: false })
+        break
+      case 'name':
+        query = query.order('name', { ascending: true })
+        break
+      case 'featured':
+      default:
+        query = query.order('is_featured', { ascending: false }).order('created_at', { ascending: false })
+        break
+    }
 
-  // Aplicar paginación
-  const from = (page - 1) * limit
-  const to = from + limit - 1
-  query = query.range(from, to)
+    // Aplicar paginación
+    const from = (page - 1) * limit
+    const to = from + limit - 1
+    query = query.range(from, to)
 
-  const { data: products, error } = await query
+    const { data: products, error } = await query
 
-  if (error) {
-    console.error('Error fetching products:', error)
-    throw error
-  }
+    if (error) {
+      console.error('Error fetching products:', error)
+      return []
+    }
 
-  if (!products) {
-    return []
-  }
+    if (!products) {
+      return []
+    }
 
-  // Procesar productos con variantes y stock
-  const processedProducts: ProductWithVariantsAndStock[] = (products as ProductWithVariantsQuery[]).map((product) => {
-    const variants: VariantWithStock[] = (product.product_variants || []).map((variant) => ({
-      ...variant,
-      is_in_stock: variant.stock_quantity > 0,
-      is_low_stock: variant.stock_quantity <= variant.low_stock_threshold && variant.stock_quantity > 0
-    }))
+    // Procesar productos con variantes y stock
+    const processedProducts: ProductWithVariantsAndStock[] = (products as ProductWithVariantsQuery[]).map((product) => {
+      const variants: VariantWithStock[] = (product.product_variants || []).map((variant) => ({
+        ...variant,
+        is_in_stock: variant.stock_quantity > 0,
+        is_low_stock: variant.stock_quantity <= variant.low_stock_threshold && variant.stock_quantity > 0
+      }))
 
-    // Filtrar por stock si se requiere
-    const availableVariants = filters.in_stock_only 
-      ? variants.filter(v => v.is_in_stock)
-      : variants
+      // Filtrar por stock si se requiere
+      const availableVariants = filters.in_stock_only 
+        ? variants.filter(v => v.is_in_stock)
+        : variants
 
-    // Filtrar por talle y color
-    const filteredVariants = availableVariants.filter(variant => {
-      if (filters.size && variant.size !== filters.size) return false
-      if (filters.color && variant.color !== filters.color) return false
-      return true
+      // Filtrar por talle y color
+      const filteredVariants = availableVariants.filter(variant => {
+        if (filters.size && variant.size !== filters.size) return false
+        if (filters.color && variant.color !== filters.color) return false
+        return true
+      })
+
+      // Calcular rangos de precio
+      const prices = filteredVariants.map(v => product.base_price + v.price_adjustment)
+      const minPrice = prices.length > 0 ? Math.min(...prices) : product.base_price
+      const maxPrice = prices.length > 0 ? Math.max(...prices) : product.base_price
+
+      return {
+        ...product,
+        variants: filteredVariants,
+        available_sizes: [...new Set(variants.map(v => v.size).filter((size): size is string => Boolean(size)))],
+        available_colors: [...new Set(variants.map(v => v.color).filter((color): color is string => Boolean(color)))],
+        price_range: {
+          min: minPrice,
+          max: maxPrice
+        },
+        total_stock: variants.reduce((sum, v) => sum + v.stock_quantity, 0)
+      }
     })
 
-    // Calcular rangos de precio
-    const prices = filteredVariants.map(v => product.base_price + v.price_adjustment)
-    const minPrice = prices.length > 0 ? Math.min(...prices) : product.base_price
-    const maxPrice = prices.length > 0 ? Math.max(...prices) : product.base_price
-
-    return {
-      ...product,
-      variants: filteredVariants,
-      available_sizes: [...new Set(variants.map(v => v.size).filter((size): size is string => Boolean(size)))],
-      available_colors: [...new Set(variants.map(v => v.color).filter((color): color is string => Boolean(color)))],
-      price_range: {
-        min: minPrice,
-        max: maxPrice
-      },
-      total_stock: variants.reduce((sum, v) => sum + v.stock_quantity, 0)
-    }
-  })
-
-  return processedProducts
+    return processedProducts
   } catch (error) {
     console.error('Error fetching products:', error)
     // Durante el build, retornar array vacío en lugar de fallar
@@ -202,33 +202,33 @@ export async function getProductBySlug(slug: string): Promise<ProductWithVariant
       return null
     }
 
-  if (!data) return null
+    if (!data) return null
 
-  const product = data as ProductWithVariantsQuery
+    const product = data as ProductWithVariantsQuery
 
-  // Procesar variantes con stock
-  const variants: VariantWithStock[] = (product.product_variants || []).map((variant) => ({
-    ...variant,
-    is_in_stock: variant.stock_quantity > 0,
-    is_low_stock: variant.stock_quantity <= variant.low_stock_threshold && variant.stock_quantity > 0
-  }))
+    // Procesar variantes con stock
+    const variants: VariantWithStock[] = (product.product_variants || []).map((variant) => ({
+      ...variant,
+      is_in_stock: variant.stock_quantity > 0,
+      is_low_stock: variant.stock_quantity <= variant.low_stock_threshold && variant.stock_quantity > 0
+    }))
 
-  // Calcular rangos de precio
-  const prices = variants.map(v => product.base_price + v.price_adjustment)
-  const minPrice = prices.length > 0 ? Math.min(...prices) : product.base_price
-  const maxPrice = prices.length > 0 ? Math.max(...prices) : product.base_price
+    // Calcular rangos de precio
+    const prices = variants.map(v => product.base_price + v.price_adjustment)
+    const minPrice = prices.length > 0 ? Math.min(...prices) : product.base_price
+    const maxPrice = prices.length > 0 ? Math.max(...prices) : product.base_price
 
-  return {
-    ...product,
-    variants,
-    available_sizes: [...new Set(variants.map(v => v.size).filter((size): size is string => Boolean(size)))],
-    available_colors: [...new Set(variants.map(v => v.color).filter((color): color is string => Boolean(color)))],
-    price_range: {
-      min: minPrice,
-      max: maxPrice
-    },
-    total_stock: variants.reduce((sum, v) => sum + v.stock_quantity, 0)
-  }
+    return {
+      ...product,
+      variants,
+      available_sizes: [...new Set(variants.map(v => v.size).filter((size): size is string => Boolean(size)))],
+      available_colors: [...new Set(variants.map(v => v.color).filter((color): color is string => Boolean(color)))],
+      price_range: {
+        min: minPrice,
+        max: maxPrice
+      },
+      total_stock: variants.reduce((sum, v) => sum + v.stock_quantity, 0)
+    }
   } catch (error) {
     console.error('Error fetching product by slug:', error)
     return null

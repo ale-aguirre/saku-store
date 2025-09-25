@@ -16,6 +16,55 @@
 
 ## Today: 2025-09-25
 
+### Task 19: Corrección de errores de despliegue por fetch failed durante prerenderizado
+- **Branch**: `fix/product-images-and-types` (continuación)
+- **What was done**:
+  - Identificación del origen del error de fetch durante prerenderizado de la página principal
+  - Mejora del manejo de errores en funciones de Supabase para evitar fallos de build
+  - Corrección de estructura try-catch en funciones `getProducts` y `getProductBySlug`
+  - Verificación de que el build local funciona correctamente
+- **How it was done**:
+  - Análisis del error: Next.js intentaba prerenderizar la página principal y hacer fetch a Supabase durante el build
+  - Identificación de que las variables de entorno de Supabase no estaban disponibles en Vercel
+  - Corrección en `src/lib/supabase/products.ts`:
+    - Función `getProducts`: Eliminación de `throw error` dentro del try, asegurando que el catch retorne array vacío
+    - Función `getProductBySlug`: Ajuste de estructura try-catch para manejo adecuado de errores
+    - Mantenimiento de verificaciones de variables de entorno existentes
+  - Verificación de que todas las funciones retornan valores seguros cuando fallan (array vacío o null)
+- **Checks**:
+  - ✅ Build local: `npm run build` ejecuta exitosamente sin errores de fetch
+  - ✅ ESLint: `npm run lint` pasa sin warnings
+  - ✅ TypeScript: `npm run type-check` pasa sin errores
+  - ✅ Prerenderizado: Página principal se prerenderiza como contenido estático (○)
+  - ✅ Manejo de errores: Funciones de Supabase manejan correctamente la ausencia de variables de entorno
+- **Status**: ✅ Completado y Verificado
+
+### Task 18: Corrección de errores de imágenes de productos y tipos TypeScript
+- **Branch**: `fix/product-images-and-types`
+- **What was done**:
+  - Corrección de errores de imágenes de productos en ProductCard
+  - Actualización de tipos TypeScript para reflejar estructura real de la base de datos
+  - Asignación de imágenes a productos existentes en la base de datos
+  - Resolución de errores de tipo en componentes de productos
+- **How it was done**:
+  - Identificación de que la columna `images` en la tabla `products` es de tipo `TEXT[]` (array de strings)
+  - Actualización del tipo `Product` en `src/types/catalog.ts` para cambiar `images?: ProductImage[]` a `images?: string[]`
+  - Eliminación del tipo `ProductImage` que no corresponde a la estructura actual de la base de datos
+  - Corrección del acceso a imágenes en `src/components/product/product-card.tsx`:
+    - Cambio de `product.images?.[0]?.url` a `product.images?.[0]`
+    - Simplificación del código eliminando type casting innecesario
+  - Ejecución de script para asignar imágenes a productos existentes:
+    - "Conjunto Encaje Negro" → `/productos/conjunto-elegance.jpg`
+    - "Conjunto Satén Rojo" → `/productos/conjunto-romantic.jpg`
+    - "Conjunto Algodón Blanco" → `/productos/brasier-comfort.jpg`
+- **Checks**:
+  - ✅ ESLint: `npm run lint` pasa sin warnings
+  - ✅ TypeScript: `npm run type-check` pasa sin errores
+  - ✅ Imágenes: Productos tienen imágenes asignadas correctamente
+  - ✅ Tipos: Consistencia entre tipos TypeScript y estructura de base de datos
+  - ✅ Componentes: ProductCard accede correctamente a las imágenes
+- **Status**: ✅ Completado y Verificado
+
 ### Task 17: Corrección de errores de build y múltiples instancias de GoTrueClient
 - **Branch**: `fix/build-errors-and-gotrue-instances`
 - **What was done**:
