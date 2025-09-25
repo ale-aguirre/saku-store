@@ -45,6 +45,29 @@
 - **Fix**: Limpiar cache con `rm -rf .next` antes de `npm run build`
 - **Prevention**: Cuando aparezcan errores de build inexplicables relacionados con imports, limpiar cache de Next.js como primer paso de debugging
 
+## 2025-09-25 — Inconsistencia en tipos de retorno del hook useAuth
+
+- **Issue**: Errores TypeScript en componentes de autenticación donde `signUp`, `signIn` esperaban `{ success: boolean; error?: string }` pero el hook retornaba `{ error: any }`
+- **Cause**: Desalineación entre la interfaz `AuthContextType` y la implementación real de los métodos de autenticación. Los componentes fueron desarrollados esperando un formato de respuesta diferente al implementado
+- **Fix**: 
+  1. Actualizada interfaz `AuthContextType` para retornar `{ success: boolean; error?: string }`
+  2. Modificadas implementaciones de `signUp`, `signIn`, `resetPassword` para retornar formato consistente
+  3. Eliminado código duplicado de creación de perfil en página de registro (ya manejado por trigger)
+  4. Agregado componente Avatar faltante con `npx shadcn@latest add avatar`
+  5. Limpiado cache `.next` y regenerado tipos con `npm run build`
+- **Prevention**: Definir contratos de tipos antes de implementar. Mantener consistencia entre interfaces TypeScript y implementaciones. Verificar que componentes dependientes usen el mismo formato de respuesta
+
+## 2025-09-24 — Errores de tipos TypeScript con Supabase en componentes de administración
+
+- **Issue**: Errores `TS2345` donde `any` no es asignable a `never` en operaciones `update` e `insert` de Supabase, especialmente en componentes de administración
+- **Cause**: Los tipos generados automáticamente por Supabase son muy estrictos y a veces infieren tipos `never` para operaciones que deberían ser válidas. Los tipos auxiliares en `supabase-helpers.ts` no resolvían el problema correctamente
+- **Fix**: 
+  1. Eliminación del archivo `src/types/supabase-helpers.ts` con tipos auxiliares problemáticos
+  2. Creación de `src/lib/supabase/admin-client.ts` con función `createAdminClient()` que retorna un cliente sin tipado estricto
+  3. Actualización de todos los componentes de administración para usar `createAdminClient()` en lugar de `createClient()`
+  4. Eliminación de directivas `@ts-expect-error` innecesarias una vez resueltos los tipos
+- **Prevention**: Para operaciones de administración que requieren flexibilidad de tipos, usar un cliente de Supabase sin tipado estricto. Mantener el cliente tipado para operaciones de frontend donde la seguridad de tipos es más importante
+
 ## 2025-09-24 — Errores de ESLint por uso de <a> en lugar de Link
 
 - **Issue**: ESLint reporta errores `@next/next/no-html-link-for-pages` por usar etiquetas `<a>` para navegación interna en lugar de componentes `Link` de Next.js

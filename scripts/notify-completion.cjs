@@ -98,6 +98,11 @@ class TaskNotificationSystem {
       processedVariables.taskListText = this.renderTaskList(variables.tasks, 'text');
     }
 
+    // Generar resumen textual de la tarea
+    const taskSummary = this.generateTaskSummary();
+    processedVariables.taskSummary = taskSummary;
+    processedVariables.hasTaskSummary = taskSummary && taskSummary.trim() !== '';
+
     // Generar y procesar estado del proyecto
     const projectStatusItems = this.generateProjectStatusSummary();
     if (projectStatusItems && projectStatusItems.length > 0) {
@@ -522,6 +527,137 @@ ${variables.footerText}
   }
 
   /**
+   * Genera un resumen textual detallado de lo que se hizo en la tarea
+   */
+  generateTaskSummary() {
+    if (!this.tasks || this.tasks.length === 0) {
+      return 'No se registraron tareas específicas en esta sesión.';
+    }
+
+    const completedTasks = this.tasks.filter(t => t.status === 'completed');
+    const failedTasks = this.tasks.filter(t => t.status === 'failed');
+    
+    let summary = '';
+    
+    // Resumen general
+    summary += `Se completaron ${completedTasks.length} de ${this.tasks.length} tareas programadas.\n\n`;
+    
+    // Tareas completadas con detalles
+    if (completedTasks.length > 0) {
+      summary += '✅ TAREAS COMPLETADAS:\n';
+      completedTasks.forEach((task, index) => {
+        summary += `${index + 1}. ${task.name}\n`;
+        if (task.details && task.details !== 'N/A' && task.details.trim() !== '') {
+          summary += `   → ${task.details}\n`;
+        }
+        if (task.duration) {
+          summary += `   ⏱️ Duración: ${task.duration}\n`;
+        }
+        summary += '\n';
+      });
+    }
+    
+    // Tareas fallidas
+    if (failedTasks.length > 0) {
+      summary += '❌ TAREAS CON ERRORES:\n';
+      failedTasks.forEach((task, index) => {
+        summary += `${index + 1}. ${task.name}\n`;
+        if (task.error) {
+          summary += `   ❌ Error: ${task.error}\n`;
+        }
+        summary += '\n';
+      });
+    }
+    
+    // Análisis de archivos modificados
+    const fileChanges = this.analyzeFileChanges();
+    if (fileChanges) {
+      summary += fileChanges;
+    }
+    
+    return summary.trim();
+  }
+
+  /**
+   * Analiza las tareas para identificar cambios en archivos
+   */
+  analyzeFileChanges() {
+    const filePatterns = {
+      components: /components?\/.*\.(tsx?|jsx?)$/i,
+      pages: /pages?\/.*\.(tsx?|jsx?)$/i,
+      api: /api\/.*\.(ts|js)$/i,
+      styles: /\.(css|scss|sass)$/i,
+      config: /(config|\.config)\.(ts|js|json)$/i,
+      database: /(migration|schema|sql)$/i,
+      docs: /\.(md|txt)$/i
+    };
+    
+    const changes = {
+      components: [],
+      pages: [],
+      api: [],
+      styles: [],
+      config: [],
+      database: [],
+      docs: []
+    };
+    
+    // Analizar detalles de tareas para encontrar archivos mencionados
+    this.tasks.forEach(task => {
+      const text = `${task.name} ${task.details || ''}`.toLowerCase();
+      
+      // Buscar patrones de archivos en el texto
+      Object.entries(filePatterns).forEach(([category, pattern]) => {
+        const matches = text.match(pattern);
+        if (matches) {
+          changes[category].push(matches[0]);
+        }
+      });
+      
+      // Buscar palabras clave específicas
+      if (text.includes('component') || text.includes('tsx') || text.includes('jsx')) {
+        changes.components.push(task.name);
+      }
+      if (text.includes('api') || text.includes('endpoint')) {
+        changes.api.push(task.name);
+      }
+      if (text.includes('database') || text.includes('supabase') || text.includes('migration')) {
+        changes.database.push(task.name);
+      }
+      if (text.includes('style') || text.includes('css') || text.includes('tailwind')) {
+        changes.styles.push(task.name);
+      }
+    });
+    
+    let analysis = '';
+    
+    // Generar resumen de cambios
+    const hasChanges = Object.values(changes).some(arr => arr.length > 0);
+    if (hasChanges) {
+      analysis += '\n📁 ÁREAS MODIFICADAS:\n';
+      
+      Object.entries(changes).forEach(([category, items]) => {
+        if (items.length > 0) {
+          const categoryNames = {
+            components: 'Componentes',
+            pages: 'Páginas',
+            api: 'APIs',
+            styles: 'Estilos',
+            config: 'Configuración',
+            database: 'Base de Datos',
+            docs: 'Documentación'
+          };
+          
+          analysis += `• ${categoryNames[category]}: ${items.length} cambio(s)\n`;
+        }
+      });
+      analysis += '\n';
+    }
+    
+    return analysis;
+  }
+
+  /**
    * Ejecuta verificaciones automáticas si están habilitadas
    */
   runAutoDetection() {
@@ -820,6 +956,18 @@ ${variables.footerText}
                     </div>
                 </div>
             </div>`;
+
+    // Agregar resumen de la tarea si existe
+    const taskSummary = this.generateTaskSummary();
+    if (taskSummary && taskSummary.trim() !== '') {
+      html += `
+            <div class="section">
+                <h2>📋 Resumen de la Tarea</h2>
+                <div style="background: #e8f5e8; border: 1px solid #c3e6cb; padding: 15px; border-radius: 6px; white-space: pre-line; font-family: 'Segoe UI', sans-serif; line-height: 1.6;">
+                    ${taskSummary}
+                </div>
+            </div>`;
+    }
 
     // Tareas por categoría
     for (const [categoryKey, categoryTasks] of Object.entries(tasksByCategory)) {

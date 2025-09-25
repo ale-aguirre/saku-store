@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { createAdminClient } from '@/lib/supabase/admin-client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -87,11 +87,10 @@ export function OrderSummary({ order, onUpdate }: OrderSummaryProps) {
   const updateOrderStatus = async (newStatus: string) => {
     setIsUpdating(true)
     try {
-      const supabase = createClient()
+      const supabase = createAdminClient()
       
       const { error } = await supabase
         .from('orders')
-        // @ts-expect-error - Supabase types are not matching our schema
         .update({ status: newStatus })
         .eq('id', order.id)
 
@@ -100,7 +99,6 @@ export function OrderSummary({ order, onUpdate }: OrderSummaryProps) {
       // Create order event
       await supabase
         .from('order_events')
-        // @ts-expect-error - Supabase types are not matching our schema
         .insert({
           order_id: order.id,
           type: 'status_change',

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { createAdminClient } from '@/lib/supabase/admin-client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -63,7 +63,7 @@ export function OrderShippingManager({ order, onUpdate }: OrderShippingManagerPr
   const updateShippingInfo = async () => {
     setIsUpdating(true)
     try {
-      const supabase = createClient()
+      const supabase = createAdminClient()
       
       // Generar URL de seguimiento si no se proporcionó una
       let finalTrackingUrl = trackingUrl
@@ -74,7 +74,6 @@ export function OrderShippingManager({ order, onUpdate }: OrderShippingManagerPr
       // Actualizar la orden
       const { error } = await supabase
         .from('orders')
-        // @ts-expect-error - Supabase types are not matching our schema
         .update({
           tracking_number: trackingNumber,
           tracking_url: finalTrackingUrl,
@@ -89,7 +88,6 @@ export function OrderShippingManager({ order, onUpdate }: OrderShippingManagerPr
       // Crear evento de seguimiento
       await supabase
         .from('order_events')
-        // @ts-expect-error - Supabase types are not matching our schema
         .insert({
           order_id: order.id,
           type: 'tracking_added',
@@ -118,7 +116,7 @@ export function OrderShippingManager({ order, onUpdate }: OrderShippingManagerPr
   const sendShippingNotification = async () => {
     try {
       // Obtener email del usuario
-      const supabase = createClient()
+      const supabase = createAdminClient()
       const { data: userData, error: userError } = await supabase
         .from('profiles')
         .select('email, first_name, last_name')
@@ -132,24 +130,21 @@ export function OrderShippingManager({ order, onUpdate }: OrderShippingManagerPr
       // Enviar email
       sendEmail({
         orderId: order.id,
-        // @ts-expect-error - Supabase types are not matching our schema
         customerEmail: userData.email
       }, {
         onSuccess: () => {
           setShowNotification(false)
           
           // Registrar evento de email enviado
-          const supabase = createClient()
+          const supabase = createAdminClient()
           supabase
             .from('order_events')
-            // @ts-expect-error - Supabase types are not matching our schema
             .insert({
               order_id: order.id,
               type: 'email_sent',
               description: 'Email de envío enviado',
               metadata: {
                 email_type: 'shipping_notification',
-                // @ts-expect-error - Supabase types are not matching our schema
                 recipient: userData.email
               }
             })

@@ -1,0 +1,180 @@
+'use client'
+
+import { useState, useEffect, createContext, useContext } from 'react'
+import { User, Session } from '@supabase/supabase-js'
+import { createClient } from '@/lib/supabase/client'
+
+interface AuthContextType {
+  user: User | null
+  session: Session | null
+  loading: boolean
+  signUp: (email: string, password: string, userData?: { firstName?: string; lastName?: string }) => Promise<{ success: boolean; error?: string }>
+  signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
+  signOut: () => Promise<void>
+  resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined)
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null)
+  const [session, setSession] = useState<Session | null>(null)
+  const [loading, setLoading] = useState(true)
+  const supabase = createClient()
+
+  useEffect(() => {
+    // Obtener sesión inicial
+    const getInitialSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      setSession(session)
+      setUser(session?.user ?? null)
+      setLoading(false)
+    }
+
+    getInitialSession()
+
+    // Escuchar cambios de autenticación
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setSession(session)
+        setUser(session?.user ?? null)
+        setLoading(false)
+
+        // Crear perfil automáticamente después del registro
+        if (event === 'SIGNED_UP' && session?.user) {
+          await createUserProfile(session.user)
+        }
+      }
+    )
+
+    return () => subscription.unsubscribe()
+  }, [supabase.auth])
+
+  /**
+   * Crear perfil de usuario automáticamente
+   */
+  const createUserProfile = async (user: User) => {
+    try {
+      const { error } = await supabase
+        .from('user_profiles')
+        .insert({
+          id: user.id,
+          email: user.email,
+          first_name: user.user_metadata?.firstName || '',
+          last_name: user.user_metadata?.lastName || '',
+          role: 'customer',
+          created_at: new Date().toISOString()
+        })
+
+      if (error && error.code !== '23505') { // Ignorar error de duplicado
+        console.error('Error creating user profile:', error)
+      }
+    } catch (error) {
+      console.error('Error creating user profile:', error)
+    }
+  }
+
+  /**
+   * Registrar nuevo usuario
+   */
+  const signUp = async (
+    email: string, 
+    password: string, 
+    userData?: { firstName?: string; lastName?: string }
+  ) => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            firstName: userData?.firstName || '',
+            lastName: userData?.lastName || ''
+          }
+        }
+      })
+
+      if (error) {
+        return { success: false, error: error.message }
+      }
+
+      return { success: true }
+    } catch (error) {
+      return { success: false, error: 'Error inesperado durante el registro' }
+    }
+  }
+
+  /**
+   * Iniciar sesión
+   */
+  const signIn = async (email: string, password: string) => {
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      })
+
+      if (error) {
+        return { success: false, error: error.message }
+      }
+
+      return { success: true }
+    } catch (error) {
+      return { success: false, error: 'Error inesperado durante el login' }
+    }
+  }
+
+  /**
+   * Cerrar sesión
+   */
+  const signOut = async () => {
+    try {
+      await supabase.auth.signOut()
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error)
+    }
+  }
+
+  /**
+   * Restablecer contraseña
+   */
+  const resetPassword = async (email: string) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/reset-password`
+      })
+
+      if (error) {
+        return { success: false, error: error.message }
+      }
+
+      return { success: true }
+    } catch (error) {
+      return { success: false, error: 'Error inesperado al restablecer contraseña' }
+    }
+  }
+
+  const value = {
+    user,
+    session,
+    loading,
+    signUp,
+    signIn,
+    signOut,
+    resetPassword
+  }
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  )
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext)
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider')
+  }
+  return context
+}

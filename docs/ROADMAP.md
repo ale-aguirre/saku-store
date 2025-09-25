@@ -16,6 +16,73 @@
 
 ## Today: 2025-09-24
 
+### Task 16: Resolución completa del trigger de autenticación de Supabase
+- **Branch**: `feature/auth-trigger-fix`
+- **What was done**:
+  - Diagnóstico y resolución completa del problema del trigger de autenticación
+  - Simplificación del trigger para crear perfiles automáticamente al registrar usuarios
+  - Verificación exitosa del flujo completo de autenticación con usuarios reales
+- **How it was done**:
+  - Creación de migración `20250124000005_simple_auth_trigger.sql` para simplificar el trigger
+  - Redefinición de la función `public.handle_new_user` con lógica de asignación de roles basada en email
+  - Creación del trigger `on_auth_user_created` que se ejecuta después de insertar en `auth.users`
+  - Múltiples migraciones de corrección: `20250124000006_fix_test_function.sql` y `20250124000008_test_trigger_only.sql`
+  - Scripts de prueba progresivos para diagnosticar y verificar el funcionamiento
+  - Test final con emails reales (`test-real-auth-flow.js`) que confirma el funcionamiento correcto
+- **Checks**:
+  - ✅ Trigger: Existe y está habilitado en `auth.users`
+  - ✅ Función: `public.handle_new_user` funciona correctamente
+  - ✅ Roles: Asignación automática (admin para @saku.com.ar, customer para otros)
+  - ✅ Test real: Usuarios con Gmail y Saku domain crean perfiles automáticamente
+  - ✅ Limpieza: Scripts de test limpian usuarios de prueba correctamente
+- **Status**: ✅ Completado y Verificado
+
+### Task 15: Mejora del sistema de notificaciones con resumen textual de tareas
+- **Branch**: `feature/notification-task-summary`
+- **What was done**:
+  - Mejora del script de notificación para incluir resumen textual detallado de las tareas realizadas
+  - Actualización de plantillas de correo electrónico para mostrar información más relevante
+  - Modificación del reporte HTML local para incluir el mismo resumen textual
+- **How it was done**:
+  - Añadidas dos nuevas funciones al script `notify-completion.cjs`:
+    - `generateTaskSummary()`: genera un resumen textual detallado de tareas completadas/fallidas con duración
+    - `analyzeFileChanges()`: identifica y categoriza archivos modificados basándose en patrones
+  - Modificada la función principal para incluir `taskSummary` en las variables del template
+  - Actualizada la plantilla HTML en `email-templates.json` con nuevo bloque `task-summary` y estilos CSS
+  - Actualizada la plantilla de texto para incluir el resumen en notificaciones de texto
+  - Modificada la función `generateHTMLReport()` para incluir el resumen textual en reportes locales
+- **Checks**:
+  - ✅ Script: `npm run notify:done` ejecuta correctamente con nuevo resumen
+  - ✅ Email: Plantilla incluye sección "Resumen de la Tarea" con información detallada
+  - ✅ Reporte HTML: Archivo local incluye el mismo resumen textual (verificado 24/09/2025 17:10)
+  - ✅ Funcionalidad: Mantiene todas las verificaciones automáticas existentes (ESLint, TypeScript, Build)
+  - ✅ Resumen muestra correctamente: "Se completaron 3 de 3 tareas programadas" con detalles de ESLint, TypeScript y Build
+- **Status**: ✅ Completado y Verificado
+
+### Task 14: Resolución de errores de tipos en componentes de administración
+- **Branch**: `feature/f1-admin-types-fix`
+- **What was done**:
+  - Resolución completa de errores de tipos TypeScript en componentes de administración
+  - Creación de cliente de Supabase específico para operaciones de administración
+  - Eliminación de tipos auxiliares problemáticos y directivas @ts-expect-error innecesarias
+- **How it was done**:
+  - Eliminación del archivo `src/types/supabase-helpers.ts` que contenía tipos auxiliares problemáticos
+  - Creación de `src/lib/supabase/admin-client.ts` con función `createAdminClient()` que retorna un cliente de Supabase sin tipado estricto
+  - Actualización de todos los componentes de administración para usar `createAdminClient()` en lugar de `createClient()`:
+    - `category-manager.tsx`
+    - `product-image-manager.tsx`
+    - `product-stock-manager.tsx`
+    - `order-summary.tsx`
+    - `order-shipping-manager.tsx`
+  - Eliminación de todas las directivas `@ts-expect-error` que ya no eran necesarias
+  - Reemplazo de tipos auxiliares con definiciones locales donde era necesario
+- **Checks**:
+  - ✅ TypeScript: `npm run type-check` pasa sin errores
+  - ✅ ESLint: `npm run lint` pasa sin warnings
+  - ✅ Funcionalidad: Componentes de administración mantienen su funcionalidad
+  - ✅ Tipos: Operaciones de Supabase funcionan correctamente sin errores de tipos
+- **Status**: ✅ Completado
+
 ### Task 13: Implementación del sistema de gestión de órdenes
 - **Branch**: `feature/f1-order-management`
 - **What was done**:

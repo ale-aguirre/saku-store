@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { ConsentProvider } from "@/components/consent/consent-provider";
+import { AuthProvider } from '@/hooks/use-auth';
 import { CookieBanner } from "@/components/consent/cookie-banner";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { MetaPixel } from "@/components/analytics/meta-pixel";
@@ -45,12 +46,14 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <QueryProvider>
-            <ConsentProvider>
-              <MainLayout>{children}</MainLayout>
-              <CookieBanner />
-              <GoogleAnalytics />
-              <MetaPixel />
-            </ConsentProvider>
+            <AuthProvider>
+              <ConsentProvider>
+                <MainLayout>{children}</MainLayout>
+                <CookieBanner />
+                <GoogleAnalytics />
+                <MetaPixel />
+              </ConsentProvider>
+            </AuthProvider>
           </QueryProvider>
         </ThemeProvider>
       </body>

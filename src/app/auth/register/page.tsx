@@ -76,6 +76,8 @@ export default function RegisterPage() {
       if (authError) {
         setError(authError.message)
       } else if (data.user) {
+        // Profile is created automatically by Supabase trigger
+
         setSuccess(true)
         // Redirect to login after successful registration
         setTimeout(() => {

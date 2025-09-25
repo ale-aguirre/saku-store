@@ -45,6 +45,8 @@ interface ProductVariant {
   product_id?: string
 }
 
+
+
 const SIZES = ['85', '90', '95', '100']
 const COLORS = ['Negro', 'Rojo', 'Blanco']
 const CATEGORIES = ['Brasieres', 'Conjuntos', 'Bombachas', 'Camisones']
@@ -118,6 +120,9 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
       if (variantsError) throw variantsError
 
       setVariants(variantsData || [])
+      
+      // Fetch product images
+      // Images are now handled by ProductImageManager component
     } catch (error) {
       console.error('Error fetching product:', error)
       alert('Error al cargar el producto')
