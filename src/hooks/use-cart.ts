@@ -8,7 +8,7 @@ export interface CartItem {
   price: number
   originalPrice?: number
   image: string
-  size: string
+  size?: string | null
   color: string
   quantity: number
   maxStock: number

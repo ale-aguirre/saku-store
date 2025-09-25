@@ -27,7 +27,7 @@ const getColorHex = (colorName: string): string => {
 }
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const [selectedSize, setSelectedSize] = useState<string>('')
+  const [selectedSize, setSelectedSize] = useState<string | null>('')
   const [selectedColor, setSelectedColor] = useState<string>('')
   const [quantity] = useState(1)
   const { addItem, openCart } = useCart()

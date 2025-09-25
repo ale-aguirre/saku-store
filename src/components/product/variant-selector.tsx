@@ -8,11 +8,11 @@ import { ProductWithVariantsAndStock } from '@/types/catalog'
 
 interface VariantSelectorProps {
   product: ProductWithVariantsAndStock
-  selectedSize: string
+  selectedSize: string | null
   selectedColor: string
-  onSizeChange: (size: string) => void
+  onSizeChange: (size: string | null) => void
   onColorChange: (color: string) => void
-  availableSizes: string[]
+  availableSizes: (string | null)[]
   availableColors: string[]
 }
 

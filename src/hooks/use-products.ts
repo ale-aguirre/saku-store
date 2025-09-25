@@ -20,7 +20,7 @@ export interface Product {
 export interface ProductVariant {
   id: string
   product_id: string
-  size: string
+  size: string | null
   color: string
   price: number
   compare_at_price: number | null

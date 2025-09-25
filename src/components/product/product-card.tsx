@@ -27,12 +27,12 @@ interface ProductCardProps {
 
 export function ProductCard({ product, className }: ProductCardProps) {
   const { addItem, openCart } = useCart()
-  const [selectedSize, setSelectedSize] = useState<string>('')
+  const [selectedSize, setSelectedSize] = useState<string | null>('')
   const [selectedColor, setSelectedColor] = useState<string>('')
   const [quickAddOpen, setQuickAddOpen] = useState(false)
   
   // Determinar si el producto requiere talles
-  const requiresSizes = categoryRequiresSizes(product.category || '')
+  const requiresSizes = categoryRequiresSizes(product.category?.slug || '')
   const hasDiscount = product.compare_at_price && product.compare_at_price > product.base_price
   const discountPercentage = hasDiscount 
     ? Math.round(((product.compare_at_price! - product.base_price) / product.compare_at_price!) * 100)
@@ -207,7 +207,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
                 {requiresSizes && (
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Talle</label>
-                    <Select value={selectedSize} onValueChange={setSelectedSize}>
+                    <Select value={selectedSize || ''} onValueChange={setSelectedSize}>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecciona un talle" />
                       </SelectTrigger>
