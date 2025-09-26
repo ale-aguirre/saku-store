@@ -36,7 +36,7 @@ interface ProductVariant {
   product_id: string;
   size: string;
   color: string;
-  stock: number;
+  stock_quantity: number;
   sku: string;
 }
 
@@ -77,12 +77,12 @@ export function ProductStockManager({
       // 1. Update variant stock
       const newStock =
         operation === "add"
-          ? selectedVariant.stock + quantity
-          : Math.max(0, selectedVariant.stock - quantity);
+          ? selectedVariant.stock_quantity + quantity
+          : Math.max(0, selectedVariant.stock_quantity - quantity);
 
       const { error: updateError } = await supabase
         .from('product_variants')
-        .update({ stock: newStock } as any)
+        .update({ stock_quantity: newStock } as any)
         .eq('id', selectedVariant.id);
 
       if (updateError) throw updateError;
@@ -151,10 +151,10 @@ export function ProductStockManager({
                   <TableCell>
                     <span
                       className={`font-medium ${getStockStatusColor(
-                        variant.stock
+                        variant.stock_quantity
                       )}`}
                     >
-                      {variant.stock} unidades
+                      {variant.stock_quantity} unidades
                     </span>
                   </TableCell>
                   <TableCell className="text-right">
@@ -171,7 +171,7 @@ export function ProductStockManager({
                         variant="outline"
                         size="sm"
                         onClick={() => handleOpenDialog(variant, "remove")}
-                        disabled={variant.stock === 0}
+                        disabled={variant.stock_quantity === 0}
                       >
                         <Minus className="h-4 w-4 mr-1" />
                         Quitar
@@ -211,8 +211,8 @@ export function ProductStockManager({
                 <Badge variant="outline">{selectedVariant.color}</Badge>
                 <span className="text-sm">
                   Stock actual:{" "}
-                  <span className={getStockStatusColor(selectedVariant.stock)}>
-                    {selectedVariant.stock} unidades
+                  <span className={getStockStatusColor(selectedVariant.stock_quantity)}>
+                    {selectedVariant.stock_quantity} unidades
                   </span>
                 </span>
               </div>
@@ -224,7 +224,7 @@ export function ProductStockManager({
                   type="number"
                   min="1"
                   max={
-                    operation === "remove" ? selectedVariant.stock : undefined
+                    operation === "remove" ? selectedVariant.stock_quantity : undefined
                   }
                   value={quantity}
                   onChange={(e) =>
@@ -254,7 +254,7 @@ export function ProductStockManager({
                     <CheckCircle className="h-5 w-5 flex-shrink-0 mt-0.5" />
                     <div>
                       <p className="font-medium">
-                        Nuevo stock: {selectedVariant.stock + quantity} unidades
+                        Nuevo stock: {selectedVariant.stock_quantity + quantity} unidades
                       </p>
                       <p>Estás agregando {quantity} unidades al inventario</p>
                     </div>
@@ -265,7 +265,7 @@ export function ProductStockManager({
                     <div>
                       <p className="font-medium">
                         Nuevo stock:{" "}
-                        {Math.max(0, selectedVariant.stock - quantity)} unidades
+                        {Math.max(0, selectedVariant.stock_quantity - quantity)} unidades
                       </p>
                       <p>Estás quitando {quantity} unidades del inventario</p>
                     </div>

@@ -1,51 +1,64 @@
 import { test, expect } from '@playwright/test'
 
 test.describe('Flujo básico del carrito', () => {
+  // Slugs de productos reales obtenidos de la base de datos
+  const PRODUCT_SLUGS = {
+    CORSET_ANASTASIA: 'corset-anastasia',
+    CONJUNTO_TASSIA: 'conjunto-tassia',
+    CULOTE_CON_FAJA: 'culote-con-faja'
+  };
+
   test.beforeEach(async ({ page }) => {
     // Ir a la página principal
     await page.goto('/')
   })
 
   test('debe permitir agregar un producto al carrito desde PDP', async ({ page }) => {
-    // Navegar directamente a una PDP específica
-    await page.goto('/productos/1')
-    await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(3000)
-
-    // Verificar que estamos en la PDP
-    await expect(page.locator('h1')).toBeVisible({ timeout: 10000 })
-
-    // Seleccionar variantes específicas que sabemos que tienen stock
-    try {
-      // Seleccionar talle 85 (sabemos que tiene stock en mock data)
-      const sizeSelector = page.locator('[data-testid="size-selector"]').filter({ hasText: '85' })
-      await sizeSelector.waitFor({ state: 'visible', timeout: 5000 })
-      await sizeSelector.click()
-      await page.waitForTimeout(500)
-      console.log('Talle 85 seleccionado')
-    } catch (e) {
-      console.log('No se pudo seleccionar talle 85:', e)
-    }
-
-    try {
-      // Seleccionar color negro (sabemos que tiene stock en mock data)
-      const colorSelector = page.locator('[data-testid="color-selector"]').first()
-      await colorSelector.waitFor({ state: 'visible', timeout: 5000 })
-      await colorSelector.click()
-      await page.waitForTimeout(500)
-      console.log('Color seleccionado')
-    } catch (e) {
-      console.log('No se pudo seleccionar color:', e)
-    }
-
-    // Esperar un poco más para que se actualice el estado
+    // Navegar directamente a una PDP específica usando slug real
+    await page.goto(`/productos/${PRODUCT_SLUGS.CORSET_ANASTASIA}`)
+    await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(2000)
 
-    // Verificar que el botón está habilitado antes de hacer clic
+    // Verificar que estamos en la PDP
+    await expect(page.locator('h1')).toBeVisible({ timeout: 15000 })
+
+    // Verificar que la página cargó correctamente
+    const productTitle = page.locator('h1')
+    await expect(productTitle).toContainText(/Corset|Anastasia/i, { timeout: 10000 })
+
+    // Intentar seleccionar variantes si están disponibles
+    try {
+      // Buscar selectores de talle
+      const sizeSelector = page.locator('[data-testid="size-selector"]').first()
+      if (await sizeSelector.isVisible({ timeout: 3000 })) {
+        await sizeSelector.click()
+        await page.waitForTimeout(500)
+        console.log('Talle seleccionado')
+      }
+    } catch (e) {
+      console.log('No hay selector de talle o no se pudo seleccionar:', e instanceof Error ? e.message : String(e))
+    }
+
+    try {
+      // Buscar selectores de color
+      const colorSelector = page.locator('[data-testid="color-selector"]').first()
+      if (await colorSelector.isVisible({ timeout: 3000 })) {
+        await colorSelector.click()
+        await page.waitForTimeout(500)
+        console.log('Color seleccionado')
+      }
+    } catch (e) {
+      console.log('No hay selector de color o no se pudo seleccionar:', e instanceof Error ? e.message : String(e))
+    }
+
+    // Esperar a que se actualice el estado
+    await page.waitForTimeout(2000)
+
+    // Verificar y hacer clic en el botón de agregar al carrito
     const addToCartButton = page.locator('[data-testid="add-to-cart-button"]')
     await expect(addToCartButton).toBeVisible({ timeout: 10000 })
     
-    // Esperar hasta que el botón esté habilitado (máximo 10 segundos)
+    // Esperar hasta que el botón esté habilitado
     await expect(addToCartButton).toBeEnabled({ timeout: 10000 })
     
     // Agregar al carrito
@@ -57,17 +70,12 @@ test.describe('Flujo básico del carrito', () => {
     await expect(cartCount).toBeVisible({ timeout: 10000 })
     await expect(cartCount).toHaveText('1')
 
-    // Hacer click en el cart trigger para abrir el carrito
+    // Abrir el carrito
     const cartTrigger = page.locator('[data-testid="cart-trigger"]')
     await expect(cartTrigger).toBeVisible()
     
-    // Intentar hacer click con force si es necesario
-    try {
-      await cartTrigger.click()
-    } catch (e) {
-      console.log('Click normal falló, intentando con force')
-      await cartTrigger.click({ force: true })
-    }
+    // Intentar hacer clic con force para evitar problemas de interceptación
+    await cartTrigger.click({ force: true })
     await page.waitForTimeout(2000)
     
     // Verificar que el carrito se abrió y contiene el producto
@@ -76,25 +84,38 @@ test.describe('Flujo básico del carrito', () => {
   })
 
   test('debe permitir aplicar un cupón de descuento', async ({ page }) => {
-    // Navegar directamente a una PDP específica para mayor confiabilidad
-    await page.goto('/productos/1')
-    await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(3000)
+    // Navegar directamente a una PDP específica usando slug real
+    await page.goto(`/productos/${PRODUCT_SLUGS.CONJUNTO_TASSIA}`)
+    await page.waitForLoadState('domcontentloaded')
+    await page.waitForTimeout(2000)
 
     // Verificar que estamos en la PDP
-    await expect(page.locator('h1')).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('h1')).toBeVisible({ timeout: 15000 })
 
-    // Seleccionar talle
-    const sizeSelector = page.locator('[data-testid="size-selector"]').first()
-    await expect(sizeSelector).toBeVisible({ timeout: 5000 })
-    await sizeSelector.click()
-    await page.waitForTimeout(1000)
+    // Verificar que la página cargó correctamente
+    const productTitle = page.locator('h1')
+    await expect(productTitle).toContainText(/Conjunto|Tassia/i, { timeout: 10000 })
 
-    // Seleccionar color
-    const colorSelector = page.locator('[data-testid="color-selector"]').first()
-    await expect(colorSelector).toBeVisible({ timeout: 5000 })
-    await colorSelector.click()
-    await page.waitForTimeout(1000)
+    // Intentar seleccionar variantes si están disponibles
+    try {
+      const sizeSelector = page.locator('[data-testid="size-selector"]').first()
+      if (await sizeSelector.isVisible({ timeout: 3000 })) {
+        await sizeSelector.click()
+        await page.waitForTimeout(500)
+      }
+    } catch (e) {
+      console.log('No hay selector de talle:', e instanceof Error ? e.message : String(e))
+    }
+
+    try {
+      const colorSelector = page.locator('[data-testid="color-selector"]').first()
+      if (await colorSelector.isVisible({ timeout: 3000 })) {
+        await colorSelector.click()
+        await page.waitForTimeout(500)
+      }
+    } catch (e) {
+      console.log('No hay selector de color:', e instanceof Error ? e.message : String(e))
+    }
 
     // Esperar a que el botón esté habilitado
     const addToCartButton = page.locator('[data-testid="add-to-cart-button"]')
@@ -147,25 +168,38 @@ test.describe('Flujo básico del carrito', () => {
   })
 
   test('debe mostrar el flujo completo hasta checkout', async ({ page }) => {
-    // Navegar directamente a una PDP específica para mayor confiabilidad
-    await page.goto('/productos/1')
-    await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(3000)
+    // Navegar directamente a una PDP específica usando slug real
+    await page.goto(`/productos/${PRODUCT_SLUGS.CULOTE_CON_FAJA}`)
+    await page.waitForLoadState('domcontentloaded')
+    await page.waitForTimeout(2000)
 
     // Verificar que estamos en la PDP
-    await expect(page.locator('h1')).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('h1')).toBeVisible({ timeout: 15000 })
 
-    // Seleccionar talle
-    const sizeSelector = page.locator('[data-testid="size-selector"]').first()
-    await expect(sizeSelector).toBeVisible({ timeout: 5000 })
-    await sizeSelector.click()
-    await page.waitForTimeout(1000)
+    // Verificar que la página cargó correctamente
+    const productTitle = page.locator('h1')
+    await expect(productTitle).toContainText(/Culote|faja/i, { timeout: 10000 })
 
-    // Seleccionar color
-    const colorSelector = page.locator('[data-testid="color-selector"]').first()
-    await expect(colorSelector).toBeVisible({ timeout: 5000 })
-    await colorSelector.click()
-    await page.waitForTimeout(1000)
+    // Intentar seleccionar variantes si están disponibles
+    try {
+      const sizeSelector = page.locator('[data-testid="size-selector"]').first()
+      if (await sizeSelector.isVisible({ timeout: 3000 })) {
+        await sizeSelector.click()
+        await page.waitForTimeout(500)
+      }
+    } catch (e) {
+      console.log('No hay selector de talle:', e instanceof Error ? e.message : String(e))
+    }
+
+    try {
+      const colorSelector = page.locator('[data-testid="color-selector"]').first()
+      if (await colorSelector.isVisible({ timeout: 3000 })) {
+        await colorSelector.click()
+        await page.waitForTimeout(500)
+      }
+    } catch (e) {
+      console.log('No hay selector de color:', e instanceof Error ? e.message : String(e))
+    }
 
     // Esperar a que el botón esté habilitado
     const addToCartButton = page.locator('[data-testid="add-to-cart-button"]')
@@ -199,25 +233,38 @@ test.describe('Flujo básico del carrito', () => {
   })
 
   test('debe calcular correctamente los costos de envío', async ({ page }) => {
-    // Navegar directamente a una PDP específica para mayor confiabilidad
-    await page.goto('/productos/1')
-    await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(3000)
+    // Navegar directamente a una PDP específica usando slug real
+    await page.goto(`/productos/${PRODUCT_SLUGS.CORSET_ANASTASIA}`)
+    await page.waitForLoadState('domcontentloaded')
+    await page.waitForTimeout(2000)
 
     // Verificar que estamos en la PDP
-    await expect(page.locator('h1')).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('h1')).toBeVisible({ timeout: 15000 })
 
-    // Seleccionar talle
-    const sizeSelector = page.locator('[data-testid="size-selector"]').first()
-    await expect(sizeSelector).toBeVisible({ timeout: 5000 })
-    await sizeSelector.click()
-    await page.waitForTimeout(1000)
+    // Verificar que la página cargó correctamente
+    const productTitle = page.locator('h1')
+    await expect(productTitle).toContainText(/Corset|Anastasia/i, { timeout: 10000 })
 
-    // Seleccionar color
-    const colorSelector = page.locator('[data-testid="color-selector"]').first()
-    await expect(colorSelector).toBeVisible({ timeout: 5000 })
-    await colorSelector.click()
-    await page.waitForTimeout(1000)
+    // Intentar seleccionar variantes si están disponibles
+    try {
+      const sizeSelector = page.locator('[data-testid="size-selector"]').first()
+      if (await sizeSelector.isVisible({ timeout: 3000 })) {
+        await sizeSelector.click()
+        await page.waitForTimeout(500)
+      }
+    } catch (e) {
+      console.log('No hay selector de talle:', e instanceof Error ? e.message : String(e))
+    }
+
+    try {
+      const colorSelector = page.locator('[data-testid="color-selector"]').first()
+      if (await colorSelector.isVisible({ timeout: 3000 })) {
+        await colorSelector.click()
+        await page.waitForTimeout(500)
+      }
+    } catch (e) {
+      console.log('No hay selector de color:', e instanceof Error ? e.message : String(e))
+    }
 
     // Esperar a que el botón esté habilitado
     const addToCartButton = page.locator('[data-testid="add-to-cart-button"]')

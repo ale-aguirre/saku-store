@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -143,18 +143,76 @@ export default function ProductsPage() {
   const [filters, setFilters] = useState<ProductFilters>({})
   const [sortBy, setSortBy] = useState<SortOption>('featured')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [mounted, setMounted] = useState(false)
   
-  const { data: products, isLoading, error } = useQuery({
+  // Evitar problemas de hidratación
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+  
+  const { data: products, isLoading, error, refetch } = useQuery({
     queryKey: ['products', filters, sortBy],
-    queryFn: () => getProducts(filters, sortBy)
+    queryFn: () => getProducts(filters, sortBy),
+    enabled: mounted, // Solo ejecutar después de que el componente esté montado
+    retry: 3,
+    retryDelay: 1000,
+    staleTime: 5 * 60 * 1000, // 5 minutos
   })
+
+  // Si hay error, intentar refetch automáticamente
+  useEffect(() => {
+    if (error && mounted) {
+      const timer = setTimeout(() => {
+        refetch()
+      }, 2000)
+      return () => clearTimeout(timer)
+    }
+  }, [error, mounted, refetch])
+
+  // Mostrar loading inicial si no está montado
+  if (!mounted) {
+    return (
+      <div className="space-y-safe-section px-safe-x py-safe-y">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <div className="lg:col-span-1">
+            <div className="animate-pulse space-y-4">
+              <div className="h-6 bg-gray-200 rounded w-1/2" />
+              <div className="space-y-2">
+                <div className="h-4 bg-gray-200 rounded" />
+                <div className="h-4 bg-gray-200 rounded" />
+                <div className="h-4 bg-gray-200 rounded" />
+              </div>
+            </div>
+          </div>
+          <div className="lg:col-span-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="aspect-[3/4] bg-gray-200 rounded-lg mb-4" />
+                  <div className="space-y-2">
+                    <div className="h-4 bg-gray-200 rounded w-3/4" />
+                    <div className="h-4 bg-gray-200 rounded w-1/2" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   if (error) {
     return (
-      <div className="py-8">
+      <div className="space-y-safe-section px-safe-x py-safe-y">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Error al cargar productos</h1>
-          <p className="text-muted-foreground">Hubo un problema al cargar los productos. Por favor, intenta nuevamente.</p>
+          <p className="text-muted-foreground mb-4">
+            Hubo un problema al cargar los productos. Reintentando automáticamente...
+          </p>
+          <Button onClick={() => refetch()}>
+            Reintentar ahora
+          </Button>
         </div>
       </div>
     )

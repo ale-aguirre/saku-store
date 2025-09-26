@@ -45,6 +45,18 @@
 - **Fix**: Limpiar cache con `rm -rf .next` antes de `npm run build`
 - **Prevention**: Cuando aparezcan errores de build inexplicables relacionados con imports, limpiar cache de Next.js como primer paso de debugging
 
+## 2025-09-26 — Problema de carga inicial de productos en hidratación
+
+- **Issue**: La página `/productos` fallaba durante la carga inicial con errores de hidratación, especialmente cuando `getProducts` verificaba variables de entorno en el lado del cliente
+- **Cause**: La función `getProducts` intentaba acceder a variables de entorno de Supabase durante la hidratación del cliente, cuando estas pueden no estar disponibles o tener valores "placeholder". Además, falta de manejo robusto de estados de carga y errores de tipos en tests E2E
+- **Fix**: 
+  1. Agregado estado `mounted` para evitar problemas de hidratación y habilitar `useQuery` solo cuando el componente está montado
+  2. Verificación de disponibilidad de variables de Supabase antes de crear cliente, con manejo de valores "placeholder"
+  3. Mejora de estados de carga con esqueleto inicial y mensajes de error detallados con botón de reintento
+  4. Corrección de referencias inconsistentes `stock` → `stock_quantity` en ProductStockManager
+  5. Corrección de errores de tipo `unknown` en catch blocks usando `e instanceof Error ? e.message : String(e)`
+- **Prevention**: Siempre verificar disponibilidad de variables de entorno antes de crear clientes en el lado del cliente. Usar estado `mounted` para componentes que dependen de hidratación. Mantener consistencia en nombres de propiedades entre interfaces TypeScript y uso real. Usar manejo de tipos robusto en catch blocks para evitar errores de `unknown`
+
 ## 2025-01-25 — Error de next/image con URLs externas de placeholder
 
 - **Issue**: Error "Invalid src prop on next/image, hostname 'via.placeholder.com' is not configured under images in your next.config.js"

@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/supabase/browser'
 import type { Database } from '@/types/database'
 import type { 
   ProductFilters, 
@@ -38,8 +38,19 @@ export async function getProducts(
 ): Promise<ProductWithVariantsAndStock[]> {
   try {
     // Verificar si las variables de entorno están disponibles
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      console.log('Supabase environment variables not found, using placeholder values for build')
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    
+    if (!supabaseUrl || !supabaseAnonKey || 
+        supabaseUrl.includes('placeholder') || 
+        supabaseAnonKey.includes('placeholder')) {
+      console.log('Supabase environment variables not properly configured')
+      return []
+    }
+
+    // Verificar que el cliente de Supabase esté disponible
+    if (!supabase) {
+      console.error('Supabase client not available')
       return []
     }
 

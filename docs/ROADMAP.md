@@ -48,6 +48,47 @@
 4. **✅ COMPLETADA - Verificación de conectividad**: 
    - Confirmado que Supabase funciona correctamente (local y remoto)
    - Variables de entorno configuradas correctamente
+
+### Task 30: Corrección de Carga Inicial de Productos
+
+**Fecha**: 2025-09-26 19:54
+
+**Estado**: ✅ Completada
+
+**Descripción**: Resolución del problema de carga inicial de productos en la página `/productos` que causaba fallos durante la hidratación del lado del cliente.
+
+**Problema Identificado**: 
+- La función `getProducts` verificaba variables de entorno en el lado del cliente durante la hidratación
+- Esto causaba errores cuando las variables no estaban disponibles o tenían valores "placeholder"
+- Falta de manejo robusto de estados de carga y error
+
+**Solución Implementada**:
+
+1. **✅ COMPLETADA - Mejora de hidratación**: 
+   - Agregado estado `mounted` para evitar problemas de hidratación
+   - Habilitación de `useQuery` solo cuando el componente está montado
+   - Configuración de reintentos automáticos y tiempo de inactividad
+
+2. **✅ COMPLETADA - Manejo robusto de variables de entorno**: 
+   - Verificación de disponibilidad de variables de Supabase antes de crear cliente
+   - Manejo de casos con valores "placeholder" durante la hidratación
+   - Validación de cliente Supabase antes de realizar consultas
+
+3. **✅ COMPLETADA - Mejora de estados de carga y error**: 
+   - Esqueleto de carga inicial cuando el componente no está montado
+   - Mensaje de error detallado con botón para reintentar
+   - Reintentos automáticos en caso de fallo
+
+4. **✅ COMPLETADA - Corrección de errores de TypeScript**: 
+   - Corregidas referencias inconsistentes de `stock` por `stock_quantity` en ProductStockManager
+   - Corregidos errores de tipo `unknown` en catch blocks de tests E2E
+   - Verificación exitosa de ESLint y TypeScript sin errores
+
+**Verificación**: 
+- ✅ ESLint: Sin errores ni advertencias
+- ✅ TypeScript: Sin errores de tipos  
+- ✅ Página `/productos` carga correctamente con 37 productos disponibles
+- ✅ Servidor funcionando en puerto 3000 sin errores
    - Build local exitoso
 
 **Resultado**: 
