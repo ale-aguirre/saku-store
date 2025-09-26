@@ -9,6 +9,7 @@ import { ProductImage } from '@/components/ui/product-image'
 
 import { useCart } from '@/hooks/use-cart'
 import { useProductBySlug } from '@/hooks/use-products'
+import { useWishlist } from '@/hooks/use-wishlist'
 import { ChevronLeft, Heart, Share2, ShoppingCart, AlertCircle, Truck, Shield, RotateCcw, Loader2 } from 'lucide-react'
 
 const getColorHex = (colorName: string): string => {
@@ -31,6 +32,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   const [selectedColor, setSelectedColor] = useState<string>('')
   const [quantity] = useState(1)
   const { addItem, openCart } = useCart()
+  const { isInWishlist, toggleWishlist } = useWishlist()
 
   const resolvedParams = use(params)
   const { data: product, isLoading, error } = useProductBySlug(resolvedParams.slug)
@@ -269,9 +271,20 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
             </Button>
 
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="flex-1">
-                <Heart className="h-4 w-4 mr-2" />
-                Favoritos
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex-1"
+                onClick={() => toggleWishlist(product.id)}
+              >
+                <Heart 
+                  className={`h-4 w-4 mr-2 transition-colors ${
+                    isInWishlist(product.id) 
+                      ? 'fill-red-500 text-red-500' 
+                      : 'text-muted-foreground'
+                  }`} 
+                />
+                {isInWishlist(product.id) ? 'En Favoritos' : 'Favoritos'}
               </Button>
               <Button variant="outline" size="sm" className="flex-1">
                 <Share2 className="h-4 w-4 mr-2" />

@@ -10,6 +10,8 @@ import type { ProductWithVariantsAndStock } from '@/types/catalog'
 import { categoryRequiresSizes } from '@/types/catalog'
 import { useCart } from '@/hooks/use-cart'
 import { useState } from 'react'
+import { useWishlist } from '@/hooks/use-wishlist'
+import { cn } from '@/lib/utils'
 import { 
   Dialog,
   DialogContent,
@@ -27,6 +29,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, className }: ProductCardProps) {
   const { addItem, openCart } = useCart()
+  const { isInWishlist, toggleWishlist } = useWishlist()
   const [selectedSize, setSelectedSize] = useState<string | null>('')
   const [selectedColor, setSelectedColor] = useState<string>('')
   const [quickAddOpen, setQuickAddOpen] = useState(false)
@@ -75,9 +78,21 @@ export function ProductCard({ product, className }: ProductCardProps) {
         variant="ghost"
         size="icon"
         className="absolute top-2 right-2 z-10 h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm opacity-0 transition-opacity group-hover:opacity-100"
-        aria-label="Agregar a favoritos"
+        aria-label={isInWishlist(product.id) ? "Remover de favoritos" : "Agregar a favoritos"}
+        onClick={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          toggleWishlist(product.id)
+        }}
       >
-        <Heart className="h-4 w-4" />
+        <Heart 
+          className={cn(
+            "h-4 w-4 transition-colors",
+            isInWishlist(product.id) 
+              ? "fill-red-500 text-red-500" 
+              : "text-muted-foreground hover:text-red-500"
+          )} 
+        />
       </Button>
 
       {/* Product Image */}
