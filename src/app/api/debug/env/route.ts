@@ -3,28 +3,53 @@ import { createClient } from '@supabase/supabase-js';
 
 export async function GET() {
   try {
-    const diagnostics = {
-      timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV,
+    const diagnostics: {
+      environment: string;
+      timestamp: string;
       vercel: {
-        region: process.env.VERCEL_REGION || 'unknown',
-        url: process.env.VERCEL_URL || 'unknown',
-        env: process.env.VERCEL_ENV || 'unknown'
+        env: string;
+        region: string;
+        url: string;
+      };
+      supabase: {
+        url: string;
+        anonKey: string;
+        serviceRole: string;
+        connection: string;
+        productsCount: number;
+      };
+      mercadoPago: {
+        accessToken: string;
+      };
+      smtp: {
+        host: string;
+        port: string;
+        user: string;
+        from: string;
+      };
+    } = {
+      environment: process.env.VERCEL ? 'vercel' : 'local',
+      timestamp: new Date().toISOString(),
+      vercel: {
+        env: process.env.VERCEL_ENV || 'development',
+        region: process.env.VERCEL_REGION || 'local',
+        url: process.env.VERCEL_URL || 'localhost'
       },
       supabase: {
-        url: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'configured' : 'missing',
+        url: process.env.NEXT_PUBLIC_SUPABASE_URL || 'missing',
         anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'configured' : 'missing',
         serviceRole: process.env.SUPABASE_SERVICE_ROLE ? 'configured' : 'missing',
-        connection: 'unknown' as string,
-        productsCount: 0 as number
+        connection: 'unknown',
+        productsCount: 0
       },
       mercadoPago: {
-        accessToken: process.env.MP_ACCESS_TOKEN ? 'configured' : 'missing',
-        publicKey: process.env.MP_PUBLIC_KEY ? 'configured' : 'missing'
+        accessToken: process.env.MP_ACCESS_TOKEN ? 'configured' : 'missing'
       },
       smtp: {
-        host: process.env.SMTP_HOST ? 'configured' : 'missing',
-        user: process.env.SMTP_USER ? 'configured' : 'missing'
+        host: process.env.SMTP_HOST || 'missing',
+        port: process.env.SMTP_PORT || 'missing',
+        user: process.env.SMTP_USER ? 'configured' : 'missing',
+        from: process.env.SMTP_FROM || 'missing'
       }
     };
 
