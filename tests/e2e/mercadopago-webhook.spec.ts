@@ -46,7 +46,7 @@ test.describe('Webhook de Mercado Pago', () => {
     })
 
     // Verificar que se rechaza el webhook inválido
-    expect(response.status()).toBe(500) // El webhook devuelve 500 para errores de validación
+    expect(response.status()).toBe(400) // El webhook devuelve 400 para datos inválidos
   })
 
   test('debe actualizar el estado de la orden cuando el pago es aprobado', async ({ request }) => {
