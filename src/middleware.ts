@@ -1,98 +1,123 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-// Configurar runtime para Node.js en lugar de Edge Runtime
-export const runtime = 'nodejs'
-
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  })
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value
-        },
-        set(name: string, value: string, options: Record<string, unknown>) {
-          request.cookies.set({
-            name,
-            value,
-            ...options,
-          })
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          })
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-          })
-        },
-        remove(name: string, options: Record<string, unknown>) {
-          request.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          })
-          response.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
-        },
+  try {
+    let response = NextResponse.next({
+      request: {
+        headers: request.headers,
       },
-    }
-  )
+    })
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  // Protected admin routes
-  if (request.nextUrl.pathname.startsWith('/admin')) {
-    if (!user) {
-      return NextResponse.redirect(new URL('/auth/login?redirect=/admin', request.url))
+    // Verificar que las variables de entorno estén disponibles
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      console.error('Missing Supabase environment variables in middleware')
+      return response
     }
 
-    // Check if user has admin role
-    const { data: profile } = await supabase
-      .from('users')
-      .select('role')
-      .eq('id', user.id)
-      .single()
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      {
+        cookies: {
+          get(name: string) {
+            return request.cookies.get(name)?.value
+          },
+          set(name: string, value: string, options: Record<string, unknown>) {
+            request.cookies.set({
+              name,
+              value,
+              ...options,
+            })
+            response = NextResponse.next({
+              request: {
+                headers: request.headers,
+              },
+            })
+            response.cookies.set({
+              name,
+              value,
+              ...options,
+            })
+          },
+          remove(name: string, options: Record<string, unknown>) {
+            request.cookies.set({
+              name,
+              value: '',
+              ...options,
+            })
+            response = NextResponse.next({
+              request: {
+                headers: request.headers,
+              },
+            })
+            response.cookies.set({
+              name,
+              value: '',
+              ...options,
+            })
+          },
+        },
+      }
+    )
 
-    if (!profile || (profile.role !== 'admin' && profile.role !== 'super_admin')) {
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
+
+    if (authError) {
+      console.error('Auth error in middleware:', authError)
+      // Continue without user if auth fails
+    }
+
+    // Protected admin routes
+    if (request.nextUrl.pathname.startsWith('/admin')) {
+      if (!user) {
+        return NextResponse.redirect(new URL('/auth/login?redirect=/admin', request.url))
+      }
+
+      // Check if user has admin role
+      try {
+        const { data: profile, error: profileError } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', user.id)
+          .single()
+
+        if (profileError) {
+          console.error('Profile fetch error in middleware:', profileError)
+          return NextResponse.redirect(new URL('/', request.url))
+        }
+
+        if (!profile || (profile.role !== 'admin' && profile.role !== 'super_admin')) {
+          return NextResponse.redirect(new URL('/', request.url))
+        }
+      } catch (error) {
+        console.error('Database error in middleware:', error)
+        return NextResponse.redirect(new URL('/', request.url))
+      }
+    }
+
+    // Protected user routes (cuenta, orders, etc.)
+    if (request.nextUrl.pathname.startsWith('/cuenta') || 
+        request.nextUrl.pathname.startsWith('/orders')) {
+      if (!user) {
+        return NextResponse.redirect(new URL('/auth/login?redirect=' + request.nextUrl.pathname, request.url))
+      }
+    }
+
+    // Redirect authenticated users away from auth pages
+    if (user && request.nextUrl.pathname.startsWith('/auth/')) {
       return NextResponse.redirect(new URL('/', request.url))
     }
-  }
 
-  // Protected user routes (cuenta, orders, etc.)
-  if (request.nextUrl.pathname.startsWith('/cuenta') || 
-      request.nextUrl.pathname.startsWith('/orders')) {
-    if (!user) {
-      return NextResponse.redirect(new URL('/auth/login?redirect=' + request.nextUrl.pathname, request.url))
-    }
+    return response
+  } catch (error) {
+    console.error('Middleware error:', error)
+    // Return a basic response if middleware fails
+    return NextResponse.next()
   }
-
-  // Redirect authenticated users away from auth pages
-  if (user && request.nextUrl.pathname.startsWith('/auth/')) {
-    return NextResponse.redirect(new URL('/', request.url))
-  }
-
-  return response
 }
 
 export const config = {
