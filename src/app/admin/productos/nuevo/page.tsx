@@ -28,7 +28,7 @@ import { useAuth } from '@/hooks/use-auth'
 interface ProductVariant {
   size: string
   color: string
-  stock: number
+  stock_quantity: number
   sku: string
 }
 
@@ -56,7 +56,7 @@ export default function NewProductPage() {
   const [newVariant, setNewVariant] = useState<ProductVariant>({
     size: '',
     color: '',
-    stock: 0,
+    stock_quantity: 0,
     sku: ''
   })
 
@@ -86,7 +86,7 @@ export default function NewProductPage() {
     }
     
     setVariants(prev => [...prev, { ...newVariant, sku }])
-    setNewVariant({ size: '', color: '', stock: 0, sku: '' })
+    setNewVariant({ size: '', color: '', stock_quantity: 0, sku: '' })
   }
 
   const removeVariant = (index: number) => {
@@ -133,7 +133,7 @@ export default function NewProductPage() {
         product_id: (product as any).id,
         size: variant.size,
         color: variant.color,
-        stock: variant.stock,
+        stock_quantity: variant.stock_quantity,
         sku: variant.sku
       }))
 
@@ -323,8 +323,8 @@ export default function NewProductPage() {
                   <Input
                     type="number"
                     min="0"
-                    value={newVariant.stock}
-                    onChange={(e) => setNewVariant(prev => ({ ...prev, stock: parseInt(e.target.value) || 0 }))}
+                    value={newVariant.stock_quantity}
+                    onChange={(e) => setNewVariant(prev => ({ ...prev, stock_quantity: parseInt(e.target.value) || 0 }))}
                     placeholder="0"
                   />
                 </div>
@@ -343,7 +343,7 @@ export default function NewProductPage() {
                     <div className="flex gap-2">
                       <Badge variant="outline">Talle {variant.size}</Badge>
                       <Badge variant="outline">{variant.color}</Badge>
-                      <Badge variant="outline">{variant.stock} unidades</Badge>
+                      <Badge variant="outline">{variant.stock_quantity} unidades</Badge>
                     </div>
                     <Button
                       type="button"

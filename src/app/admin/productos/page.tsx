@@ -37,7 +37,7 @@ interface Product {
     id: string
     size: string
     color: string
-    stock: number
+    stock_quantity: number
   }[]
 }
 
@@ -85,7 +85,7 @@ export default function AdminProductsPage() {
   )
 
   const getTotalStock = (variants: Product['product_variants']) => {
-    return variants.reduce((sum, variant) => sum + variant.stock, 0)
+    return variants.reduce((sum, variant) => sum + variant.stock_quantity, 0)
   }
 
   const getVariantCount = (variants: Product['product_variants']) => {

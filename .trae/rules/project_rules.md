@@ -143,3 +143,45 @@ The canonical schema lives in `AI_QA_CONTEXT.md`.
 - Every PR must reference the corresponding board item (ID or title).
 - Allowed states: **Backlog**, **Today**, **In Progress**, **Blocked**, **Done**.
 - Format: Markdown with checkboxes `- [ ]` / `- [x]`, timestamps `YYYY-MM-DD HH:mm`, owner “Agent Saku”.
+
+## Definition of Done (gated by evidence)
+
+A task can be marked **Done** only if ALL checks are green and artifacts are attached:
+
+**Required checks**
+
+- ESLint ✔ `npm run lint` (exit code 0)
+- Type-check ✔ `npm run type-check` (exit code 0)
+- E2E (Playwright) ✔ against the **Vercel Preview** URL (exit code 0)
+- Preview ✔ visually verified (no blocking errors in console)
+
+**Required evidence**
+
+- Link to the **Preview URL**
+- Test report/summary (e.g., Playwright HTML report or traces link)
+- Short note: what changed, how it was verified (1–3 bullets)
+
+**Hard rule**
+
+- If any check fails or artifacts are missing → status = **Failed verification** (NOT Done). Create a follow-up task instead of overwriting history.
+
+## Definition of Done (gated by evidence)
+
+A task can be marked **Done** only if ALL checks are green and artifacts are attached:
+
+**Required checks**
+
+- ESLint ✔ `npm run lint` (exit code 0)
+- Type-check ✔ `npm run type-check` (exit code 0)
+- E2E (Playwright) ✔ against the **Vercel Preview** URL (exit code 0)
+- Preview ✔ visually verified (no blocking errors in console)
+
+**Required evidence**
+
+- Link to the **Preview URL**
+- Test report/summary (e.g., Playwright HTML report or traces link)
+- Short note: what changed, how it was verified (1–3 bullets)
+
+**Hard rule**
+
+- If any check fails or artifacts are missing → status = **Failed verification** (NOT Done). Create a follow-up task instead of overwriting history.

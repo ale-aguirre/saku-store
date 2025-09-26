@@ -40,7 +40,7 @@ interface ProductVariant {
   id?: string
   size: string
   color: string
-  stock: number
+  stock_quantity: number
   sku: string
   product_id?: string
 }
@@ -74,7 +74,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
   const [newVariant, setNewVariant] = useState<ProductVariant>({
     size: '',
     color: '',
-    stock: 0,
+    stock_quantity: 0,
     sku: ''
   })
 
@@ -171,7 +171,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
           product_id: productId,
           size: newVariant.size,
           color: newVariant.color,
-          stock: newVariant.stock,
+          stock_quantity: newVariant.stock_quantity,
           sku
         })
         .select()
@@ -180,7 +180,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
       if (error) throw error
 
       setVariants(prev => [...prev, data])
-      setNewVariant({ size: '', color: '', stock: 0, sku: '' })
+      setNewVariant({ size: '', color: '', stock_quantity: 0, sku: '' })
     } catch (error) {
       console.error('Error adding variant:', error)
       alert('Error al agregar la variante')
@@ -211,13 +211,13 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
       
       const { error } = await (supabase as any)
         .from('product_variants')
-        .update({ stock: newStock })
+        .update({ stock_quantity: newStock })
         .eq('id', variantId)
 
       if (error) throw error
 
       setVariants(prev => prev.map(v => 
-        v.id === variantId ? { ...v, stock: newStock } : v
+        v.id === variantId ? { ...v, stock_quantity: newStock } : v
       ))
     } catch (error) {
       console.error('Error updating stock:', error)
@@ -446,8 +446,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                   <Input
                     type="number"
                     min="0"
-                    value={newVariant.stock}
-                    onChange={(e) => setNewVariant(prev => ({ ...prev, stock: parseInt(e.target.value) || 0 }))}
+                    value={newVariant.stock_quantity}
+                    onChange={(e) => setNewVariant(prev => ({ ...prev, stock_quantity: parseInt(e.target.value) || 0 }))}
                     placeholder="0"
                   />
                 </div>
@@ -470,7 +470,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                         <Input
                           type="number"
                           min="0"
-                          value={variant.stock}
+                          value={variant.stock_quantity}
                           onChange={(e) => updateVariantStock(variant.id!, parseInt(e.target.value) || 0)}
                           className="w-20"
                         />
