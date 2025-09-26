@@ -10,6 +10,7 @@ import { Separator } from '@/components/ui/separator'
 import { Package, Truck, Clock, CheckCircle, XCircle, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/hooks/use-auth'
+import { formatPrice } from '@/lib/utils'
 
 interface OrderItem {
   id: string
@@ -236,7 +237,7 @@ export default function OrdersPage() {
                             </p>
                           </div>
                           <div className="text-right">
-                            <p className="font-medium">${(item.price / 100).toLocaleString()}</p>
+                            <p className="font-medium">{formatPrice(item.price)}</p>
                           </div>
                         </div>
                       ))}
@@ -274,12 +275,12 @@ export default function OrdersPage() {
                     {/* Total */}
                     <div className="flex justify-between items-center">
                       <div className="text-sm text-gray-600">
-                        <p>Subtotal: ${((order.total - order.shipping_cost) / 100).toLocaleString()}</p>
-                        <p>Envío: ${(order.shipping_cost / 100).toLocaleString()}</p>
+                        <p>Subtotal: {formatPrice(order.total - order.shipping_cost)}</p>
+                        <p>Envío: {formatPrice(order.shipping_cost)}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-lg font-bold">
-                          Total: ${(order.total / 100).toLocaleString()}
+                          Total: {formatPrice(order.total)}
                         </p>
                       </div>
                     </div>

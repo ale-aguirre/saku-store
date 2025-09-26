@@ -21,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { formatPrice } from '@/lib/utils'
 import { 
   Search,
   Eye,
@@ -287,7 +288,7 @@ export default function OrdersPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Ingresos totales</CardDescription>
-            <CardTitle className="text-2xl">${(totalRevenue / 100).toLocaleString('es-AR')}</CardTitle>
+            <CardTitle className="text-2xl">{formatPrice(totalRevenue)}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
@@ -301,7 +302,7 @@ export default function OrdersPage() {
             <CardDescription>Ticket promedio</CardDescription>
             <CardTitle className="text-2xl">
               {orders.filter(o => ['paid', 'processing', 'shipped', 'delivered'].includes(o.status)).length > 0 
-                ? `$${(totalRevenue / orders.filter(o => ['paid', 'processing', 'shipped', 'delivered'].includes(o.status)).length / 100).toLocaleString('es-AR')}` 
+                ? formatPrice(totalRevenue / orders.filter(o => ['paid', 'processing', 'shipped', 'delivered'].includes(o.status)).length)
                 : '$0'}
             </CardTitle>
           </CardHeader>
@@ -507,7 +508,7 @@ export default function OrdersPage() {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          ${(order.total / 100).toLocaleString('es-AR')}
+                          {formatPrice(order.total)}
                         </TableCell>
                         <TableCell>
                           <div className="whitespace-nowrap">

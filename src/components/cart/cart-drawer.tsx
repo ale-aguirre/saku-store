@@ -16,6 +16,7 @@ import {
   AccordionItem,
   AccordionTrigger
 } from '@/components/ui/accordion'
+import { formatPrice } from '@/lib/utils'
 
 const mockCoupons = [
   { code: 'BIENVENIDA10', discount: 10, type: 'percentage', minAmount: 0 },
@@ -112,7 +113,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
     }
 
     if (subtotal < foundCoupon.minAmount) {
-      setCouponError(`Compra mínima de $${foundCoupon.minAmount.toLocaleString()} para este cupón`)
+      setCouponError(`Compra mínima de ${formatPrice(foundCoupon.minAmount)} para este cupón`)
       return
     }
 
@@ -234,11 +235,11 @@ export function CartDrawer({ children }: CartDrawerProps) {
                       
                       <div className="text-right">
                         <div className="font-medium text-sm">
-                          ${(item.price * item.quantity).toLocaleString()}
+                          {formatPrice(item.price * item.quantity)}
                         </div>
                         {item.originalPrice && (
                           <div className="text-xs text-muted-foreground line-through">
-                            ${(item.originalPrice * item.quantity).toLocaleString()}
+                            {formatPrice(item.originalPrice * item.quantity)}
                           </div>
                         )}
                       </div>
@@ -382,7 +383,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
                                   <div className="text-xs text-muted-foreground">Entrega en 24-48hs</div>
                                 </div>
                                 <div className="font-medium">
-                                  {isShippingFree(cordobaShippingCost) ? 'Gratis' : `$${cordobaShippingCost.toLocaleString()}`}
+                                  {isShippingFree(cordobaShippingCost) ? 'Gratis' : formatPrice(cordobaShippingCost)}
                                 </div>
                               </div>
                               <div 
@@ -396,7 +397,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
                                   <div className="text-xs text-muted-foreground">Entrega en 3-5 días</div>
                                 </div>
                                 <div className="font-medium">
-                                  {isShippingFree(nationalShippingCost) ? 'Gratis' : `$${nationalShippingCost.toLocaleString()}`}
+                                  {isShippingFree(nationalShippingCost) ? 'Gratis' : formatPrice(nationalShippingCost)}
                                 </div>
                               </div>
                             </>
@@ -412,7 +413,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
                                 <div className="text-xs text-muted-foreground">Entrega en 3-5 días</div>
                               </div>
                               <div className="font-medium">
-                                {isShippingFree(nationalShippingCost) ? 'Gratis' : `$${nationalShippingCost.toLocaleString()}`}
+                                {isShippingFree(nationalShippingCost) ? 'Gratis' : formatPrice(nationalShippingCost)}
                               </div>
                             </div>
                           )}
@@ -428,13 +429,13 @@ export function CartDrawer({ children }: CartDrawerProps) {
             <div className="space-y-3 py-4 border-t px-4 md:px-6">
               <div className="flex justify-between text-sm">
                 <span>Subtotal</span>
-                <span>${subtotal.toLocaleString()}</span>
+                <span>{formatPrice(subtotal)}</span>
               </div>
               
               {discount > 0 && (
                 <div className="flex justify-between text-sm text-green-600">
                   <span>Descuento</span>
-                  <span>-${discount.toLocaleString()}</span>
+                  <span>-{formatPrice(discount)}</span>
                 </div>
               )}
               
@@ -446,14 +447,14 @@ export function CartDrawer({ children }: CartDrawerProps) {
                   ) : isShippingFree(shippingCost) ? (
                     <span className="text-green-600">Gratis</span>
                   ) : (
-                    `$${shippingCost.toLocaleString()}`
+                    formatPrice(shippingCost)
                   )}
                 </span>
               </div>
               
               {total < freeShippingThreshold && (
                 <div className="text-xs text-muted-foreground">
-                  Agregá ${(freeShippingThreshold - total).toLocaleString()} más para envío gratis
+                  Agregá {formatPrice(freeShippingThreshold - total)} más para envío gratis
                 </div>
               )}
               
@@ -461,7 +462,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
               
               <div className="flex justify-between font-semibold">
                 <span>Total</span>
-                <span data-testid="cart-total">${finalTotal.toLocaleString()}</span>
+                <span data-testid="cart-total">{formatPrice(finalTotal)}</span>
               </div>
               
               {!shippingMethod && cartItems.length > 0 && (

@@ -55,7 +55,7 @@ export function ProductImage({
   };
 
   // Si no hay src, src es null/undefined, o es una URL de placeholder, mostrar placeholder directamente
-  const shouldShowPlaceholder = !src || src.includes('placeholder-product.svg') || hasError;
+  const shouldShowPlaceholder = !src || (typeof src === 'string' && src.includes('placeholder-product.svg')) || hasError;
   
   if (shouldShowPlaceholder) {
     return (
@@ -78,11 +78,6 @@ export function ProductImage({
         />
       </div>
     );
-  }
-
-  // Solo renderizar Image si tenemos un src válido
-  if (!src) {
-    return null;
   }
 
   return (

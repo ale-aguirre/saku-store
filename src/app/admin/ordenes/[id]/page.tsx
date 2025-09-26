@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ProductImage } from '@/components/ui/product-image'
+import { formatPrice } from "@/lib/utils"
 import { 
   ArrowLeft,
   Package,
@@ -285,10 +286,10 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                     <div className="text-right">
                       <p className="font-medium">Cantidad: {item.quantity}</p>
                       <p className="text-sm text-gray-600">
-                        ${(item.price / 100).toLocaleString('es-AR')} c/u
+                        {formatPrice(item.price)} c/u
                       </p>
                       <p className="font-medium">
-                        ${((item.price * item.quantity) / 100).toLocaleString('es-AR')}
+                        {formatPrice(item.price * item.quantity)}
                       </p>
                     </div>
                   </div>

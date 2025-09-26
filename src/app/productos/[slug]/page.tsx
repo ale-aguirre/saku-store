@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { ProductImage } from '@/components/ui/product-image'
+import { formatPrice } from '@/lib/utils'
 
 import { useCart } from '@/hooks/use-cart'
 import { useProductBySlug } from '@/hooks/use-products'
@@ -28,9 +29,9 @@ const getColorHex = (colorName: string): string => {
 }
 
 export default function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
-  const [selectedSize, setSelectedSize] = useState<string | null>('')
+  const [selectedSize, setSelectedSize] = useState<string | null>(null)
   const [selectedColor, setSelectedColor] = useState<string>('')
-  const [quantity] = useState(1)
+  const quantity = 1
   const { addItem, openCart } = useCart()
   const { isInWishlist, toggleWishlist } = useWishlist()
 
@@ -153,17 +154,17 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
           <div className="space-y-2">
             <div className="flex items-center gap-3">
               <span className="text-3xl font-bold" data-testid="product-price">
-                ${finalPrice.toLocaleString()}
+                {formatPrice(finalPrice)}
               </span>
               {hasComparePrice && (
                 <span className="text-lg text-muted-foreground line-through" data-testid="product-compare-price">
-                  ${comparePrice.toLocaleString()}
+                  {formatPrice(comparePrice)}
                 </span>
               )}
             </div>
             {hasComparePrice && (
               <p className="text-sm text-green-600">
-                Ahorrás ${(comparePrice - finalPrice).toLocaleString()}
+                Ahorrás {formatPrice(comparePrice - finalPrice)}
               </p>
             )}
           </div>

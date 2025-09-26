@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { formatPrice } from '@/lib/utils'
 import { 
   Plus, 
   Search, 
@@ -177,7 +178,7 @@ export default function AdminProductsPage() {
                   </TableCell>
                   <TableCell>
                     <span className="font-medium">
-                      ${(product.price / 100).toLocaleString()}
+                      {formatPrice(product.price)}
                     </span>
                   </TableCell>
                   <TableCell>

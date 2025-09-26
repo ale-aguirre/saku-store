@@ -11,7 +11,7 @@ import { categoryRequiresSizes } from '@/types/catalog'
 import { useCart } from '@/hooks/use-cart'
 import { useState } from 'react'
 import { useWishlist } from '@/hooks/use-wishlist'
-import { cn } from '@/lib/utils'
+import { cn, formatPrice } from '@/lib/utils'
 import { 
   Dialog,
   DialogContent,
@@ -141,9 +141,9 @@ export function ProductCard({ product, className }: ProductCardProps) {
                   key={color}
                   className="w-4 h-4 rounded-full border border-border"
                   style={{ 
-                    backgroundColor: color === 'negro' ? '#000000' : 
-                                   color === 'rojo' ? '#dc2626' : 
-                                   color === 'blanco' ? '#ffffff' : color 
+                    backgroundColor: color.toLowerCase() === 'negro' ? '#000000' : 
+                                   color.toLowerCase() === 'rojo' ? '#dc2626' : 
+                                   color.toLowerCase() === 'blanco' ? '#ffffff' : color 
                   }}
                   title={color}
                 />
@@ -156,17 +156,17 @@ export function ProductCard({ product, className }: ProductCardProps) {
         <div className="flex items-center gap-2 mb-3">
           {product.price_range.min === product.price_range.max ? (
             <span className="font-semibold text-lg">
-              ${product.price_range.min.toLocaleString()}
+              {formatPrice(product.price_range.min)}
             </span>
           ) : (
             <span className="font-semibold text-lg">
-              ${product.price_range.min.toLocaleString()} - ${product.price_range.max.toLocaleString()}
+              {formatPrice(product.price_range.min)} - {formatPrice(product.price_range.max)}
             </span>
           )}
           
           {hasDiscount && (
             <span className="text-sm text-muted-foreground line-through">
-              ${product.compare_at_price!.toLocaleString()}
+              {formatPrice(product.compare_at_price!)}
             </span>
           )}
         </div>

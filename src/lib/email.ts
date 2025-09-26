@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer'
+import { formatPrice } from '@/lib/utils'
 
 interface EmailConfig {
   to: string
@@ -145,7 +146,6 @@ const getEmailTemplate = (content: string) => `
 // Email de confirmación de pedido
 export const sendOrderConfirmationEmail = async (data: OrderEmailData) => {
   const { order, customerEmail, items } = data
-  const formatPrice = (price: number) => `$${price.toLocaleString('es-AR')}`
   
   const content = `
     <h2>¡Gracias por tu compra!</h2>

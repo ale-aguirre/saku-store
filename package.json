@@ -26,6 +26,7 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
     "test:e2e:report": "playwright show-report --host=127.0.0.1 --port=0",
+    "import:products": "node scripts/import-products-from-csv.js",
     "notify:done": "node scripts/notify-completion.cjs"
   },
   "dependencies": {
@@ -51,6 +52,7 @@
     "@types/nodemailer": "^7.0.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "csv-parser": "^3.2.0",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.544.0",
     "next": "15.5.3",

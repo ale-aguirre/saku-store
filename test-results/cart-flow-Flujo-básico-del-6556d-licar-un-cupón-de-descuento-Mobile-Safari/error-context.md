@@ -1,0 +1,179 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - link "Sakú Lencería" [ref=e5]:
+          - /url: /
+          - img "Sakú Lencería" [ref=e6]
+        - generic [ref=e7]:
+          - button "Ingresar" [ref=e8] [cursor=pointer]:
+            - img
+            - text: Ingresar
+          - button "Carrito" [ref=e10] [cursor=pointer]:
+            - img
+            - generic [ref=e11] [cursor=pointer]: Carrito
+          - button "Cambiar tema" [ref=e12] [cursor=pointer]:
+            - img [ref=e13] [cursor=pointer]
+            - generic [ref=e19] [cursor=pointer]: Cambiar tema
+          - button "Menú" [ref=e20] [cursor=pointer]:
+            - img
+            - generic [ref=e21] [cursor=pointer]: Menú
+    - main [ref=e22]:
+      - generic [ref=e24]:
+        - navigation [ref=e25]:
+          - link "Inicio" [ref=e26]:
+            - /url: /
+          - generic [ref=e27]: /
+          - link "Productos" [ref=e28]:
+            - /url: /productos
+          - generic [ref=e29]: /
+          - generic [ref=e30]: Brasier Comfort
+        - link "Volver a Productos" [ref=e31]:
+          - /url: /productos
+          - img
+          - text: Volver a Productos
+        - generic [ref=e32]:
+          - img "Brasier Comfort" [ref=e35]
+          - generic [ref=e36]:
+            - generic [ref=e37]:
+              - heading "Brasier Comfort" [level=1] [ref=e38]
+              - paragraph [ref=e39]: Brasier cómodo y elegante para uso diario. Confeccionado con materiales de alta calidad que brindan soporte y comodidad durante todo el día.
+            - generic [ref=e42]: $0
+            - generic [ref=e43]:
+              - generic [ref=e44]:
+                - generic [ref=e45]: Talle
+                - generic [ref=e46]:
+                  - button "85" [ref=e47] [cursor=pointer]
+                  - button "90" [ref=e48] [cursor=pointer]
+              - generic [ref=e49]:
+                - generic [ref=e50]: Color
+                - generic [ref=e51]:
+                  - button "negro" [ref=e52] [cursor=pointer]
+                  - button "blanco" [ref=e53] [cursor=pointer]
+            - generic [ref=e54]:
+              - button "Selecciona talle y color" [disabled]:
+                - img
+                - text: Selecciona talle y color
+              - generic [ref=e55]:
+                - button "Favoritos" [ref=e56] [cursor=pointer]:
+                  - img
+                  - text: Favoritos
+                - button "Compartir" [ref=e57] [cursor=pointer]:
+                  - img
+                  - text: Compartir
+            - generic [ref=e59]:
+              - generic [ref=e60]:
+                - img [ref=e61]
+                - generic [ref=e66]:
+                  - paragraph [ref=e67]: Envío gratis
+                  - paragraph [ref=e68]: En compras superiores a $50.000
+              - generic [ref=e69]:
+                - img [ref=e70]
+                - generic [ref=e72]:
+                  - paragraph [ref=e73]: Compra protegida
+                  - paragraph [ref=e74]: Garantía de satisfacción
+              - generic [ref=e75]:
+                - img [ref=e76]
+                - generic [ref=e79]:
+                  - paragraph [ref=e80]: Cambios y devoluciones
+                  - paragraph [ref=e81]: Hasta 30 días
+            - generic [ref=e84]:
+              - img [ref=e85]
+              - generic [ref=e87]:
+                - paragraph [ref=e88]: Importante
+                - paragraph [ref=e89]: Por razones de higiene, la lencería no admite cambios ni devoluciones una vez retirada del empaque.
+    - contentinfo [ref=e90]:
+      - generic [ref=e91]:
+        - generic [ref=e92]:
+          - generic [ref=e93]:
+            - link "Sakú Lencería" [ref=e94]:
+              - /url: /
+              - img "Sakú Lencería" [ref=e95]
+            - paragraph [ref=e96]: Lencería femenina de calidad premium. Diseños únicos que realzan tu belleza natural.
+            - generic [ref=e97]:
+              - link "Instagram" [ref=e98]:
+                - /url: https://instagram.com/sakulenceria
+                - img [ref=e99]
+                - generic [ref=e102]: Instagram
+              - link "Facebook" [ref=e103]:
+                - /url: https://facebook.com/sakulenceria
+                - img [ref=e104]
+                - generic [ref=e106]: Facebook
+          - generic [ref=e107]:
+            - heading "Empresa" [level=3] [ref=e108]
+            - list [ref=e109]:
+              - listitem [ref=e110]:
+                - link "Sobre Nosotros" [ref=e111]:
+                  - /url: /sobre-nosotros
+              - listitem [ref=e112]:
+                - link "Guía de Talles" [ref=e113]:
+                  - /url: /guia-talles
+              - listitem [ref=e114]:
+                - link "Cuidado de Prendas" [ref=e115]:
+                  - /url: /cuidado-prendas
+              - listitem [ref=e116]:
+                - link "Contacto" [ref=e117]:
+                  - /url: /contacto
+          - generic [ref=e118]:
+            - heading "Soporte" [level=3] [ref=e119]
+            - list [ref=e120]:
+              - listitem [ref=e121]:
+                - link "Preguntas Frecuentes" [ref=e122]:
+                  - /url: /faq
+              - listitem [ref=e123]:
+                - link "Cambios y Devoluciones" [ref=e124]:
+                  - /url: /cambios-devoluciones
+              - listitem [ref=e125]:
+                - link "Envíos" [ref=e126]:
+                  - /url: /envios
+              - listitem [ref=e127]:
+                - link "Métodos de Pago" [ref=e128]:
+                  - /url: /metodos-pago
+          - generic [ref=e129]:
+            - heading "Contacto" [level=3] [ref=e130]
+            - generic [ref=e131]:
+              - generic [ref=e132]:
+                - img [ref=e133]
+                - generic [ref=e136]: hola@sakulenceria.com
+              - generic [ref=e137]:
+                - img [ref=e138]
+                - generic [ref=e140]: +54 351 123-4567
+              - generic [ref=e141]:
+                - img [ref=e142]
+                - generic [ref=e145]: Córdoba, Argentina
+        - generic [ref=e146]:
+          - generic [ref=e147]:
+            - link "Términos y Condiciones" [ref=e148]:
+              - /url: /terminos
+            - link "Política de Privacidad" [ref=e149]:
+              - /url: /privacidad
+            - link "Política de Cookies" [ref=e150]:
+              - /url: /cookies
+          - paragraph [ref=e151]: © 2025 Sakú Lencería. Todos los derechos reservados.
+  - generic [ref=e155]:
+    - generic [ref=e156]:
+      - img [ref=e157]
+      - generic [ref=e159]:
+        - heading "Usamos cookies para mejorar tu experiencia" [level=3] [ref=e160]
+        - paragraph [ref=e161]:
+          - text: Utilizamos cookies esenciales para el funcionamiento del sitio y cookies opcionales para análisis y marketing. Puedes personalizar tus preferencias.
+          - link "Más información" [ref=e162]:
+            - /url: /cookies
+    - generic [ref=e163]:
+      - button "Personalizar" [ref=e164] [cursor=pointer]:
+        - img
+        - text: Personalizar
+      - button "Solo Esenciales" [ref=e165] [cursor=pointer]
+      - button "Aceptar Todas" [ref=e166] [cursor=pointer]
+  - region "Notifications alt+T"
+  - generic [ref=e167]:
+    - img [ref=e169]
+    - button "Open Tanstack query devtools" [ref=e237] [cursor=pointer]:
+      - img [ref=e238] [cursor=pointer]
+  - button "Open Next.js Dev Tools" [ref=e311] [cursor=pointer]:
+    - img [ref=e312] [cursor=pointer]
+  - alert [ref=e317]
+```

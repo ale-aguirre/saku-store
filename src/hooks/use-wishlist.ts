@@ -13,9 +13,9 @@ export interface WishlistItem {
   product?: {
     id: string
     name: string
-    slug: string
-    price: number
-    image_url?: string
+    sku: string
+    base_price: number
+    images?: string[]
   }
 }
 
@@ -44,9 +44,9 @@ export function useWishlist() {
           product:products(
             id,
             name,
-            slug,
-            price,
-            image_url
+            sku,
+            base_price,
+            images
           )
         `)
         .eq('user_id', user.id)

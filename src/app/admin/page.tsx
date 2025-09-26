@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { formatPrice } from '@/lib/utils'
 import { 
   Package, 
   ShoppingCart, 
@@ -282,7 +283,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Ingresos</p>
-                <p className="text-2xl font-bold">${(stats.totalRevenue / 100).toLocaleString()}</p>
+                <p className="text-2xl font-bold">{formatPrice(stats.totalRevenue)}</p>
               </div>
               <TrendingUp className="h-8 w-8 text-orange-600" />
             </div>
@@ -326,7 +327,7 @@ export default function AdminDashboard() {
                         <Badge className={status?.color}>
                           {status?.label}
                         </Badge>
-                        <p className="font-medium">${(order.total / 100).toLocaleString()}</p>
+                        <p className="font-medium">{formatPrice(order.total)}</p>
                         <Button variant="outline" size="sm">
                           <Eye className="h-4 w-4" />
                         </Button>
@@ -360,7 +361,7 @@ export default function AdminDashboard() {
                           <div>
                             <p className="font-medium">{product.name}</p>
                             <p className="text-sm text-gray-600">
-                              ${(product.price / 100).toLocaleString()}
+                              {formatPrice(product.price)}
                             </p>
                             <p className="text-xs text-gray-500">
                               Stock total: {totalStock} unidades

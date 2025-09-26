@@ -14,6 +14,7 @@ import { useCheckout, type ShippingData } from '@/hooks/use-checkout'
 import { ArrowLeft, MapPin, Truck, CreditCard, Loader2 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { formatPrice } from '@/lib/utils'
 
 const checkoutSchema = z.object({
   firstName: z.string().min(2, 'Nombre requerido'),
@@ -247,7 +248,7 @@ export default function CheckoutPage() {
                           <p className="font-medium">{method.name}</p>
                           <p className="text-sm text-muted-foreground">{method.description}</p>
                         </div>
-                        <span className="font-medium">${(method.cost / 100).toLocaleString()}</span>
+                        <span className="font-medium">{formatPrice(method.cost)}</span>
                       </div>
                     </Label>
                   </div>
@@ -292,7 +293,7 @@ export default function CheckoutPage() {
                     </p>
                   </div>
                   <span className="font-medium">
-                    ${((item.price * item.quantity) / 100).toLocaleString()}
+                    {formatPrice(item.price * item.quantity)}
                   </span>
                 </div>
               ))}
@@ -302,16 +303,16 @@ export default function CheckoutPage() {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span>Subtotal ({items.length} items)</span>
-                  <span>${(getTotalPrice() / 100).toLocaleString()}</span>
+                  <span>{formatPrice(getTotalPrice())}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Envío</span>
-                  <span>${(shippingCost / 100).toLocaleString()}</span>
+                  <span>{formatPrice(shippingCost)}</span>
                 </div>
                 <Separator />
                 <div className="flex justify-between text-lg font-bold">
                   <span>Total</span>
-                  <span>${(total / 100).toLocaleString()}</span>
+                  <span>{formatPrice(total)}</span>
                 </div>
               </div>
 

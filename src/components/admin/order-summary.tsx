@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { createAdminClient } from '@/lib/supabase/admin-client'
+import { formatPrice } from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -122,9 +123,7 @@ export function OrderSummary({ order, onUpdate }: OrderSummaryProps) {
     setShowCancelDialog(false)
   }
   
-  const formatPrice = (price: number) => {
-    return `$${(price / 100).toLocaleString('es-AR')}`
-  }
+
   
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString('es-AR', {
