@@ -134,3 +134,12 @@ The canonical schema lives in `AI_QA_CONTEXT.md`.
 - **Learning log**: append mistakes/recurring issues and how to avoid them to `/docs/LEARNING_LOG.md`.
 - **Protected docs**: do **not** modify `project_rules.md`, `user_rules.md`, `AI_QA_CONTEXT.md` without explicit approval.
 - **No merges without approval**: do not merge to `develop` or `main` without Ale’s approval; verify **Vercel Preview** before any merge.
+
+## Tasks Board (mandatory, append-only)
+
+- The agent must maintain a living **tasks board** at `docs/TASKS_BOARD.md`.
+- **Append-only**: never delete or overwrite previous tasks; only add or move items between states.
+- On **context switch/correction**: record an entry in **“Context switch log”** and leave the prior task as **In Progress (paused)** or move it to **Blocked** with a reason.
+- Every PR must reference the corresponding board item (ID or title).
+- Allowed states: **Backlog**, **Today**, **In Progress**, **Blocked**, **Done**.
+- Format: Markdown with checkboxes `- [ ]` / `- [x]`, timestamps `YYYY-MM-DD HH:mm`, owner “Agent Saku”.
