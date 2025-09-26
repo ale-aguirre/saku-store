@@ -1,11 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { ShoppingCart, Heart, Eye } from 'lucide-react'
+import { ProductImage } from '@/components/ui/product-image'
 import type { ProductWithVariantsAndStock } from '@/types/catalog'
 import { categoryRequiresSizes } from '@/types/catalog'
 import { useCart } from '@/hooks/use-cart'
@@ -41,8 +41,8 @@ export function ProductCard({ product, className }: ProductCardProps) {
   const isInStock = product.total_stock > 0
   const isLowStock = product.variants.some(v => v.is_low_stock)
 
-  // Usar la primera imagen disponible o una imagen placeholder
-  const primaryImage = product.images?.[0] || '/images/placeholder-product.svg'
+  // Usar la primera imagen disponible o null para que ProductImage maneje el fallback
+  const primaryImage = product.images?.[0] || null
 
   return (
     <Card className={`group relative overflow-hidden transition-all duration-300 hover:shadow-lg ${className}`}>
@@ -83,7 +83,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
       {/* Product Image */}
       <Link href={`/productos/${product.slug}`} className="block">
         <div className="relative aspect-square overflow-hidden">
-          <Image
+          <ProductImage
             src={primaryImage}
             alt={product.name}
             fill

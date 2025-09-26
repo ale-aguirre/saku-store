@@ -45,6 +45,17 @@
 - **Fix**: Limpiar cache con `rm -rf .next` antes de `npm run build`
 - **Prevention**: Cuando aparezcan errores de build inexplicables relacionados con imports, limpiar cache de Next.js como primer paso de debugging
 
+## 2025-01-25 — Error de next/image con URLs externas de placeholder
+
+- **Issue**: Error "Invalid src prop on next/image, hostname 'via.placeholder.com' is not configured under images in your next.config.js"
+- **Cause**: Scripts de importación asignaron URLs externas de Unsplash/placeholder a productos, pero next/image requiere configuración explícita de dominios externos
+- **Fix**: 
+  1. Limpieza de URLs externas de la base de datos con script `fix-external-placeholder-urls.js`
+  2. Creación de componente `ProductImage` con fallback automático a SVG dinámico
+  3. Reemplazo de `next/image` por `ProductImage` en todos los componentes
+  4. Placeholder SVG generado con colores de marca y nombre del producto
+- **Prevention**: No usar URLs externas para placeholders. Implementar sistema de fallback interno desde el inicio. Centralizar lógica de imágenes en un componente reutilizable
+
 ## 2025-09-25 — Inconsistencia en tipos de retorno del hook useAuth
 
 - **Issue**: Errores TypeScript en componentes de autenticación donde `signUp`, `signIn` esperaban `{ success: boolean; error?: string }` pero el hook retornaba `{ error: any }`

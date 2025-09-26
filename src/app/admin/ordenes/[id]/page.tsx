@@ -1,11 +1,11 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import Image from 'next/image'
 
 import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { ProductImage } from '@/components/ui/product-image'
 import { 
   ArrowLeft,
   Package,
@@ -264,7 +264,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                   <div key={item.id} className="flex items-center gap-4 p-4 border rounded-lg">
                     <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
                       {item.product_variants.products.image_url ? (
-                        <Image
+                        <ProductImage
                           src={item.product_variants.products.image_url}
                           alt={item.product_variants.products.name}
                           width={64}

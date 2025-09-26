@@ -14,7 +14,74 @@
 - **F3 Optimization** — Status: **Planned** — Owner: Agente Saku
   - Scope: Bricks, filtros/búsqueda, wishlist, reseñas, bundles, A/B, CWV, reportes
 
-## Today: 2025-09-25
+## Today: 2025-01-25
+
+### Task 26: Mejoras Prioritarias de UX en Catálogo de Productos
+
+**Fecha**: 2025-01-25 15:45
+
+**Estado**: 🔄 En Progreso
+
+**Descripción**: Conjunto de mejoras prioritarias para optimizar la experiencia de usuario en el catálogo de productos, incluyendo correcciones de visualización, funcionalidad y usabilidad.
+
+**Tareas Pendientes**:
+
+1. **✅ COMPLETADA - Caracteres especiales**: Corregir visualización de tildes en nombres de productos (ej: "Mónaco" muestra caracteres extraños)
+
+2. **🔴 ALTA - Placeholder display**: Verificar y corregir el problema con el placeholder que no se está mostrando según lo definido
+
+3. **🔴 ALTA - Error 404 productos**: Solucionar el error 404 en la ruta producto/${id}, asegurando que funcione correctamente
+
+4. **🔴 ALTA - Build errors**: Ejecutar comando build para identificar y resolver posibles errores de compilación
+
+5. **🔴 ALTA - Previsualizaciones de color**: Solucionar renderizado de colores que solo muestran negro
+
+6. **🔴 ALTA - Lógica de badges**: Revisar "Últimas unidades" (auto <10 stock + opción admin activar/desactivar)
+
+7. **🟡 MEDIA - Icono carrito**: Modificar icono para incluir signo "+" indicando acción de agregar
+
+8. **🟡 MEDIA - Botón favoritos**: Reparar funcionalidad que actualmente no funciona
+
+9. **🟡 MEDIA - Paginación**: Implementar sistema con límite de 10 productos por página
+
+**Criterios de Aceptación**:
+- Nombres de productos con tildes se muestran correctamente
+- Previsualizaciones de color funcionan para todos los colores disponibles
+- Badges "Últimas unidades" aparecen automáticamente cuando stock < 10
+- Admin puede activar/desactivar badges manualmente por producto
+- Icono de carrito incluye "+" visual
+- Botón de favoritos funciona correctamente
+- Paginación limita a 10 productos por página con navegación
+
+### Task 25: Corrección de Sistema de Imágenes Placeholder
+
+**Fecha**: 2025-01-25 15:30
+
+**Estado**: ✅ Completada
+
+**Descripción**: Corrección del error de `next/image` con URLs externas y implementación de sistema de placeholder SVG dinámico para productos sin imágenes.
+
+- **What was done**:
+  - Identificación y corrección del error de `next/image` con hostname "via.placeholder.com" no configurado
+  - Limpieza de URLs de placeholder externas de 52 productos en la base de datos
+  - Creación del componente `ProductImage` con sistema de fallback automático
+  - Implementación de placeholder SVG dinámico con colores de marca (#d8ceb5)
+  - Actualización de todos los componentes que usan imágenes de productos (ProductCard, PDP, Admin)
+  - Verificación del funcionamiento en frontend sin errores
+
+- **How it was done**:
+  - Script `fix-external-placeholder-urls.js` para limpiar URLs problemáticas de Unsplash
+  - Componente `ProductImage` en `/src/components/ui/product-image.tsx` con manejo de errores
+  - Placeholder SVG generado dinámicamente con nombre del producto y colores de marca
+  - Actualización de imports en ProductCard, página de detalle de producto y admin de órdenes
+  - Reemplazo de `next/image` por `ProductImage` en todos los componentes relevantes
+  - Verificación en preview de que los productos se muestran correctamente
+
+- **Key Technical Decisions**:
+  - **Fallback automático**: No configurar dominios externos en `next.config.js`, usar SVG interno
+  - **Placeholder dinámico**: SVG generado con nombre del producto y colores de marca
+  - **Componente reutilizable**: `ProductImage` centraliza la lógica de fallback
+  - **Limpieza de datos**: Eliminación de URLs externas para evitar dependencias
 
 ### Task 24: Análisis y Diseño del Panel de Administración
 
