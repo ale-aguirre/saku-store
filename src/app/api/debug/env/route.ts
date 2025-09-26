@@ -14,7 +14,9 @@ export async function GET() {
       supabase: {
         url: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'configured' : 'missing',
         anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'configured' : 'missing',
-        serviceRole: process.env.SUPABASE_SERVICE_ROLE ? 'configured' : 'missing'
+        serviceRole: process.env.SUPABASE_SERVICE_ROLE ? 'configured' : 'missing',
+        connection: 'unknown' as string,
+        productsCount: 0 as number
       },
       mercadoPago: {
         accessToken: process.env.MP_ACCESS_TOKEN ? 'configured' : 'missing',
