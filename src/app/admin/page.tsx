@@ -52,7 +52,7 @@ interface Product {
     id: string
     size: string
     color: string
-    stock: number
+    stock_quantity: number
   }[]
 }
 
@@ -140,7 +140,7 @@ export default function AdminDashboard() {
             id,
             size,
             color,
-            stock
+            stock_quantity
           )
         `)
         .order('created_at', { ascending: false })
@@ -352,7 +352,7 @@ export default function AdminDashboard() {
             <CardContent>
               <div className="space-y-4">
                 {products.map((product) => {
-                  const totalStock = product.product_variants.reduce((sum, variant) => sum + variant.stock, 0)
+                  const totalStock = product.product_variants.reduce((sum, variant) => sum + variant.stock_quantity, 0)
                   
                   return (
                     <div key={product.id} className="flex items-center justify-between p-4 border rounded-lg">

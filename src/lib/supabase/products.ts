@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/browser'
+import { createClient } from '@/lib/supabase/client'
 import type { Database } from '@/types/database'
 import type { 
   ProductFilters, 
