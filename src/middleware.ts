@@ -69,12 +69,12 @@ export async function middleware(request: NextRequest) {
 
     // Check if user has admin role
     const { data: profile } = await supabase
-      .from('profiles')
+      .from('users')
       .select('role')
       .eq('id', user.id)
       .single()
 
-    if (!profile || profile.role !== 'admin') {
+    if (!profile || (profile.role !== 'admin' && profile.role !== 'super_admin')) {
       return NextResponse.redirect(new URL('/', request.url))
     }
   }
