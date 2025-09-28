@@ -85,15 +85,48 @@ console.log('3. Selecciona los entornos: production, preview, development');
 console.log('\n🔗 También puedes configurar las variables desde la interfaz web:');
 console.log('   https://vercel.com/dashboard → tu-proyecto → Settings → Environment Variables');
 
-// Generar archivo de ejemplo para Vercel
-const vercelEnvExample = criticalVars.map(key => {
-  const value = envVars[key] || 'your-value-here';
-  return `${key}=${value}`;
-}).join('\n');
+// Generar archivo de ejemplo para Vercel con valores de ejemplo seguros
+const exampleValues = {
+  'NEXT_PUBLIC_SUPABASE_URL': 'https://your-project-ref.supabase.co',
+  'NEXT_PUBLIC_SUPABASE_ANON_KEY': 'your-anon-key-here',
+  'SUPABASE_SERVICE_ROLE': 'your-service-role-key-here',
+  'MP_ACCESS_TOKEN': 'your-mp-access-token-here',
+  'MP_PUBLIC_KEY': 'your-mp-public-key-here',
+  'SMTP_HOST': 'smtp-relay.brevo.com',
+  'SMTP_PORT': '587',
+  'SMTP_SECURE': 'false',
+  'SMTP_USER': 'your-smtp-user@smtp-brevo.com',
+  'SMTP_PASS': 'your-smtp-password-here',
+  'SMTP_FROM': 'noreply@yourdomain.com',
+  'NEXT_PUBLIC_APP_URL': 'https://your-domain.com',
+  'NEXT_PUBLIC_SITE_URL': 'https://your-domain.com'
+};
+
+const vercelEnvExample = [
+  '# Variables de entorno para Vercel',
+  '# IMPORTANTE: Reemplaza estos valores de ejemplo con tus credenciales reales',
+  '',
+  '# Supabase',
+  ...criticalVars.filter(key => key.includes('SUPABASE')).map(key => `${key}=${exampleValues[key] || 'your-value-here'}`),
+  '',
+  '# Mercado Pago',
+  ...criticalVars.filter(key => key.includes('MP_')).map(key => `${key}=${exampleValues[key] || 'your-value-here'}`),
+  '',
+  '# SMTP (Brevo/Sendinblue)',
+  ...criticalVars.filter(key => key.includes('SMTP')).map(key => `${key}=${exampleValues[key] || 'your-value-here'}`),
+  '',
+  '# URLs',
+  ...criticalVars.filter(key => key.includes('URL')).map(key => `${key}=${exampleValues[key] || 'your-value-here'}`),
+  '',
+  '# Analytics',
+  'GA4_ID=G-XXXXXXXXXX',
+  'META_PIXEL_ID=your-pixel-id-here'
+].join('\n');
 
 fs.writeFileSync(
   path.join(__dirname, '..', 'vercel-env-example.txt'),
   vercelEnvExample
 );
 
-console.log('\n✅ Archivo vercel-env-example.txt generado con las variables necesarias');
+console.log('\n✅ Archivo vercel-env-example.txt generado con valores de ejemplo seguros');
+console.log('⚠️  IMPORTANTE: Este archivo contiene valores de ejemplo, NO tus credenciales reales');

@@ -1,13 +1,28 @@
-NEXT_PUBLIC_SUPABASE_URL=https://yhddnpcwhmeupwsjkchb.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InloZGRucGN3aG1ldXB3c2prY2hiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg0OTgyMzAsImV4cCI6MjA3NDA3NDIzMH0.stUmviSi2A3htTpSLzEA7M2-zqkajxyWwBKAr-nyvEE
-SUPABASE_SERVICE_ROLE=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InloZGRucGN3aG1ldXB3c2prY2hiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1ODQ5ODIzMCwiZXhwIjoyMDc0MDc0MjMwfQ.GTeou9hfYXCSAxZAnAbh8Ha9Van-D7O6oweTMPbd2gc
-MP_ACCESS_TOKEN=APP_USR-339820665340982-092120-15a12f4f9f2ab892a305a584f35a2a7c-35806733
-MP_PUBLIC_KEY=APP_USR-01b64738-8f7c-4495-846a-e2f30775f032
+# Variables de entorno para Vercel
+# IMPORTANTE: Reemplaza estos valores de ejemplo con tus credenciales reales
+
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+SUPABASE_SERVICE_ROLE=your-service-role-key-here
+
+# Mercado Pago
+MP_ACCESS_TOKEN=your-mp-access-token-here
+MP_PUBLIC_KEY=your-mp-public-key-here
+
+# SMTP (Brevo/Sendinblue)
 SMTP_HOST=smtp-relay.brevo.com
 SMTP_PORT=587
 SMTP_SECURE=false
-SMTP_USER=9784d5001@smtp-brevo.com
-SMTP_PASS=rUc4z5KEMTFXHNBJ
-SMTP_FROM=noreply@sakulenceria.com
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
+SMTP_USER=your-smtp-user@smtp-brevo.com
+SMTP_PASS=your-smtp-password-here
+SMTP_FROM=noreply@yourdomain.com
+
+# URLs
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+NEXT_PUBLIC_APP_URL=https://your-domain.com
+NEXT_PUBLIC_SITE_URL=https://your-domain.com
+
+# Analytics
+GA4_ID=G-XXXXXXXXXX
+META_PIXEL_ID=your-pixel-id-here

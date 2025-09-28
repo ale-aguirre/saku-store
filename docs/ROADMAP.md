@@ -14,7 +14,52 @@
 - **F3 Optimization** — Status: **Planned** — Owner: Agente Saku
   - Scope: Bricks, filtros/búsqueda, wishlist, reseñas, bundles, A/B, CWV, reportes
 
-## Today: 2025-09-26
+## Today: 2025-09-27
+
+### Task 30: Resolución de Warnings del Deploy en Vercel
+
+**Fecha**: 2025-09-27 23:53
+
+**Estado**: ✅ Completada
+
+**Descripción**: Resolución de múltiples warnings que aparecían durante el proceso de deploy en Vercel, incluyendo vulnerabilidades de seguridad, dependencias faltantes y configuración de variables de entorno.
+
+**Warnings Identificados**:
+- 31 vulnerabilidades de alta severidad en dependencias de MJML
+- Dependencias SWC faltantes en lockfile
+- Variables de entorno de Supabase no encontradas durante el build
+- Warning de serialización de webpack para strings grandes
+
+**Solución Implementada**:
+
+1. **✅ COMPLETADA - Actualización de MJML**: 
+   - Actualizado MJML de v4.16.1 a v5.0.0-alpha.6
+   - Resueltas las 31 vulnerabilidades de alta severidad
+   - Recompiladas todas las plantillas de email exitosamente
+
+2. **✅ COMPLETADA - Corrección de dependencias SWC**: 
+   - Ejecutado `npm run build` localmente para que Next.js parchee automáticamente las dependencias SWC
+   - Generado package-lock.json actualizado con las dependencias correctas
+
+3. **✅ COMPLETADA - Script de configuración de variables de entorno**: 
+   - Creado `scripts/setup-vercel-env.js` para facilitar la configuración en Vercel
+   - Generado `vercel-env-example.txt` con todas las variables necesarias
+   - Identificadas variables críticas: Supabase, Mercado Pago, SMTP, Analytics
+
+4. **✅ COMPLETADA - Verificaciones de calidad**: 
+   - ESLint: ✅ Sin errores ni warnings
+   - TypeScript: ✅ Sin errores de tipos
+   - Build: ✅ Compilación exitosa
+
+**Archivos Modificados**:
+- `package.json` y `package-lock.json` (actualización MJML)
+- `scripts/setup-vercel-env.js` (nuevo)
+- `vercel-env-example.txt` (nuevo)
+- Plantillas HTML recompiladas en `/emails/templates/`
+
+**Rama**: `fix/deploy-warnings`
+
+## Previous: 2025-09-26
 
 ### Task 29: Resolución de Problema de Despliegue en Vercel
 
