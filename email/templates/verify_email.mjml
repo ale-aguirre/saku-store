@@ -1,0 +1,100 @@
+<mjml>
+  <mj-head>
+    <mj-title>{{subjects.verify_email.subject}}</mj-title>
+    <mj-preview>{{subjects.verify_email.preheader}}</mj-preview>
+    <mj-attributes>
+      <mj-all font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif" />
+      <mj-text font-size="16px" color="#000000" line-height="1.6" />
+      <mj-section padding="0" />
+    </mj-attributes>
+    <mj-style>
+      .content-padding { padding: 30px 24px !important; }
+      @media only screen and (max-width: 480px) {
+        .content-padding { padding: 24px 16px !important; }
+      }
+    </mj-style>
+  </mj-head>
+  
+  <mj-body background-color="#f8f8f8" width="600px">
+    <!-- Header -->
+    <mj-include path="../partials/header.mjml" />
+    
+    <!-- Main Content -->
+    <mj-section background-color="#ffffff" css-class="content-padding">
+      <mj-column>
+        <mj-text 
+          font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif"
+          font-size="24px" 
+          font-weight="600" 
+          color="#000000" 
+          align="center"
+          padding="0 0 28px 0"
+          line-height="1.3"
+        >
+          Confirmá tu email
+        </mj-text>
+        
+        <mj-text 
+          font-size="16px" 
+          color="#000000" 
+          align="left"
+          padding="0 0 24px 0"
+          line-height="1.6"
+        >
+          Hola {{user.first_name}},
+        </mj-text>
+        
+        <mj-text 
+          font-size="16px" 
+          color="#000000" 
+          align="left"
+          padding="0 0 28px 0"
+          line-height="1.6"
+        >
+          Gracias por registrarte en Sakú. Para completar tu cuenta y empezar a comprar, necesitamos que confirmes tu dirección de email.
+        </mj-text>
+        
+        <mj-button 
+          href="{{verification.url}}" 
+          background-color="#000000" 
+          color="#ffffff"
+          font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif"
+          font-size="16px"
+          font-weight="600"
+          border-radius="8px"
+          padding="20px 0"
+          align="center"
+          text-decoration="none"
+          line-height="1.2"
+          inner-padding="16px 32px"
+        >
+          Confirmar mi email
+        </mj-button>
+        
+        <mj-text 
+          font-size="14px" 
+          color="#666666" 
+          align="center"
+          padding="24px 0 0 0"
+          line-height="1.5"
+        >
+          Si no podés hacer clic en el botón, copiá y pegá este enlace en tu navegador:<br/>
+          <a href="{{verification.url}}" style="color: #666666; text-decoration: underline; word-break: break-all;">{{verification.url}}</a>
+        </mj-text>
+        
+        <mj-text 
+          font-size="14px" 
+          color="#999999" 
+          align="center"
+          padding="20px 0 0 0"
+          line-height="1.5"
+        >
+          Este enlace vence en 24 horas por seguridad.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    
+    <!-- Footer -->
+    <mj-include path="../partials/footer.mjml" />
+  </mj-body>
+</mjml>

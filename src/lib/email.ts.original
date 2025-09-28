@@ -555,25 +555,24 @@ export const sendWelcomeEmail = async (data: WelcomeEmailData) => {
   const content = `
     <h1>¡Bienvenida a Sakú Lencería, ${customerName}!</h1>
     
-    <p>Nos emociona tenerte como parte de nuestra comunidad. En Sakú creemos que cada mujer merece sentirse hermosa y cómoda en su propia piel.</p>
+    <p>Nos alegra mucho tenerte como parte de nuestra comunidad. En Sakú encontrarás lencería de alta calidad que combina elegancia y comodidad.</p>
     
-    <div class="info-box">
-      <h3>¿Qué puedes esperar de nosotras?</h3>
+    <div class="order-summary">
+      <h3>¿Qué puedes esperar de nosotros?</h3>
       <ul style="margin: 0; padding-left: 20px;">
-        <li style="margin-bottom: 12px;">Lencería de alta calidad diseñada para realzar tu belleza natural</li>
-        <li style="margin-bottom: 12px;">Atención personalizada y asesoramiento en tallas</li>
-        <li style="margin-bottom: 12px;">Envíos discretos y seguros a todo el país</li>
-        <li style="margin-bottom: 12px;">Ofertas exclusivas y novedades antes que nadie</li>
+        <li style="margin-bottom: 8px;">Productos de alta calidad con materiales premium</li>
+        <li style="margin-bottom: 8px;">Diseños únicos que realzan tu belleza natural</li>
+        <li style="margin-bottom: 8px;">Atención personalizada y asesoramiento experto</li>
+        <li style="margin-bottom: 8px;">Envíos seguros y discretos</li>
       </ul>
     </div>
     
-    <p><div style="text-align: center; margin: 32px 0;">
-      <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://saku-lenceria.com'}" class="button">Descubrir Colección</a>
-    </div>
+    <p>Como bienvenida, queremos ofrecerte un <strong>15% de descuento</strong> en tu primera compra. Usa el código:</p>
     
-    <p style="text-align: center; color: #666666; font-style: italic;">
-      "La elegancia es la única belleza que nunca se desvanece" - Audrey Hepburn
-    </p>
+    <div class="tracking-info">
+      <div class="tracking-number">BIENVENIDA15</div>
+      <p style="margin: 8px 0 0 0; font-size: 14px; color: #666;">Válido por 30 días</p>
+    </div>
     
     <div style="text-align: center; margin: 32px 0;">
       <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://saku-lenceria.com'}" class="button">
@@ -598,14 +597,14 @@ export const sendWelcomeEmail = async (data: WelcomeEmailData) => {
 export const sendOrderConfirmationEmail = async (data: OrderEmailData) => {
   const { order, customerEmail, items } = data
   
-  const statusMessages = {
-    pending: 'Tu pedido ha sido recibido y está siendo procesado',
-    paid: 'Tu pedido ha sido confirmado y está siendo preparado',
-    processing: 'Tu pedido está siendo preparado con mucho cuidado',
-    shipped: 'Tu pedido está en camino',
-    delivered: 'Tu pedido ha sido entregado',
-    cancelled: 'Tu pedido ha sido cancelado',
-    refunded: 'Tu pedido ha sido reembolsado'
+  const statusText = {
+    pending: 'Pendiente de pago',
+    paid: 'Confirmado',
+    processing: 'En preparación',
+    shipped: 'Enviado',
+    delivered: 'Entregado',
+    cancelled: 'Cancelado',
+    refunded: 'Reembolsado'
   }
   
   const statusClass = {
@@ -620,7 +619,7 @@ export const sendOrderConfirmationEmail = async (data: OrderEmailData) => {
   
   const content = `
     <h1>¡Gracias por tu compra!</h1>
-    <p>${statusMessages[order.status]}. Te enviaremos actualizaciones sobre el estado de tu pedido.</p>
+    <p>Hemos recibido tu pedido y ${order.status === 'paid' ? 'lo estamos preparando con mucho cuidado' : 'estamos esperando la confirmación del pago'}.</p>
     
     <div class="order-summary">
       <h3>Resumen del pedido</h3>
@@ -634,7 +633,7 @@ export const sendOrderConfirmationEmail = async (data: OrderEmailData) => {
       </div>
       <div class="order-info">
         <span><strong>Estado:</strong></span>
-        <span class="status-badge ${statusClass[order.status]}">${statusMessages[order.status]}</span>
+        <span class="status-badge ${statusClass[order.status]}">${statusText[order.status]}</span>
       </div>
       
       <div style="margin-top: 20px;">
@@ -693,7 +692,7 @@ export const sendOrderConfirmationEmail = async (data: OrderEmailData) => {
     to: customerEmail,
     subject: `Confirmación de pedido #${order.order_number} - Sakú Lencería`,
     html: getEmailTemplate(content),
-    text: `Gracias por tu compra. Tu pedido #${order.order_number} ha sido recibido y está ${statusMessages[order.status].toLowerCase()}.`
+    text: `Gracias por tu compra. Tu pedido #${order.order_number} ha sido recibido y está ${statusText[order.status].toLowerCase()}.`
   }
   
   return await sendEmail(emailConfig)

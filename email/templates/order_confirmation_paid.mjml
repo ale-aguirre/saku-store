@@ -1,0 +1,165 @@
+<mjml>
+  <mj-head>
+    <mj-title>{{subjects.order_confirmation_paid.subject}}</mj-title>
+    <mj-preview>{{subjects.order_confirmation_paid.preheader}}</mj-preview>
+    <mj-attributes>
+      <mj-all font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif" />
+      <mj-text font-size="16px" color="#000000" line-height="1.6" />
+      <mj-section padding="0" />
+    </mj-attributes>
+    <mj-style>
+      .content-padding { padding: 30px 24px !important; }
+      .order-item { border-bottom: 1px solid #f0f0f0; padding: 16px 0; }
+      .order-total { background-color: #f8f8f8; padding: 20px; border-radius: 8px; margin: 20px 0; }
+      @media only screen and (max-width: 480px) {
+        .content-padding { padding: 24px 16px !important; }
+      }
+    </mj-style>
+  </mj-head>
+  
+  <mj-body background-color="#f8f8f8" width="600px">
+    <!-- Header -->
+    <mj-include path="../partials/header.mjml" />
+    
+    <!-- Main Content -->
+    <mj-section background-color="#ffffff" css-class="content-padding">
+      <mj-column>
+        <mj-text 
+          font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif"
+          font-size="24px" 
+          font-weight="600" 
+          color="#000000" 
+          align="center"
+          padding="0 0 28px 0"
+          line-height="1.3"
+        >
+          ¡Pago confirmado!
+        </mj-text>
+        
+        <mj-text 
+          font-size="16px" 
+          color="#000000" 
+          align="left"
+          padding="0 0 24px 0"
+          line-height="1.6"
+        >
+          Hola {{user.first_name}},
+        </mj-text>
+        
+        <mj-text 
+          font-size="16px" 
+          color="#000000" 
+          align="left"
+          padding="0 0 28px 0"
+          line-height="1.6"
+        >
+          ¡Excelente! Confirmamos que recibimos tu pago y tu pedido <strong>#{{order.id}}</strong> ya está siendo preparado.
+        </mj-text>
+        
+        <!-- Order Details -->
+        <mj-text 
+          font-size="18px" 
+          font-weight="600" 
+          color="#000000" 
+          align="left"
+          padding="0 0 20px 0"
+          line-height="1.4"
+        >
+          Detalles del pedido
+        </mj-text>
+        
+        <mj-text 
+          font-size="14px" 
+          color="#666666" 
+          align="left"
+          padding="0 0 20px 0"
+          line-height="1.5"
+        >
+          <strong>Pedido:</strong> #{{order.id}}<br/>
+          <strong>Fecha:</strong> {{order.date}}<br/>
+          <strong>Estado:</strong> Pago confirmado
+        </mj-text>
+        
+        <!-- Order Items -->
+        <mj-table>
+          <tr style="border-bottom: 2px solid #d8ceb5; text-align: left;">
+            <th style="padding: 12px 8px; font-size: 14px; font-weight: 600; color: #000000;">Producto</th>
+            <th style="padding: 12px 8px; font-size: 14px; font-weight: 600; color: #000000; text-align: center;">Cant.</th>
+            <th style="padding: 12px 8px; font-size: 14px; font-weight: 600; color: #000000; text-align: right;">Precio</th>
+          </tr>
+          {{#each order.items}}
+          <tr style="border-bottom: 1px solid #f0f0f0;">
+            <td style="padding: 16px 8px; font-size: 14px; color: #000000;">
+              <strong>{{name}}</strong><br/>
+              <span style="color: #666666; font-size: 13px;">{{variant}}</span>
+            </td>
+            <td style="padding: 16px 8px; font-size: 14px; color: #000000; text-align: center;">{{qty}}</td>
+            <td style="padding: 16px 8px; font-size: 14px; color: #000000; text-align: right;">${{price}}</td>
+          </tr>
+          {{/each}}
+        </mj-table>
+        
+        <!-- Order Summary -->
+        <mj-text 
+          font-size="14px" 
+          color="#000000" 
+          align="right" 
+          padding="20px"
+          background-color="#f8f8f8"
+        >
+          <strong>Subtotal:</strong> ${{order.subtotal}}<br/>
+          <strong>Envío:</strong> ${{order.shipping_cost}}<br/>
+          {{#if discount_total}}
+          <strong>Descuento:</strong> -${{discount_total}}<br/>
+          {{/if}}
+          <span style="font-size: 16px; font-weight: 600; color: #000000;">
+            <strong>Total:</strong> ${{order.total}}
+          </span>
+        </mj-text>
+        
+        <!-- Shipping Info -->
+        <mj-text 
+          font-size="16px" 
+          color="#000000" 
+          align="left"
+          padding="28px 0 20px 0"
+          line-height="1.6"
+        >
+          <strong>Información de envío:</strong><br/>
+          {{shipping.method}}<br/>
+          {{shipping.address}}
+        </mj-text>
+        
+        <mj-text 
+          font-size="14px" 
+          color="#666666" 
+          align="left"
+          padding="0 0 28px 0"
+          line-height="1.5"
+        >
+          Te avisaremos por email cuando tu pedido esté en camino con el código de seguimiento.
+        </mj-text>
+        
+        <mj-button 
+          href="{{site.url}}/mi-cuenta/pedidos/{{order.id}}" 
+          background-color="#000000" 
+          color="#ffffff"
+          font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif"
+          font-size="16px"
+          font-weight="600"
+          border-radius="8px"
+          padding="20px 0"
+          align="center"
+          text-decoration="none"
+          line-height="1.2"
+          inner-padding="16px 32px"
+        >
+          Ver mi pedido
+        </mj-button>
+      </mj-column>
+    </mj-section>
+    
+    <!-- Footer -->
+    <mj-include path="../partials/footer.mjml" />
+  </mj-body>
+</mjml>

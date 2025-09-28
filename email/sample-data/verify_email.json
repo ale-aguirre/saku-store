@@ -1,0 +1,24 @@
+{
+  "user": {
+    "first_name": "María",
+    "email": "maria@ejemplo.com"
+  },
+  "verification": {
+    "url": "https://sakulenceria.com/auth/verify?token=abc123xyz789"
+  },
+  "support": {
+    "email": "hola@sakulenceria.com"
+  },
+  "site": {
+    "url": "https://sakulenceria.com"
+  },
+  "unsubscribe": {
+    "url": "https://sakulenceria.com/unsubscribe?token=unsubscribe123"
+  },
+  "subjects": {
+    "verify_email": {
+      "subject": "Confirmá tu email para usar Sakú",
+      "preheader": "Completá el registro con un clic"
+    }
+  }
+}

@@ -1166,3 +1166,84 @@
   - ✅ Vercel build: OK (resuelto)
   - ✅ Sitio en producción: Funcionando correctamente
   - ✅ Git: Commit y push exitosos
+
+## ��� Mejora de Plantillas de Email - 27 de septiembre de 2025
+
+**Objetivo**: Mejorar las plantillas de email para hacerlas más profesionales y orientadas al cliente final.
+
+**Cambios realizados**:
+- ✅ **Email de bienvenida mejorado**:
+  - Eliminado código de descuento hardcodeado (`BIENVENIDA15`)
+  - Mejorado el mensaje de bienvenida con tono más cálido
+  - Actualizada lista de beneficios (4 puntos clave)
+  - Agregada cita inspiracional de Audrey Hepburn
+  - Cambiado CTA a "Descubrir Colección"
+
+- ✅ **Email de confirmación de pedido mejorado**:
+  - Agregado saludo personalizado con nombre del cliente
+  - Mejorados los mensajes de estado del pedido
+  - Agregada sección "Información importante" con:
+    - Tiempo de preparación: 1-2 días hábiles
+    - Envío: 3-5 días hábiles
+    - Embalaje discreto garantizado
+    - Política de no devoluciones por higiene
+  - Cambiado enlace a "Ver Estado del Pedido"
+
+- ✅ **Mejoras técnicas**:
+  - Corregidas referencias de `statusText` a `statusMessages`
+  - Eliminada información técnica innecesaria
+  - Mejorado el formato para mejor legibilidad
+  - Mantenida compatibilidad con clientes de email
+
+- ✅ **Scripts de soporte**:
+  - Creado `scripts/improve-email-templates.js` para aplicar mejoras
+  - Creado `scripts/simulate-email-preview.js` para vista previa
+  - Respaldos creados: `email.ts.original` y `email.ts.backup`
+
+- ✅ **Verificaciones de calidad**:
+  - ESLint: ✅ Sin errores
+  - TypeScript: ✅ Sin errores
+  - Simulación de emails: ✅ Completada
+
+**Cómo se hizo**:
+1. Análisis de plantillas actuales para identificar información técnica
+2. Creación de script automatizado para aplicar mejoras consistentes
+3. Corrección de errores de TypeScript por cambios en variables
+4. Simulación con datos realistas para verificar resultado final
+5. Verificación de calidad con lint y type-check
+
+**Resultado**: Las plantillas ahora son más profesionales, cálidas y orientadas al cliente, eliminando información técnica y agregando valor con políticas claras y tiempos de entrega.
+
+## 🔧 Corrección de Ancho de Emails y Envío de Pruebas - 27 de septiembre de 2025
+
+**Objetivo**: Corregir el problema de ancho incorrecto en los cuerpos de email y configurar sistema de envío de pruebas.
+
+**Tareas Completadas**:
+
+- ✅ **Corrección de ancho en plantillas MJML**:
+  - Identificado problema: falta de especificación de ancho en `<mj-body>`
+  - Agregado `width="600px"` a las 3 plantillas principales:
+    - `emails/templates/verify_email.mjml`
+    - `emails/templates/welcome_account.mjml`
+    - `emails/templates/order_confirmation_paid.mjml`
+  - Recompilación exitosa con `npm run emails:build`
+
+- ✅ **Script de envío de pruebas**:
+  - Corregido error en `scripts/send-test-emails.js` (nodemailer.createTransporter → createTransport)
+  - Configurado envío con datos de prueba realistas
+  - Implementado delay entre envíos para evitar rate limiting
+  - Soporte para envío individual o todos los templates
+
+- ✅ **Envío exitoso de pruebas**:
+  - 3/3 emails enviados correctamente a aguirrealexis.cba@gmail.com
+  - Message IDs confirmados por servidor SMTP
+  - Ancho corregido a 600px (estándar para emails)
+
+**Cómo se hizo**:
+1. Análisis de plantillas MJML para identificar problema de ancho
+2. Corrección sistemática en las 3 plantillas principales
+3. Recompilación de templates HTML desde MJML
+4. Corrección de bug en script de envío (importación nodemailer)
+5. Envío de pruebas con confirmación de entrega
+
+**Resultado**: Los emails ahora tienen el ancho correcto (600px) y el sistema de envío de pruebas funciona perfectamente para testing futuro.
