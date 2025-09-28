@@ -81,7 +81,7 @@
     "dotenv": "^17.2.2",
     "eslint": "^9",
     "eslint-config-next": "15.5.3",
-    "mjml": "^4.16.1",
+    "mjml": "^5.0.0-alpha.6",
     "next-sitemap": "^4.2.3",
     "node-fetch": "^3.3.2",
     "prettier": "^3.6.2",
