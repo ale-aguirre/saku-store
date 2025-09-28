@@ -1,0 +1,46 @@
+{
+  "verify_email": {
+    "subject": "Confirmá tu email para usar Sakú",
+    "preheader": "Completá el registro con un clic"
+  },
+  "welcome_account": {
+    "subject": "¡Bienvenida a Sakú!",
+    "preheader": "Tu cuenta ya está lista"
+  },
+  "password_reset": {
+    "subject": "Restablecé tu contraseña",
+    "preheader": "Este enlace vence pronto"
+  },
+  "order_confirmation_pending": {
+    "subject": "Recibimos tu pedido (#{{order.id}})",
+    "preheader": "Esperando confirmación de pago"
+  },
+  "order_confirmation_paid": {
+    "subject": "¡Pago aprobado! Pedido #{{order.id}}",
+    "preheader": "Te avisamos cuando lo despachemos"
+  },
+  "order_failed": {
+    "subject": "No pudimos procesar tu pago",
+    "preheader": "Probá nuevamente o cambiá el método"
+  },
+  "order_fulfilled_with_tracking": {
+    "subject": "Tu pedido está en camino",
+    "preheader": "Seguimiento: {{tracking.code}}"
+  },
+  "delivery_confirmation": {
+    "subject": "¿Recibiste tu pedido?",
+    "preheader": "Contanos cómo fue tu experiencia"
+  },
+  "abandoned_cart": {
+    "subject": "¿Te olvidaste algo en tu carrito?",
+    "preheader": "Completá tu compra antes de que se agoten"
+  },
+  "nps_request": {
+    "subject": "¿Cómo fue tu experiencia con Sakú?",
+    "preheader": "Tu opinión nos ayuda a mejorar"
+  },
+  "winback_60_90": {
+    "subject": "Te extrañamos en Sakú",
+    "preheader": "Volvé con un descuento especial"
+  }
+}

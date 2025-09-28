@@ -1,0 +1,47 @@
+{
+  "user": {
+    "first_name": "Ana",
+    "email": "ana@ejemplo.com"
+  },
+  "order": {
+    "id": "ORD-2024-001",
+    "date": "15 de enero de 2024",
+    "subtotal": "45.000",
+    "shipping_cost": "8.500",
+    "total": "53.500",
+    "items": [
+      {
+        "name": "Conjunto Clásico",
+        "variant": "Talle 90 - Negro",
+        "qty": "1",
+        "price": "25.000"
+      },
+      {
+        "name": "Bombacha Comfort",
+        "variant": "Talle 95 - Blanco",
+        "qty": "2",
+        "price": "20.000"
+      }
+    ]
+  },
+  "shipping": {
+    "method": "Envío estándar (5-7 días hábiles)",
+    "address": "Av. Colón 1234, Córdoba Capital, Córdoba (5000)"
+  },
+  "discount_total": null,
+  "support": {
+    "email": "hola@sakulenceria.com"
+  },
+  "site": {
+    "url": "https://sakulenceria.com"
+  },
+  "unsubscribe": {
+    "url": "https://sakulenceria.com/unsubscribe?token=unsubscribe123"
+  },
+  "subjects": {
+    "order_confirmation_paid": {
+      "subject": "¡Pago aprobado! Pedido #ORD-2024-001",
+      "preheader": "Te avisamos cuando lo despachemos"
+    }
+  }
+}

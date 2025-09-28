@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitación a Sakú Lencería</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Marcellus&family=Inter:wght@400;500;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.6;
+            color: #000000;
+            background-color: #ffffff;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+        
+        .header {
+            background-color: #d8ceb5;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .logo {
+            font-family: 'Razed Bold', 'Marcellus', serif;
+            font-size: 32px;
+            font-weight: bold;
+            color: #000000;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .title {
+            font-family: 'Marcellus', serif;
+            font-size: 28px;
+            color: #000000;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .message {
+            font-size: 16px;
+            color: #000000;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .button-container {
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .accept-button {
+            display: inline-block;
+            background-color: #000000;
+            color: #ffffff;
+            padding: 16px 32px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .accept-button:hover {
+            background-color: #333333;
+        }
+        
+        .alternative-link {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f8f8;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #666666;
+        }
+        
+        .alternative-link p {
+            margin-bottom: 10px;
+        }
+        
+        .link-text {
+            word-break: break-all;
+            color: #000000;
+            text-decoration: underline;
+        }
+        
+        .footer {
+            background-color: #f8f8f8;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .footer-text {
+            font-size: 14px;
+            color: #666666;
+            margin-bottom: 10px;
+        }
+        
+        .footer-links {
+            font-size: 12px;
+            color: #999999;
+        }
+        
+        .footer-links a {
+            color: #000000;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                width: 100% !important;
+            }
+            
+            .header, .content, .footer {
+                padding: 20px !important;
+            }
+            
+            .title {
+                font-size: 24px;
+            }
+            
+            .accept-button {
+                padding: 14px 28px;
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">SAKÚ</div>
+        </div>
+        
+        <div class="content">
+            <h1 class="title">Has sido invitada a Sakú</h1>
+            
+            <p class="message">
+                Te hemos invitado a formar parte de nuestra comunidad de lencería íntima y elegante. 
+                Haz clic en el botón de abajo para aceptar la invitación y crear tu cuenta.
+            </p>
+            
+            <div class="button-container">
+                <a href="{{ .ConfirmationURL }}" class="accept-button">
+                    Aceptar invitación
+                </a>
+            </div>
+            
+            <div class="alternative-link">
+                <p><strong>¿No puedes hacer clic en el botón?</strong></p>
+                <p>Copia y pega este enlace en tu navegador:</p>
+                <p class="link-text">{{ .ConfirmationURL }}</p>
+            </div>
+            
+            <p style="margin-top: 30px; font-size: 14px; color: #666666; text-align: center;">
+                Esta invitación expirará en 7 días.
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p class="footer-text">
+                <strong>Sakú Lencería</strong><br>
+                Lencería íntima y elegante para cada momento
+            </p>
+            
+            <div class="footer-links">
+                <a href="{{ .SiteURL }}">Visitar tienda</a> |
+                <a href="{{ .SiteURL }}/contacto">Contacto</a> |
+                <a href="{{ .SiteURL }}/politicas/privacidad">Privacidad</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

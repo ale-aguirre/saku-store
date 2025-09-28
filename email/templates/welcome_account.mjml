@@ -1,0 +1,102 @@
+<mjml>
+  <mj-head>
+    <mj-title>{{subjects.welcome_account.subject}}</mj-title>
+    <mj-preview>{{subjects.welcome_account.preheader}}</mj-preview>
+    <mj-attributes>
+      <mj-all font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif" />
+      <mj-text font-size="16px" color="#000000" line-height="1.6" />
+      <mj-section padding="0" />
+    </mj-attributes>
+    <mj-style>
+      .content-padding { padding: 30px 24px !important; }
+      @media only screen and (max-width: 480px) {
+        .content-padding { padding: 24px 16px !important; }
+      }
+    </mj-style>
+  </mj-head>
+  
+  <mj-body background-color="#f8f8f8" width="600px">
+    <!-- Header -->
+    <mj-include path="../partials/header.mjml" />
+    
+    <!-- Main Content -->
+    <mj-section background-color="#ffffff" css-class="content-padding">
+      <mj-column>
+        <mj-text 
+          font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif"
+          font-size="24px" 
+          font-weight="600" 
+          color="#000000" 
+          align="center"
+          padding="0 0 28px 0"
+          line-height="1.3"
+        >
+          ¡Bienvenida a Sakú!
+        </mj-text>
+        
+        <mj-text 
+          font-size="16px" 
+          color="#000000" 
+          align="left"
+          padding="0 0 24px 0"
+          line-height="1.6"
+        >
+          Hola {{user.first_name}},
+        </mj-text>
+        
+        <mj-text 
+          font-size="16px" 
+          color="#000000" 
+          align="left"
+          padding="0 0 28px 0"
+          line-height="1.6"
+        >
+          ¡Qué alegría tenerte con nosotras! Tu cuenta ya está lista y podés empezar a explorar nuestra colección de lencería íntima y elegante.
+        </mj-text>
+        
+        <mj-text 
+          font-size="16px" 
+          color="#000000" 
+          align="left"
+          padding="0 0 28px 0"
+          line-height="1.6"
+        >
+          En Sakú creemos que cada mujer merece sentirse cómoda y segura de sí misma. Por eso diseñamos cada pieza pensando en tu bienestar y elegancia.
+        </mj-text>
+        
+        <mj-button 
+          href="{{site.url}}/productos" 
+          background-color="#000000" 
+          color="#ffffff"
+          font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif"
+          font-size="16px"
+          font-weight="600"
+          border-radius="8px"
+          padding="20px 0"
+          align="center"
+          text-decoration="none"
+          line-height="1.2"
+          inner-padding="16px 32px"
+        >
+          Explorar productos
+        </mj-button>
+        
+        <mj-text 
+          font-size="14px" 
+          color="#666666" 
+          align="center"
+          padding="32px 0 0 0"
+          line-height="1.5"
+        >
+          <strong>Recordá:</strong><br/>
+          • Envío gratis en compras superiores a $50.000<br/>
+          • Cambios y devoluciones dentro de los 30 días<br/>
+          • Atención personalizada por WhatsApp
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    
+    <!-- Footer -->
+    <mj-include path="../partials/footer.mjml" />
+  </mj-body>
+</mjml>

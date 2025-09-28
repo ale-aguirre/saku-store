@@ -90,18 +90,18 @@ enable_signup = true
 # addresses. If disabled, only the new email is required to confirm.
 double_confirm_changes = true
 # If enabled, users need to confirm their email address before signing in.
-enable_confirmations = false
+enable_confirmations = true
 
-# Uncomment to customize email template
-# [auth.email.template.invite]
-# subject = "You have been invited"
-# content_path = "./supabase/templates/invite.html"
+# Custom email templates for Sakú Lencería
+[auth.email.template.invite]
+subject = "Invitación a Sakú Lencería"
+content_path = "./supabase/templates/invite.html"
 
 [auth.sms]
 # Allow/disallow new user signups via SMS to your project.
 enable_signup = true
 # If enabled, users need to confirm their phone number before signing in.
-enable_confirmations = false
+enable_confirmations = true
 # Template for sending a confirmation OTP via SMS.
 # Must contain a {{ .Code }} placeholder for the verification code.
 template = "Your code is {{ .Code }} ."
@@ -154,3 +154,10 @@ backend = "postgres"
 # port = 54433
 # user = "postgres"
 # password = "password"
+[auth.email.template.confirmation]
+subject = "Confirma tu cuenta en Sakú Lencería"
+content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.recovery]
+subject = "Recuperar contraseña - Sakú Lencería"
+content_path = "./supabase/templates/recovery.html"

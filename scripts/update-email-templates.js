@@ -1,4 +1,7 @@
-import nodemailer from 'nodemailer'
+const fs = require('fs')
+const path = require('path')
+
+const emailContent = `import nodemailer from 'nodemailer'
 import { formatPrice } from '@/lib/utils'
 
 interface EmailConfig {
@@ -71,7 +74,7 @@ export interface NewsletterEmailData {
 
 // Configurar transporter de nodemailer
 const createTransporter = () => {
-  return nodemailer.createTransport({
+  return nodemailer.createTransporter({
     host: process.env.SMTP_HOST,
     port: parseInt(process.env.SMTP_PORT || '587'),
     secure: process.env.SMTP_SECURE === 'true',
@@ -83,7 +86,7 @@ const createTransporter = () => {
 }
 
 // Plantilla base responsive para emails
-const getEmailTemplate = (content: string) => `
+const getEmailTemplate = (content: string, emailType: 'order' | 'welcome' | 'shipping' | 'newsletter' | 'general' = 'general') => \`
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -535,7 +538,7 @@ const getEmailTemplate = (content: string) => `
     </div>
     
     <div class="content">
-      ${content}
+      \${content}
     </div>
     
     <div class="footer">
@@ -546,49 +549,48 @@ const getEmailTemplate = (content: string) => `
   </div>
 </body>
 </html>
-`
+\`
 
 // Email de bienvenida/registro
 export const sendWelcomeEmail = async (data: WelcomeEmailData) => {
   const { customerName, customerEmail } = data
   
-  const content = `
-    <h1>¡Bienvenida a Sakú Lencería, ${customerName}!</h1>
+  const content = \`
+    <h1>¡Bienvenida a Sakú Lencería, \${customerName}!</h1>
     
-    <p>Nos emociona tenerte como parte de nuestra comunidad. En Sakú creemos que cada mujer merece sentirse hermosa y cómoda en su propia piel.</p>
+    <p>Nos alegra mucho tenerte como parte de nuestra comunidad. En Sakú encontrarás lencería de alta calidad que combina elegancia y comodidad.</p>
     
-    <div class="info-box">
-      <h3>¿Qué puedes esperar de nosotras?</h3>
+    <div class="order-summary">
+      <h3>¿Qué puedes esperar de nosotros?</h3>
       <ul style="margin: 0; padding-left: 20px;">
-        <li style="margin-bottom: 12px;">Lencería de alta calidad diseñada para realzar tu belleza natural</li>
-        <li style="margin-bottom: 12px;">Atención personalizada y asesoramiento en tallas</li>
-        <li style="margin-bottom: 12px;">Envíos discretos y seguros a todo el país</li>
-        <li style="margin-bottom: 12px;">Ofertas exclusivas y novedades antes que nadie</li>
+        <li style="margin-bottom: 8px;">Productos de alta calidad con materiales premium</li>
+        <li style="margin-bottom: 8px;">Diseños únicos que realzan tu belleza natural</li>
+        <li style="margin-bottom: 8px;">Atención personalizada y asesoramiento experto</li>
+        <li style="margin-bottom: 8px;">Envíos seguros y discretos</li>
       </ul>
     </div>
     
-    <p><div style="text-align: center; margin: 32px 0;">
-      <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://saku-lenceria.com'}" class="button">Descubrir Colección</a>
+    <p>Como bienvenida, queremos ofrecerte un <strong>15% de descuento</strong> en tu primera compra. Usa el código:</p>
+    
+    <div class="tracking-info">
+      <div class="tracking-number">BIENVENIDA15</div>
+      <p style="margin: 8px 0 0 0; font-size: 14px; color: #666;">Válido por 30 días</p>
     </div>
     
-    <p style="text-align: center; color: #666666; font-style: italic;">
-      "La elegancia es la única belleza que nunca se desvanece" - Audrey Hepburn
-    </p>
-    
     <div style="text-align: center; margin: 32px 0;">
-      <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://saku-lenceria.com'}" class="button">
+      <a href="\${process.env.NEXT_PUBLIC_SITE_URL || 'https://saku-lenceria.com'}" class="button">
         Explorar Colección
       </a>
     </div>
     
     <p>Si tienes alguna pregunta sobre talles, cuidado de las prendas o cualquier consulta, no dudes en contactarnos. Estamos aquí para ayudarte.</p>
-  `
+  \`
   
   const emailConfig: EmailConfig = {
     to: customerEmail,
-    subject: '¡Bienvenida a Sakú Lencería! ���',
-    html: getEmailTemplate(content),
-    text: `¡Bienvenida a Sakú Lencería, ${customerName}! Nos alegra tenerte como parte de nuestra comunidad. Como bienvenida, usa el código BIENVENIDA15 para obtener 15% de descuento en tu primera compra.`
+    subject: '¡Bienvenida a Sakú Lencería! ���',
+    html: getEmailTemplate(content, 'welcome'),
+    text: \`¡Bienvenida a Sakú Lencería, \${customerName}! Nos alegra tenerte como parte de nuestra comunidad. Como bienvenida, usa el código BIENVENIDA15 para obtener 15% de descuento en tu primera compra.\`
   }
   
   return await sendEmail(emailConfig)
@@ -598,14 +600,14 @@ export const sendWelcomeEmail = async (data: WelcomeEmailData) => {
 export const sendOrderConfirmationEmail = async (data: OrderEmailData) => {
   const { order, customerEmail, items } = data
   
-  const statusMessages = {
-    pending: 'Tu pedido ha sido recibido y está siendo procesado',
-    paid: 'Tu pedido ha sido confirmado y está siendo preparado',
-    processing: 'Tu pedido está siendo preparado con mucho cuidado',
-    shipped: 'Tu pedido está en camino',
-    delivered: 'Tu pedido ha sido entregado',
-    cancelled: 'Tu pedido ha sido cancelado',
-    refunded: 'Tu pedido ha sido reembolsado'
+  const statusText = {
+    pending: 'Pendiente de pago',
+    paid: 'Confirmado',
+    processing: 'En preparación',
+    shipped: 'Enviado',
+    delivered: 'Entregado',
+    cancelled: 'Cancelado',
+    refunded: 'Reembolsado'
   }
   
   const statusClass = {
@@ -618,82 +620,82 @@ export const sendOrderConfirmationEmail = async (data: OrderEmailData) => {
     refunded: 'status-pending'
   }
   
-  const content = `
+  const content = \`
     <h1>¡Gracias por tu compra!</h1>
-    <p>${statusMessages[order.status]}. Te enviaremos actualizaciones sobre el estado de tu pedido.</p>
+    <p>Hemos recibido tu pedido y \${order.status === 'paid' ? 'lo estamos preparando con mucho cuidado' : 'estamos esperando la confirmación del pago'}.</p>
     
     <div class="order-summary">
       <h3>Resumen del pedido</h3>
       <div class="order-info">
         <span><strong>Número de pedido:</strong></span>
-        <span>#${order.order_number}</span>
+        <span>#\${order.order_number}</span>
       </div>
       <div class="order-info">
         <span><strong>Fecha:</strong></span>
-        <span>${new Date(order.created_at).toLocaleDateString('es-AR')}</span>
+        <span>\${new Date(order.created_at).toLocaleDateString('es-AR')}</span>
       </div>
       <div class="order-info">
         <span><strong>Estado:</strong></span>
-        <span class="status-badge ${statusClass[order.status]}">${statusMessages[order.status]}</span>
+        <span class="status-badge \${statusClass[order.status]}">\${statusText[order.status]}</span>
       </div>
       
       <div style="margin-top: 20px;">
-        ${items.map(item => `
+        \${items.map(item => \`
           <div class="item">
             <div class="item-details">
-              <div class="item-name">${item.product_snapshot?.name || 'Producto'}</div>
-              ${item.product_snapshot?.variant_name ? `<div class="item-variant">Variante: ${item.product_snapshot.variant_name}</div>` : ''}
-              <div class="item-quantity">Cantidad: ${item.quantity}</div>
+              <div class="item-name">\${item.product_snapshot?.name || 'Producto'}</div>
+              \${item.product_snapshot?.variant_name ? \`<div class="item-variant">Variante: \${item.product_snapshot.variant_name}</div>\` : ''}
+              <div class="item-quantity">Cantidad: \${item.quantity}</div>
             </div>
             <div class="item-price">
-              ${formatPrice(item.total_price)}
+              \${formatPrice(item.total_price)}
             </div>
           </div>
-        `).join('')}
+        \`).join('')}
       </div>
       
       <div class="totals">
         <div class="total-line">
           <span>Subtotal:</span>
-          <span>${formatPrice(order.subtotal)}</span>
+          <span>\${formatPrice(order.subtotal)}</span>
         </div>
-        ${order.discount_amount > 0 ? `
+        \${order.discount_amount > 0 ? \`
           <div class="total-line">
             <span>Descuento:</span>
-            <span>-${formatPrice(order.discount_amount)}</span>
+            <span>-\${formatPrice(order.discount_amount)}</span>
           </div>
-        ` : ''}
+        \` : ''}
         <div class="total-line">
           <span>Envío:</span>
-          <span>${formatPrice(order.shipping_amount)}</span>
+          <span>\${formatPrice(order.shipping_amount)}</span>
         </div>
         <div class="total-line final">
           <span>Total:</span>
-          <span>${formatPrice(order.total_amount)}</span>
+          <span>\${formatPrice(order.total_amount)}</span>
         </div>
       </div>
     </div>
     
-    ${order.status === 'paid' ? `
+    \${order.status === 'paid' ? \`
       <p><strong>¿Qué sigue?</strong></p>
       <p>Tu pedido será preparado en las próximas 24-48 horas. Te enviaremos un email con el código de seguimiento una vez que sea despachado.</p>
-    ` : `
+    \` : \`
       <p><strong>Información de pago:</strong></p>
       <p>Una vez que se confirme el pago, comenzaremos a preparar tu pedido inmediatamente.</p>
-    `}
+    \`}
     
     <div style="text-align: center; margin: 32px 0;">
-      <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://saku-lenceria.com'}/orders/${order.id}" class="button">
+      <a href="\${process.env.NEXT_PUBLIC_SITE_URL || 'https://saku-lenceria.com'}/orders/\${order.id}" class="button">
         Ver Detalles del Pedido
       </a>
     </div>
-  `
+  \`
   
   const emailConfig: EmailConfig = {
     to: customerEmail,
-    subject: `Confirmación de pedido #${order.order_number} - Sakú Lencería`,
-    html: getEmailTemplate(content),
-    text: `Gracias por tu compra. Tu pedido #${order.order_number} ha sido recibido y está ${statusMessages[order.status].toLowerCase()}.`
+    subject: \`Confirmación de pedido #\${order.order_number} - Sakú Lencería\`,
+    html: getEmailTemplate(content, 'order'),
+    text: \`Gracias por tu compra. Tu pedido #\${order.order_number} ha sido recibido y está \${statusText[order.status].toLowerCase()}.\`
   }
   
   return await sendEmail(emailConfig)
@@ -703,25 +705,25 @@ export const sendOrderConfirmationEmail = async (data: OrderEmailData) => {
 export const sendShippingEmail = async (data: ShippingEmailData) => {
   const { customerName, customerEmail, orderNumber, trackingNumber, trackingUrl, estimatedDelivery } = data
   
-  const content = `
+  const content = \`
     <h1>¡Tu pedido está en camino!</h1>
-    <p>Hola ${customerName}, tu pedido #${orderNumber} ha sido despachado y está en camino hacia ti.</p>
+    <p>Hola \${customerName}, tu pedido #\${orderNumber} ha sido despachado y está en camino hacia ti.</p>
     
     <div class="tracking-info">
       <h3 style="margin-top: 0;">Código de seguimiento</h3>
-      <div class="tracking-number">${trackingNumber}</div>
-      ${trackingUrl ? `
+      <div class="tracking-number">\${trackingNumber}</div>
+      \${trackingUrl ? \`
         <div style="margin-top: 16px;">
-          <a href="${trackingUrl}" class="button-secondary" style="text-decoration: none;">
+          <a href="\${trackingUrl}" class="button-secondary" style="text-decoration: none;">
             Rastrear Envío
           </a>
         </div>
-      ` : ''}
-      ${estimatedDelivery ? `
+      \` : ''}
+      \${estimatedDelivery ? \`
         <p style="margin: 16px 0 0 0; font-size: 14px; color: #666;">
-          <strong>Entrega estimada:</strong> ${estimatedDelivery}
+          <strong>Entrega estimada:</strong> \${estimatedDelivery}
         </p>
-      ` : ''}
+      \` : ''}
     </div>
     
     <div class="order-summary">
@@ -738,17 +740,17 @@ export const sendShippingEmail = async (data: ShippingEmailData) => {
     <p>Si necesitas modificar la dirección de entrega o tienes alguna consulta sobre tu envío, contáctanos lo antes posible.</p>
     
     <div style="text-align: center; margin: 32px 0;">
-      <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://saku-lenceria.com'}/orders/${orderNumber}" class="button">
+      <a href="\${process.env.NEXT_PUBLIC_SITE_URL || 'https://saku-lenceria.com'}/orders/\${orderNumber}" class="button">
         Ver Estado del Pedido
       </a>
     </div>
-  `
+  \`
   
   const emailConfig: EmailConfig = {
     to: customerEmail,
-    subject: `Tu pedido #${orderNumber} está en camino ���`,
-    html: getEmailTemplate(content),
-    text: `Tu pedido #${orderNumber} ha sido despachado. Código de seguimiento: ${trackingNumber}. ${trackingUrl ? `Rastrea tu envío en: ${trackingUrl}` : ''}`
+    subject: \`Tu pedido #\${orderNumber} está en camino ���\`,
+    html: getEmailTemplate(content, 'shipping'),
+    text: \`Tu pedido #\${orderNumber} ha sido despachado. Código de seguimiento: \${trackingNumber}. \${trackingUrl ? \`Rastrea tu envío en: \${trackingUrl}\` : ''}\`
   }
   
   return await sendEmail(emailConfig)
@@ -758,36 +760,36 @@ export const sendShippingEmail = async (data: ShippingEmailData) => {
 export const sendNewsletterEmail = async (data: NewsletterEmailData) => {
   const { customerName, customerEmail, featuredProducts, promotionCode, promotionDiscount } = data
   
-  const content = `
+  const content = \`
     <h1>Nuevas llegadas que te van a encantar</h1>
-    <p>${customerName ? `Hola ${customerName}, ` : ''}descubre nuestra nueva colección de lencería diseñada especialmente para realzar tu belleza natural.</p>
+    <p>\${customerName ? \`Hola \${customerName}, \` : ''}descubre nuestra nueva colección de lencería diseñada especialmente para realzar tu belleza natural.</p>
     
-    ${promotionCode ? `
+    \${promotionCode ? \`
       <div class="tracking-info">
         <h3 style="margin-top: 0;">Oferta especial para ti</h3>
-        <p style="margin: 0 0 8px 0;">Obtén <strong>${promotionDiscount}% de descuento</strong> en toda la tienda</p>
-        <div class="tracking-number">${promotionCode}</div>
+        <p style="margin: 0 0 8px 0;">Obtén <strong>\${promotionDiscount}% de descuento</strong> en toda la tienda</p>
+        <div class="tracking-number">\${promotionCode}</div>
         <p style="margin: 8px 0 0 0; font-size: 14px; color: #666;">Válido por tiempo limitado</p>
       </div>
-    ` : ''}
+    \` : ''}
     
-    ${featuredProducts && featuredProducts.length > 0 ? `
+    \${featuredProducts && featuredProducts.length > 0 ? \`
       <h2>Productos destacados</h2>
       <div class="products-grid">
-        ${featuredProducts.map(product => `
+        \${featuredProducts.map(product => \`
           <div class="product-card">
             <div class="product-image">
-              ${product.image ? `<img src="${product.image}" alt="${product.name}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">` : 'Imagen del producto'}
+              \${product.image ? \`<img src="\${product.image}" alt="\${product.name}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">\` : 'Imagen del producto'}
             </div>
-            <div class="product-name">${product.name}</div>
-            <div class="product-price">${formatPrice(product.price)}</div>
-            <a href="${product.url}" class="button-secondary" style="text-decoration: none; display: inline-block; padding: 8px 16px; font-size: 14px;">
+            <div class="product-name">\${product.name}</div>
+            <div class="product-price">\${formatPrice(product.price)}</div>
+            <a href="\${product.url}" class="button-secondary" style="text-decoration: none; display: inline-block; padding: 8px 16px; font-size: 14px;">
               Ver Producto
             </a>
           </div>
-        `).join('')}
+        \`).join('')}
       </div>
-    ` : ''}
+    \` : ''}
     
     <div class="order-summary">
       <h3>¿Por qué elegir Sakú?</h3>
@@ -800,7 +802,7 @@ export const sendNewsletterEmail = async (data: NewsletterEmailData) => {
     </div>
     
     <div style="text-align: center; margin: 32px 0;">
-      <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://saku-lenceria.com'}" class="button">
+      <a href="\${process.env.NEXT_PUBLIC_SITE_URL || 'https://saku-lenceria.com'}" class="button">
         Explorar Colección
       </a>
     </div>
@@ -808,13 +810,13 @@ export const sendNewsletterEmail = async (data: NewsletterEmailData) => {
     <p style="font-size: 14px; color: #666; text-align: center;">
       Si no deseas recibir más newsletters, puedes <a href="#" style="color: #666;">darte de baja aquí</a>.
     </p>
-  `
+  \`
   
   const emailConfig: EmailConfig = {
     to: customerEmail,
     subject: 'Nuevas llegadas y ofertas especiales - Sakú Lencería ✨',
-    html: getEmailTemplate(content),
-    text: `Descubre nuestra nueva colección de lencería. ${promotionCode ? `Usa el código ${promotionCode} para obtener ${promotionDiscount}% de descuento.` : ''} Visita nuestra tienda en línea.`
+    html: getEmailTemplate(content, 'newsletter'),
+    text: \`Descubre nuestra nueva colección de lencería. \${promotionCode ? \`Usa el código \${promotionCode} para obtener \${promotionDiscount}% de descuento.\` : ''} Visita nuestra tienda en línea.\`
   }
   
   return await sendEmail(emailConfig)
@@ -842,4 +844,16 @@ const sendEmail = async (config: EmailConfig) => {
   }
 }
 
-export { sendEmail }
+export { sendEmail }`
+
+// Escribir el archivo
+const emailPath = path.join(__dirname, '..', 'src', 'lib', 'email.ts')
+fs.writeFileSync(emailPath, emailContent, 'utf8')
+
+console.log('✅ Archivo email.ts actualizado con plantillas responsive')
+console.log('��� Nuevas funciones agregadas:')
+console.log('  - sendWelcomeEmail')
+console.log('  - sendOrderConfirmationEmail (mejorado)')
+console.log('  - sendShippingEmail')
+console.log('  - sendNewsletterEmail')
+console.log('��� Estilos responsive implementados para móvil y desktop')
