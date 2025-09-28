@@ -14,7 +14,54 @@
 - **F3 Optimization** — Status: **Planned** — Owner: Agente Saku
   - Scope: Bricks, filtros/búsqueda, wishlist, reseñas, bundles, A/B, CWV, reportes
 
-## Today: 2025-09-27
+## Today: 2025-09-28
+
+### Task 31: Resolución Crítica de Secretos Expuestos y Optimización Webpack
+
+**Fecha**: 2025-09-28 00:24
+
+**Estado**: ✅ Completada
+
+**Descripción**: Resolución urgente de secretos expuestos en el repositorio GitHub detectados por GitGuardian y optimización del warning de webpack sobre serialización de strings grandes.
+
+**Problemas Críticos Identificados**:
+- 🚨 Supabase Service Role JWT expuesto en `vercel-env-example.txt`
+- 🚨 Credenciales SMTP expuestas en el mismo archivo
+- ⚠️ Warning de webpack sobre serialización de strings grandes (108kiB)
+
+**Solución Implementada**:
+
+1. **✅ COMPLETADA - Remoción de secretos expuestos**: 
+   - Reemplazados valores reales con ejemplos seguros en `vercel-env-example.txt`
+   - Modificado `scripts/setup-vercel-env.js` para generar solo valores de ejemplo
+   - Verificado que `.env` esté en `.gitignore` (ya estaba protegido)
+
+2. **✅ COMPLETADA - Optimización de webpack**: 
+   - Agregada configuración en `next.config.ts` para optimizar cache y chunks
+   - Configurado `maxSize: 100000` (100KB) para chunks
+   - Habilitado `optimizePackageImports` para lucide-react
+   - Resuelto warning de serialización de strings grandes
+
+3. **✅ COMPLETADA - Verificaciones de calidad**: 
+   - ESLint: ✅ Sin errores ni warnings
+   - TypeScript: ✅ Sin errores de tipos
+   - Servidor dev: ✅ Iniciado correctamente en puerto 3000 sin warnings
+
+**Archivos Modificados**:
+- `vercel-env-example.txt` - Valores seguros de ejemplo
+- `scripts/setup-vercel-env.js` - Generación de ejemplos seguros
+- `next.config.ts` - Optimización webpack y performance
+
+**Rama**: `hotfix/remove-exposed-secrets`
+
+**Próximos Pasos Críticos**:
+- [ ] Regenerar claves comprometidas en Supabase Dashboard
+- [ ] Regenerar credenciales SMTP
+- [ ] Limpiar historial de Git (opcional, evaluar impacto)
+
+---
+
+## Yesterday: 2025-09-27
 
 ### Task 30: Resolución de Warnings del Deploy en Vercel
 
