@@ -1339,3 +1339,48 @@
 5. Envío de pruebas con confirmación de entrega
 
 **Resultado**: Los emails ahora tienen el ancho correcto (600px) y el sistema de envío de pruebas funciona perfectamente para testing futuro.
+
+## 🔧 Resolución de Errores Edge Runtime y CI/CD - 28 de septiembre de 2025
+
+**Objetivo**: Resolver errores de Edge Runtime con Supabase y problemas de CI/CD con package-lock.json faltante.
+
+**Problemas Identificados**:
+- APIs de Node.js (process.versions, process.version) usadas por Supabase no soportadas en Edge Runtime
+- Archivo package-lock.json faltante causando errores en CI/CD
+- Warnings de build relacionados con compatibilidad de librerías
+
+**Tareas Completadas**:
+
+- ✅ **Configuración de Runtime en Middleware**:
+  - Agregado `export const runtime = 'nodejs'` en `src/middleware.ts`
+  - Esto fuerza el uso de Node.js runtime en lugar de Edge Runtime
+  - Evita errores de compatibilidad con APIs de Node.js
+
+- ✅ **Configuración de Next.js para Supabase**:
+  - Agregado `serverExternalPackages: ['@supabase/supabase-js', '@supabase/ssr']` en `next.config.ts`
+  - Agregado `serverComponentsExternalPackages: ['@supabase/supabase-js']` en experimental
+  - Excluye librerías de Supabase del bundling de Edge Runtime
+
+- ✅ **Regeneración de package-lock.json**:
+  - Ejecutado `npm install` para regenerar archivo de lock
+  - Resuelve problemas de CI/CD que requieren archivo de dependencias
+
+- ✅ **Verificación de Calidad**:
+  - Build exitoso sin errores (código de salida 0)
+  - ESLint sin warnings ni errores
+  - TypeScript type-check sin errores
+  - Todas las rutas generadas correctamente
+
+**Archivos Modificados**:
+- `src/middleware.ts` - Agregada configuración de runtime
+- `next.config.ts` - Configuraciones de external packages
+- `package-lock.json` - Regenerado
+
+**Cómo se hizo**:
+1. Análisis de errores de Edge Runtime para identificar causa raíz
+2. Configuración de runtime de Node.js en middleware
+3. Configuración de exclusiones en Next.js para Supabase
+4. Regeneración de dependencias con npm install
+5. Verificación completa de build, lint y type-check
+
+**Resultado**: El proyecto ahora compila sin errores de Edge Runtime, el CI/CD tiene el archivo de lock necesario, y todas las verificaciones de calidad pasan exitosamente.
