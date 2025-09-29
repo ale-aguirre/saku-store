@@ -1575,3 +1575,63 @@
 - Espacio liberado al eliminar referencias innecesarias
 
 **Resultado**: Repositorio listo para el siguiente desarrollo con la integración de Correo Argentino completamente incorporada en `develop` y todas las ramas temporales eliminadas.
+
+---
+
+## 🔧 Corrección de Errores de TypeScript en Hooks y Componentes - 29 de septiembre de 2025
+
+**Objetivo**: Resolver todos los errores de TypeScript en hooks de productos y página de productos para asegurar la estabilidad del código.
+
+**Problemas Identificados**:
+- Inconsistencias de tipos entre hooks `useProducts` y función `getProducts`
+- Tipos incorrectos en hooks `useProductCategories`, `useProductSizes`, `useProductColors`
+- Errores de asignación de tipos en página `/productos`
+- Variables no utilizadas causando errores de ESLint
+
+**Tareas Completadas**:
+
+- ✅ **Corrección de Hook useProducts**:
+  - Actualizada interfaz `UseProductsParams` para coincidir con `getProducts`
+  - Corregido tipo de `sortBy` para aceptar valores literales específicos
+  - Ajustado fallback para devolver array vacío de tipo `ProductWithVariantsAndStock`
+  - Importado tipo correcto desde `src/types/catalog`
+
+- ✅ **Corrección de Hooks de Filtros**:
+  - Corregidos tipos explícitos en `useProductCategories` eliminando aserciones incorrectas
+  - Añadidas aserciones de tipo `any` en funciones `map` para evitar errores
+  - Agregado `slug` generado automáticamente en categorías
+  - Corregidos tipos en `useProductSizes` y `useProductColors`
+
+- ✅ **Corrección de Página de Productos**:
+  - Corregido acceso a propiedades de filtros (`category_id` en lugar de `category`)
+  - Ajustado acceso a `pagination` desde `useProductFilters`
+  - Corregido tipo de `sortBy` con cast explícito
+  - Actualizado acceso a `totalProducts` en lugar de `total`
+
+- ✅ **Corrección de Función getPriceRange**:
+  - Añadidas aserciones de tipo `any` en bucles `forEach`
+  - Corregidos tipos inferidos incorrectamente
+
+- ✅ **Limpieza de ESLint**:
+  - Eliminada variable `itemsPerPage` no utilizada
+  - Prefijadas variables `supabase` no utilizadas con underscore
+
+**Archivos Modificados**:
+- `src/hooks/use-products.ts` - Correcciones de tipos y interfaces
+- `src/app/productos/page.tsx` - Correcciones de acceso a propiedades
+- `src/lib/supabase/products.ts` - Correcciones en función getPriceRange
+
+**Verificaciones de Calidad**:
+- ✅ TypeScript type-check sin errores (código de salida 0)
+- ✅ ESLint sin warnings ni errores
+- ✅ Página `/productos` funciona correctamente en preview
+- ✅ Servidor funcionando en puerto 3001
+
+**Cómo se hizo**:
+1. Análisis sistemático de errores de TypeScript
+2. Revisión de interfaces y tipos en archivos relacionados
+3. Corrección incremental de cada error identificado
+4. Verificación continua con `npm run type-check` y `npm run lint`
+5. Prueba funcional en preview del navegador
+
+**Resultado**: Todos los errores de TypeScript resueltos, código más robusto y mantenible, página de productos funcionando correctamente sin errores de compilación.

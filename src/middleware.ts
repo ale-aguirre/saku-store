@@ -6,6 +6,13 @@ export const runtime = 'nodejs'
 
 export async function middleware(request: NextRequest) {
   try {
+    // Skip middleware for Vite and other development resources
+    if (request.nextUrl.pathname.startsWith('/@vite/') || 
+        request.nextUrl.pathname.includes('__vite') ||
+        request.nextUrl.pathname.includes('hot-update')) {
+      return NextResponse.next()
+    }
+
     const response = NextResponse.next({
       request: {
         headers: request.headers,
@@ -42,7 +49,10 @@ export async function middleware(request: NextRequest) {
     } = await supabase.auth.getUser()
 
     if (authError) {
-      console.error('Auth error in middleware:', authError)
+      // Only log non-session errors to reduce noise
+      if (authError.message !== 'Auth session missing!') {
+        console.error('Auth error in middleware:', authError)
+      }
       // Continue without user if auth fails
     }
 
@@ -103,7 +113,9 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public folder
+     * - @vite/ (Vite development resources)
+     * - __vite (Vite hot reload)
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|@vite/|__vite|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
