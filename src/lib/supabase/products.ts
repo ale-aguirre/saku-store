@@ -159,42 +159,53 @@ export async function getProducts(
     }
 
     // Procesar productos con variantes y stock
-    const processedProducts: ProductWithVariantsAndStock[] = (products as ProductWithVariantsQuery[]).map((product) => {
-      const variants: VariantWithStock[] = (product.product_variants || []).map((variant) => ({
-        ...variant,
-        is_in_stock: variant.stock_quantity > 0,
-        is_low_stock: variant.stock_quantity <= variant.low_stock_threshold && variant.stock_quantity > 0
-      }))
+    const processedProducts: ProductWithVariantsAndStock[] = (products as ProductWithVariantsQuery[])
+      .map((product) => {
+        const variants: VariantWithStock[] = (product.product_variants || []).map((variant) => ({
+          ...variant,
+          is_in_stock: variant.stock_quantity > 0,
+          is_low_stock: variant.stock_quantity <= variant.low_stock_threshold && variant.stock_quantity > 0
+        }))
 
-      // Filtrar por stock si se requiere
-      const availableVariants = filters.in_stock_only 
-        ? variants.filter(v => v.is_in_stock)
-        : variants
+        // Filtrar por stock si se requiere
+        const availableVariants = filters.in_stock_only 
+          ? variants.filter(v => v.is_in_stock)
+          : variants
 
-      // Filtrar por talle y color
-      const filteredVariants = availableVariants.filter(variant => {
-        if (filters.size && variant.size !== filters.size) return false
-        if (filters.color && variant.color !== filters.color) return false
+        // Filtrar por talle y color
+        const filteredVariants = availableVariants.filter(variant => {
+          if (filters.size && variant.size !== filters.size) return false
+          if (filters.color && variant.color !== filters.color) return false
+          return true
+        })
+
+        // Calcular rangos de precio
+        const prices = filteredVariants.map(v => product.base_price + v.price_adjustment)
+        const minPrice = prices.length > 0 ? Math.min(...prices) : product.base_price
+        const maxPrice = prices.length > 0 ? Math.max(...prices) : product.base_price
+
+        return {
+          ...product,
+          variants: filteredVariants,
+          available_sizes: [...new Set(variants.map(v => v.size).filter((size): size is string => Boolean(size)))],
+          available_colors: [...new Set(variants.map(v => v.color).filter((color): color is string => Boolean(color)))],
+          price_range: {
+            min: minPrice,
+            max: maxPrice
+          },
+          total_stock: variants.reduce((sum, v) => sum + v.stock_quantity, 0)
+        }
+      })
+      .filter((product) => {
+        // Filtrar por rango de precio después del procesamiento
+        if (filters.min_price && product.price_range.max < filters.min_price) return false
+        if (filters.max_price && product.price_range.min > filters.max_price) return false
+        
+        // Filtrar productos sin variantes válidas después de aplicar filtros
+        if (product.variants.length === 0) return false
+        
         return true
       })
-
-      // Calcular rangos de precio
-      const prices = filteredVariants.map(v => product.base_price + v.price_adjustment)
-      const minPrice = prices.length > 0 ? Math.min(...prices) : product.base_price
-      const maxPrice = prices.length > 0 ? Math.max(...prices) : product.base_price
-
-      return {
-        ...product,
-        variants: filteredVariants,
-        available_sizes: [...new Set(variants.map(v => v.size).filter((size): size is string => Boolean(size)))],
-        available_colors: [...new Set(variants.map(v => v.color).filter((color): color is string => Boolean(color)))],
-        price_range: {
-          min: minPrice,
-          max: maxPrice
-        },
-        total_stock: variants.reduce((sum, v) => sum + v.stock_quantity, 0)
-      }
-    })
 
     return {
       products: processedProducts,
@@ -422,5 +433,61 @@ export async function getFeaturedProducts(limit: number = 8): Promise<ProductWit
     console.error('Error fetching products:', error)
     // Durante el build, retornar array vacío en lugar de fallar
     return []
+  }
+}
+
+/**
+ * Obtiene el rango de precios disponible para filtros
+ */
+export async function getPriceRange(): Promise<{ min: number; max: number }> {
+  try {
+    // Verificar si las variables de entorno están disponibles
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      console.log('Supabase environment variables not found, using placeholder values for build')
+      return { min: 0, max: 20000 }
+    }
+
+    const { data: products, error } = await supabase
+      .from('products')
+      .select(`
+        base_price,
+        product_variants (
+          price_adjustment
+        )
+      `)
+      .eq('is_active', true)
+
+    if (error) {
+      console.error('Error fetching price range:', error)
+      return { min: 0, max: 20000 }
+    }
+
+    if (!products || products.length === 0) {
+      return { min: 0, max: 20000 }
+    }
+
+    const allPrices: number[] = []
+    
+    products.forEach((product: any) => {
+      const basePrice = product.base_price
+      if (product.product_variants && product.product_variants.length > 0) {
+        product.product_variants.forEach((variant: any) => {
+          allPrices.push(basePrice + variant.price_adjustment)
+        })
+      } else {
+        allPrices.push(basePrice)
+      }
+    })
+
+    const minPrice = Math.min(...allPrices)
+    const maxPrice = Math.max(...allPrices)
+
+    return {
+      min: Math.floor(minPrice / 500) * 500, // Redondear hacia abajo a múltiplo de 500
+      max: Math.ceil(maxPrice / 500) * 500   // Redondear hacia arriba a múltiplo de 500
+    }
+  } catch (error) {
+    console.error('Error fetching price range:', error)
+    return { min: 0, max: 20000 }
   }
 }

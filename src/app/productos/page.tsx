@@ -1,194 +1,77 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { SlidersHorizontal, Grid, List } from 'lucide-react'
+import { Grid, List } from 'lucide-react'
 import { ProductCard } from '@/components/product/product-card'
 import { ProductPagination } from '@/components/product/product-pagination'
-import { getProducts, getCategories } from '@/lib/supabase/products'
-import type { ProductFilters, SortOption } from '@/types/catalog'
-
-function ProductFilters({ 
-  filters, 
-  onFiltersChange 
-}: { 
-  filters: ProductFilters
-  onFiltersChange: (filters: ProductFilters) => void 
-}) {
-  const { data: categories } = useQuery({
-    queryKey: ['categories'],
-    queryFn: getCategories
-  })
-
-  const availableSizes = ['85', '90', '95', '100']
-  const availableColors = ['negro', 'rojo', 'blanco']
-
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-2">
-        <SlidersHorizontal className="h-5 w-5" />
-        <h3 className="font-serif text-lg font-normal">Filtros</h3>
-      </div>
-      
-      <div className="space-y-4">
-        <div>
-          <label className="text-sm font-medium mb-2 block">Categoría</label>
-          <Select 
-            value={filters.category_id || 'all'} 
-            onValueChange={(value) => 
-              onFiltersChange({ ...filters, category_id: value === 'all' ? undefined : value })
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Todas las categorías" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas las categorías</SelectItem>
-              {categories?.map((category) => (
-                <SelectItem key={category.id} value={category.slug}>
-                  {category.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <label className="text-sm font-medium mb-2 block">Talle</label>
-          <Select 
-            value={filters.size || 'all'} 
-            onValueChange={(value) => 
-              onFiltersChange({ ...filters, size: value === 'all' ? undefined : value })
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Todos los talles" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos los talles</SelectItem>
-              {availableSizes.map((size) => (
-                <SelectItem key={size} value={size}>
-                  {size}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <label className="text-sm font-medium mb-2 block">Color</label>
-          <Select 
-            value={filters.color || 'all'} 
-            onValueChange={(value) => 
-              onFiltersChange({ ...filters, color: value === 'all' ? undefined : value })
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Todos los colores" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos los colores</SelectItem>
-              {availableColors.map((color) => (
-                <SelectItem key={color} value={color}>
-                  {color.charAt(0).toUpperCase() + color.slice(1)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-           <label className="text-sm font-medium mb-2 block">Precio</label>
-           <Select 
-             value={
-               filters.min_price === 0 && filters.max_price === 10000 ? '0-10000' :
-               filters.min_price === 10000 && filters.max_price === 15000 ? '10000-15000' :
-               filters.min_price === 15000 && filters.max_price === 20000 ? '15000-20000' :
-               filters.min_price === 20000 ? '20000+' :
-               'all'
-             }
-             onValueChange={(value) => {
-               if (value === 'all') {
-                 onFiltersChange({ ...filters, min_price: undefined, max_price: undefined })
-               } else if (value === '0-10000') {
-                 onFiltersChange({ ...filters, min_price: 0, max_price: 10000 })
-               } else if (value === '10000-15000') {
-                 onFiltersChange({ ...filters, min_price: 10000, max_price: 15000 })
-               } else if (value === '15000-20000') {
-                 onFiltersChange({ ...filters, min_price: 15000, max_price: 20000 })
-               } else if (value === '20000+') {
-                 onFiltersChange({ ...filters, min_price: 20000, max_price: undefined })
-               }
-             }}
-           >
-             <SelectTrigger>
-               <SelectValue placeholder="Todos los precios" />
-             </SelectTrigger>
-             <SelectContent>
-               <SelectItem value="all">Todos los precios</SelectItem>
-               <SelectItem value="0-10000">Hasta $10.000</SelectItem>
-               <SelectItem value="10000-15000">$10.000 - $15.000</SelectItem>
-               <SelectItem value="15000-20000">$15.000 - $20.000</SelectItem>
-               <SelectItem value="20000+">Más de $20.000</SelectItem>
-             </SelectContent>
-           </Select>
-         </div>
-      </div>
-    </div>
-  )
-}
+import { ProductFilters } from '@/components/product/product-filters'
+import { useProductFilters } from '@/hooks/use-product-filters'
+import { useProducts, useProductCategories, usePriceRange } from '@/hooks/use-products'
+import type { SortOption } from '@/types/catalog'
 
 export default function ProductsPage() {
-  const searchParams = useSearchParams()
-  const [filters, setFilters] = useState<ProductFilters>({})
-  const [sortBy, setSortBy] = useState<SortOption>('featured')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [mounted, setMounted] = useState(false)
   
-  // Estado de paginación
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 12 // Fijo en 12 productos por página
+  // Usar el hook de filtros con URL state management
+  const {
+    filters,
+    pagination,
+    updateFilters,
+    clearFilters,
+    updatePage,
+    updateSort,
+    hasActiveFilters
+  } = useProductFilters()
   
-  // Inicializar estado desde URL params
+  const { page: currentPage, sort: sortBy } = pagination
+  
+  // Configuración de paginación fija en 12 productos por página
+  
+  // Inicializar estado montado
   useEffect(() => {
     setMounted(true)
-    const page = parseInt(searchParams.get('page') || '1')
-    setCurrentPage(page)
-  }, [searchParams])
+  }, [])
   
-  // Consulta de productos con React Query
-  const {
-    data: productsData,
-    isLoading,
-    error,
-    refetch
-  } = useQuery({
-    queryKey: ['products', filters, sortBy, currentPage, itemsPerPage],
-    queryFn: () => getProducts(filters, sortBy, currentPage, itemsPerPage),
-    enabled: mounted, // Solo ejecutar después de que el componente esté montado
-    staleTime: 5 * 60 * 1000, // 5 minutos
-    gcTime: 10 * 60 * 1000, // 10 minutos
-    retry: 2
+  // Obtener categorías para el filtro
+  const { data: categories = [] } = useProductCategories()
+  
+  // Obtener rango de precios
+  const { data: priceRange } = usePriceRange()
+
+  // Obtener productos con filtros aplicados
+  const { data: productsData, isLoading, error, refetch } = useProducts({
+    categoryId: filters.category_id,
+    search: filters.search,
+    sizes: filters.size ? [filters.size] : undefined,
+    colors: filters.color ? [filters.color] : undefined,
+    minPrice: filters.min_price,
+    maxPrice: filters.max_price,
+    sortBy: sortBy as 'featured' | 'name' | 'price_asc' | 'price_desc' | 'newest',
+    page: currentPage,
+    limit: 12
   })
 
-  // Extraer datos de paginación
+  // Extraer datos de la respuesta
   const products = productsData?.products || []
-  const totalItems = productsData?.totalItems || 0
-  const totalPages = productsData?.totalPages || 0
+  const totalProducts = productsData?.totalProducts || 0
+  const totalPages = productsData?.totalPages || 1
 
   // Si hay error, intentar refetch automáticamente
   useEffect(() => {
     if (error && mounted) {
       console.error('Error loading products:', error)
       // Intentar refetch después de 3 segundos
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         refetch()
       }, 3000)
+      
+      // Cleanup timeout si el componente se desmonta o cambian las dependencias
+      return () => clearTimeout(timeoutId)
     }
-  }, [error, mounted]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [error, mounted]) // Removido refetch de las dependencias para evitar bucle infinito
 
   // Mostrar loading inicial si no está montado
   if (!mounted) {
@@ -253,12 +136,12 @@ export default function ProductsPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div className="flex items-center gap-4">
           <span className="text-sm text-muted-foreground">
-            {isLoading ? 'Cargando...' : `${totalItems} productos encontrados`}
+            {isLoading ? 'Cargando...' : `${totalProducts} productos encontrados`}
           </span>
         </div>
         
         <div className="flex items-center gap-4">
-          <Select value={sortBy} onValueChange={(value: SortOption) => setSortBy(value)}>
+          <Select value={sortBy} onValueChange={(value: SortOption) => updateSort(value)}>
             <SelectTrigger className="w-48">
               <SelectValue />
             </SelectTrigger>
@@ -296,7 +179,14 @@ export default function ProductsPage() {
         {/* Filters Sidebar */}
         <div className="lg:col-span-1">
           <div className="sticky top-8">
-            <ProductFilters filters={filters} onFiltersChange={setFilters} />
+            <ProductFilters
+              filters={filters}
+              onFiltersChange={updateFilters}
+              onClearFilters={clearFilters}
+              hasActiveFilters={hasActiveFilters}
+              availableCategories={categories}
+              priceRange={priceRange}
+            />
           </div>
         </div>
 
@@ -332,7 +222,7 @@ export default function ProductsPage() {
               </p>
               <Button 
                 variant="outline" 
-                onClick={() => setFilters({})}
+                onClick={clearFilters}
               >
                 Limpiar filtros
               </Button>
@@ -344,7 +234,7 @@ export default function ProductsPage() {
             <ProductPagination
               currentPage={currentPage}
               totalPages={totalPages}
-              onPageChange={setCurrentPage}
+              onPageChange={updatePage}
             />
           )}
         </div>
