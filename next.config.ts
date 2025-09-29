@@ -28,8 +28,6 @@ const nextConfig: NextConfig = {
   // Configuración experimental para mejorar performance
   experimental: {
     optimizePackageImports: ['lucide-react'],
-    // Configurar serverComponentsExternalPackages para Supabase
-    serverComponentsExternalPackages: ['@supabase/supabase-js'],
   },
   
   // Configurar serverExternalPackages para Edge Runtime
