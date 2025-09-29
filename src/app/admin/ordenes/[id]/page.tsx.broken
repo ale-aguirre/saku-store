@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+
 import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import { ProductImage } from '@/components/ui/product-image'
 import { formatPrice } from "@/lib/utils"
 import { 
@@ -17,10 +18,10 @@ import { useAuth } from '@/hooks/use-auth'
 // Importar los nuevos componentes
 import { OrderEventTimeline } from '@/components/admin/order-event-timeline'
 import OrderShippingManager from '@/components/admin/order-shipping-manager'
+import { OrderSummary } from '@/components/admin/order-summary'
 
 interface OrderDetail {
   id: string
-  order_number: string
   status: string
   total: number
   subtotal: number
@@ -29,7 +30,6 @@ interface OrderDetail {
   tax_amount: number
   created_at: string
   updated_at: string
-  shipping_address: {
     street: string
     city: string
     state: string
@@ -64,8 +64,9 @@ interface OrderDetail {
   }>
   order_events: Array<{
     id: string
-    event_type: string
-    event_data: Record<string, unknown> | null
+    type: string
+    description: string | null
+    metadata: Record<string, unknown> | null
     created_at: string
   }>
 }
@@ -131,17 +132,19 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
 
       setOrder(data as OrderDetail)
     } catch (error) {
-      console.error('Error fetching order:', error)
+      console.error('Error:', error)
     } finally {
       setLoading(false)
     }
   }, [orderId])
 
   useEffect(() => {
-    if (orderId) {
+    if (user && !authLoading && orderId) {
       fetchOrder()
     }
-  }, [orderId, fetchOrder])
+  }, [user, authLoading, orderId, fetchOrder])
+
+  // No se necesitan funciones adicionales ya que se han movido a los componentes
 
   if (authLoading || loading) {
     return (
@@ -167,12 +170,9 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
     return (
       <div className="py-8 text-center">
         <h1 className="text-2xl font-bold mb-4">Orden no encontrada</h1>
-        <p className="text-gray-600">La orden solicitada no existe o no tienes permisos para verla.</p>
+        <p className="text-gray-600">La orden que buscas no existe.</p>
         <Link href="/admin/ordenes">
-          <Button variant="outline" className="mt-4">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Volver a órdenes
-          </Button>
+          <Button className="mt-4">Volver a órdenes</Button>
         </Link>
       </div>
     )
@@ -211,28 +211,24 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
         {/* Columna principal */}
         <div className="lg:col-span-2 space-y-6">
           {/* Resumen de la orden */}
-          {/* Resumen de la orden */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Orden #{order.order_number}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span>Estado:</span>
-                  <span className="font-medium">{order.status}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Total:</span>
-                  <span className="font-medium">{formatPrice(order.total)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Método de pago:</span>
-                  <span className="font-medium">{order.payment_method}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <OrderSummary 
+            order={{
+              id: order.id,
+              status: order.status,
+              payment_status: order.payment_status,
+              payment_method: order.payment_method,
+              payment_id: order.payment_id,
+              created_at: order.created_at,
+              updated_at: order.updated_at,
+              subtotal: order.subtotal,
+              discount_amount: order.discount_amount,
+              shipping_amount: order.shipping_cost,
+              tax_amount: order.tax_amount,
+              total_amount: order.total,
+              profiles: order.profiles
+            }}
+            onUpdate={fetchOrder}
+          />
 
           {/* Información de envío */}
           <OrderShippingManager 
@@ -264,16 +260,16 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                           alt={item.product_variants.products.name}
                           width={64}
                           height={64}
-                          className="object-cover rounded-lg"
+                          className="w-full h-full object-cover rounded-lg"
                         />
                       ) : (
-                        <Package className="h-8 w-8 text-gray-400" />
+                        <Package className="h-6 w-6 text-gray-400" />
                       )}
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-medium">{item.product_variants.products.name}</h3>
+                      <h4 className="font-medium">{item.product_variants.products.name}</h4>
                       <p className="text-sm text-gray-600">
-                        Talle: {item.product_variants.size} | Color: {item.product_variants.color}
+                        Talle {item.product_variants.size} • {item.product_variants.color}
                       </p>
                       <p className="text-sm text-gray-600">SKU: {item.product_variants.sku}</p>
                     </div>
@@ -282,7 +278,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                       <p className="text-sm text-gray-600">
                         {formatPrice(item.price)} c/u
                       </p>
-                      <p className="font-bold">
+                      <p className="font-medium">
                         {formatPrice(item.price * item.quantity)}
                       </p>
                     </div>
@@ -295,16 +291,33 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
 
         {/* Columna lateral */}
         <div className="space-y-6">
-          {/* Timeline de eventos */}
-          <OrderEventTimeline 
-            events={order.order_events.map(event => ({
-              id: event.id,
-              type: event.event_type,
-              description: `Evento: ${event.event_type}`,
-              metadata: event.event_data,
-              created_at: event.created_at
-            }))}
-          />
+          {/* Historial de eventos */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Historial de eventos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <OrderEventTimeline events={order.order_events} />
+            </CardContent>
+          </Card>
+          
+          {/* Notas internas */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Notas internas</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">
+                {order.notes || 'No hay notas para esta orden.'}
+              </p>
+              
+              <div className="mt-4">
+                <Button variant="outline" size="sm" className="w-full">
+                  Agregar nota
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
