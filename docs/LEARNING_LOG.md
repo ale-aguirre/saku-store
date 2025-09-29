@@ -135,6 +135,15 @@
 
 ---
 
+### 2025-09-28: Configuración Edge Runtime y Next.js warnings
+
+- **Issue**: Errores de Edge Runtime con Supabase y warning sobre `experimental.serverComponentsExternalPackages` en Next.js 15
+- **Cause**: Supabase usa APIs de Node.js (`process.versions`) no disponibles en Edge Runtime, y configuración deprecated en `next.config.ts`
+- **Fix**: Configurar `runtime = 'nodejs'` en middleware.ts, usar solo `serverExternalPackages` en next.config.ts, regenerar package-lock.json
+- **Prevention**: Verificar compatibilidad de librerías con Edge Runtime antes de usar, revisar warnings de Next.js en cada actualización
+
+---
+
 ## Reglas de uso
 
 1. **Agregar entrada cada vez que**:
