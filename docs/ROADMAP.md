@@ -5,8 +5,10 @@
 - **F0 Foundations** — Status: **Done** — Owner: Agente Saku
   - Scope: UI kit (Marcellus/Inter + dark/light), legales, Consent, GA4/Pixel, Supabase schema & RLS
 
-- **F1 MVP Sales** — Status: **Planned** — Owner: Agente Saku
+- **F1 MVP Sales** — Status: **In Progress** — Owner: Agente Saku
   - Scope: Home/PLP/PDP, Cart + Coupon, Shipping (flat + Cadete Córdoba), Checkout Pro, Orders, Admin, Emails
+  - **Completado**: ✅ Paginación PLP (2025-09-29)
+  - **Pendientes**: Filtros productos, Panel Admin estilo TiendaNube, Simulación compras
 
 - **F2 Ops & CRM** — Status: **Planned** — Owner: Agente Saku
   - Scope: MP webhook, Tracking link, n8n (abandonado, NPS, RFM, winback), Admin Automatizaciones/Campañas, WhatsApp BSP
@@ -14,7 +16,163 @@
 - **F3 Optimization** — Status: **Planned** — Owner: Agente Saku
   - Scope: Bricks, filtros/búsqueda, wishlist, reseñas, bundles, A/B, CWV, reportes
 
-## Today: 2025-09-28
+---
+
+## **TAREAS PENDIENTES IDENTIFICADAS** 📋
+
+### **F1 MVP Sales - Tareas Faltantes**
+
+#### **TB-002: Paginación de Productos en PLP** ✅
+**Prioridad**: Alta | **Estimación**: 2-3 días | **Estado**: **Completado** (2025-09-29)
+
+**Descripción**: Implementar sistema de paginación en Product Listing Page para manejar catálogos grandes eficientemente.
+
+**Tareas**:
+- [x] Componente `ProductPagination` con navegación por páginas
+- [x] Lógica de paginación en función `getProducts()` 
+- [x] URL state management (`?page=1&limit=12`)
+- [x] Límite configurable de productos por página (12/24/48)
+- [x] Indicadores "Mostrando X de Y productos"
+- [x] Navegación rápida (primera/última página)
+- [x] Testing manual del flujo completo
+
+**Implementación Realizada**:
+- Componente `ProductPagination` responsive con navegación completa
+- Actualización `getProducts()` para retornar `{products, totalItems, totalPages}`
+- Integración en `/productos` con manejo de estado URL
+- UI consistente con diseño Sakú (colores #d8ceb5)
+- Performance optimizada con React Query
+
+**Criterios de Aceptación**: ✅ Todos cumplidos
+- ✅ Navegación fluida sin pérdida de filtros
+- ✅ URL state management correcto
+- ✅ Performance optimizada con React Query
+- ✅ Responsive design mobile/desktop
+
+#### **TB-003: Sistema de Filtros de Productos** 🔍
+**Prioridad**: Alta | **Estimación**: 3-4 días | **Estado**: Pendiente
+
+**Descripción**: Sistema completo de filtros (categoría, talle, color, precio) con URL state management.
+
+**Tareas**:
+- [ ] Componente `ProductFilters` con sidebar colapsible
+- [ ] Filtros por categoría (lencería, accesorios)
+- [ ] Filtros por talle (85, 90, 95, 100)
+- [ ] Filtros por color (negro, rojo, blanco)
+- [ ] Filtro de rango de precios con slider
+- [ ] URL state management para filtros
+- [ ] Contador de productos por filtro
+- [ ] Botón "Limpiar filtros" y estado activo
+- [ ] Testing de combinaciones múltiples
+
+**Criterios de Aceptación**:
+- Filtros reflejados en URL para compartir/bookmark
+- Combinación múltiple funciona correctamente
+- Performance optimizada con debounce
+- UI intuitiva y accesible
+
+#### **TB-004: Panel de Administración Estilo TiendaNube** 👨‍💼
+**Prioridad**: Media | **Estimación**: 5-7 días | **Estado**: Pendiente
+
+**Descripción**: Panel completo basado en `admin-panel-design-specs.md` y análisis TiendaNube.
+
+**Tareas**:
+- [ ] Layout base (sidebar + header según specs)
+- [ ] Dashboard principal con KPIs y gráficos
+- [ ] Módulo gestión productos (CRUD completo)
+- [ ] Módulo gestión órdenes (estados + tracking)
+- [ ] Módulo gestión stock con alertas
+- [ ] Módulo cupones y promociones
+- [ ] Configuración envíos y pagos
+- [ ] Sistema notificaciones y alertas
+- [ ] Reportes básicos (ventas, productos top)
+
+**Criterios de Aceptación**:
+- Diseño consistente con marca Sakú
+- CRUD completo para todas las entidades
+- Dashboard responsivo y funcional
+- Integración con sistema de permisos
+
+#### **TB-005: Mejora Sistema de Simulación de Compras** 🧪
+**Prioridad**: Media | **Estimación**: 2-3 días | **Estado**: Pendiente
+
+**Descripción**: Completar y mejorar sistema de simulación basado en `TESTING_PURCHASES.md`.
+
+**Tareas**:
+- [ ] Scripts automatizados para flujos E2E
+- [ ] Datos de prueba realistas (productos, usuarios)
+- [ ] Simulación completa checkout MP
+- [ ] Testing de webhooks y estados de orden
+- [ ] Documentación de casos de prueba
+- [ ] Integración con Playwright
+- [ ] Dashboard de resultados de testing
+
+**Criterios de Aceptación**:
+- Scripts ejecutables desde npm
+- Cobertura completa del flujo de compra
+- Datos de prueba consistentes
+- Reportes automáticos de resultados
+
+---
+
+## Today: 2025-09-29
+
+### Task 32: Actualización de Documentación con Tareas Faltantes Identificadas
+
+**Fecha**: 2025-09-29 15:24
+
+**Estado**: ✅ Completada
+
+**Descripción**: Identificación y documentación de tareas críticas faltantes en el roadmap del proyecto, reorganizando prioridades para la Fase F1 MVP Sales.
+
+**Tareas Faltantes Identificadas**:
+- 🔄 **Paginación de productos en PLP**: Sistema completo de navegación por páginas
+- 🔍 **Sistema de filtros de productos**: Filtros por categoría, talle, color y precio
+- 👨‍💼 **Panel de administración estilo TiendaNube**: Dashboard completo según especificaciones
+- 🧪 **Mejora del sistema de simulación de compras**: Scripts automatizados y testing E2E
+
+**Solución Implementada**:
+
+1. **✅ COMPLETADA - Actualización de ROADMAP.md**: 
+   - Cambiado estado de F1 MVP Sales de "Planned" a "In Progress"
+   - Agregada sección "TAREAS PENDIENTES IDENTIFICADAS" con 4 tareas detalladas
+   - Incluidas estimaciones de tiempo, criterios de aceptación y prioridades
+   - Reorganización por fases con tareas específicas
+
+2. **✅ COMPLETADA - Actualización de TASKS_BOARD.md**: 
+   - Agregadas 4 nuevas tareas (TB-002 a TB-005) al backlog
+   - Reorganización por prioridades: Alta (F1 MVP), Media, Baja
+   - Estimaciones de tiempo y rationale para cada tarea
+   - Documentada la tarea TB-006 como completada en el historial
+
+3. **✅ COMPLETADA - Verificaciones de calidad**: 
+   - ESLint: ✅ Sin errores ni warnings
+   - TypeScript: ✅ Sin errores de tipos
+   - Documentación actualizada con fecha correcta (2025-09-29)
+
+**Archivos Modificados**:
+- `docs/ROADMAP.md` - Agregadas tareas faltantes y reorganización de fases
+- `docs/TASKS_BOARD.md` - Backlog actualizado con nuevas prioridades
+
+**Rama**: `docs/update-roadmap-missing-features`
+
+**Próximos Pasos**:
+- [ ] Comenzar implementación de paginación de productos (TB-002) - Prioridad Alta
+- [ ] Desarrollar sistema de filtros (TB-003) - Prioridad Alta
+- [ ] Planificar panel de administración (TB-004) - Prioridad Media
+
+**Cómo se hizo**:
+1. Análisis de las observaciones de Ale sobre elementos faltantes
+2. Revisión de especificaciones en admin-panel-design-specs.md y tiendanube-dashboard-analysis.md
+3. Creación de tareas detalladas con estimaciones realistas
+4. Reorganización de prioridades por fases del proyecto
+5. Actualización sistemática de documentación con append-only approach
+
+**Resultado**: El proyecto ahora tiene una hoja de ruta clara y completa para la Fase F1 MVP Sales, con tareas priorizadas y estimaciones realistas que guiarán el desarrollo futuro.
+
+---
+
+## Yesterday: 2025-09-28
 
 ### Task 31: Resolución Crítica de Secretos Expuestos y Optimización Webpack
 

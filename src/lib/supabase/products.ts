@@ -35,7 +35,11 @@ export async function getProducts(
   sortBy: SortOption = 'featured',
   page = 1,
   limit = 12
-): Promise<ProductWithVariantsAndStock[]> {
+): Promise<{
+  products: ProductWithVariantsAndStock[]
+  totalItems: number
+  totalPages: number
+}> {
   try {
     // Verificar si las variables de entorno están disponibles
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -45,13 +49,13 @@ export async function getProducts(
         supabaseUrl.includes('placeholder') || 
         supabaseAnonKey.includes('placeholder')) {
       console.log('Supabase environment variables not properly configured')
-      return []
+      return { products: [], totalItems: 0, totalPages: 0 }
     }
 
     // Verificar que el cliente de Supabase esté disponible
     if (!supabase) {
       console.error('Supabase client not available')
-      return []
+      return { products: [], totalItems: 0, totalPages: 0 }
     }
 
     let query = supabase
@@ -110,6 +114,34 @@ export async function getProducts(
         break
     }
 
+    // Obtener conteo total primero (sin paginación)
+    let countQuery = supabase
+      .from('products')
+      .select('id', { count: 'exact', head: true })
+      .eq('is_active', true)
+
+    // Aplicar los mismos filtros para el conteo
+    if (filters.category_id) {
+      countQuery = countQuery.eq('category_id', filters.category_id)
+    }
+
+    if (filters.is_featured) {
+      countQuery = countQuery.eq('is_featured', true)
+    }
+
+    if (filters.search) {
+      countQuery = countQuery.or(`name.ilike.%${filters.search}%, description.ilike.%${filters.search}%`)
+    }
+
+    const { count: totalItems, error: countError } = await countQuery
+
+    if (countError) {
+      console.error('Error counting products:', countError)
+      return { products: [], totalItems: 0, totalPages: 0 }
+    }
+
+    const totalPages = Math.ceil((totalItems || 0) / limit)
+
     // Aplicar paginación
     const from = (page - 1) * limit
     const to = from + limit - 1
@@ -119,11 +151,11 @@ export async function getProducts(
 
     if (error) {
       console.error('Error fetching products:', error)
-      return []
+      return { products: [], totalItems: 0, totalPages: 0 }
     }
 
     if (!products) {
-      return []
+      return { products: [], totalItems: 0, totalPages: 0 }
     }
 
     // Procesar productos con variantes y stock
@@ -164,11 +196,15 @@ export async function getProducts(
       }
     })
 
-    return processedProducts
+    return {
+      products: processedProducts,
+      totalItems: totalItems || 0,
+      totalPages
+    }
   } catch (error) {
     console.error('Error fetching products:', error)
     // Durante el build, retornar array vacío en lugar de fallar
-    return []
+    return { products: [], totalItems: 0, totalPages: 0 }
   }
 }
 
@@ -381,7 +417,7 @@ export async function getFeaturedProducts(limit: number = 8): Promise<ProductWit
       limit
     )
 
-    return response
+    return response.products
   } catch (error) {
     console.error('Error fetching products:', error)
     // Durante el build, retornar array vacío en lugar de fallar

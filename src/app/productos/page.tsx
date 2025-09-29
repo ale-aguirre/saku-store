@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { SlidersHorizontal, Grid, List } from 'lucide-react'
 import { ProductCard } from '@/components/product/product-card'
+import { ProductPagination } from '@/components/product/product-pagination'
 import { getProducts, getCategories } from '@/lib/supabase/products'
 import type { ProductFilters, SortOption } from '@/types/catalog'
 
@@ -140,34 +142,53 @@ function ProductFilters({
 }
 
 export default function ProductsPage() {
+  const searchParams = useSearchParams()
   const [filters, setFilters] = useState<ProductFilters>({})
   const [sortBy, setSortBy] = useState<SortOption>('featured')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [mounted, setMounted] = useState(false)
   
-  // Evitar problemas de hidratación
+  // Estado de paginación
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 12 // Fijo en 12 productos por página
+  
+  // Inicializar estado desde URL params
   useEffect(() => {
     setMounted(true)
-  }, [])
+    const page = parseInt(searchParams.get('page') || '1')
+    setCurrentPage(page)
+  }, [searchParams])
   
-  const { data: products, isLoading, error, refetch } = useQuery({
-    queryKey: ['products', filters, sortBy],
-    queryFn: () => getProducts(filters, sortBy),
+  // Consulta de productos con React Query
+  const {
+    data: productsData,
+    isLoading,
+    error,
+    refetch
+  } = useQuery({
+    queryKey: ['products', filters, sortBy, currentPage, itemsPerPage],
+    queryFn: () => getProducts(filters, sortBy, currentPage, itemsPerPage),
     enabled: mounted, // Solo ejecutar después de que el componente esté montado
-    retry: 3,
-    retryDelay: 1000,
     staleTime: 5 * 60 * 1000, // 5 minutos
+    gcTime: 10 * 60 * 1000, // 10 minutos
+    retry: 2
   })
+
+  // Extraer datos de paginación
+  const products = productsData?.products || []
+  const totalItems = productsData?.totalItems || 0
+  const totalPages = productsData?.totalPages || 0
 
   // Si hay error, intentar refetch automáticamente
   useEffect(() => {
     if (error && mounted) {
-      const timer = setTimeout(() => {
+      console.error('Error loading products:', error)
+      // Intentar refetch después de 3 segundos
+      setTimeout(() => {
         refetch()
-      }, 2000)
-      return () => clearTimeout(timer)
+      }, 3000)
     }
-  }, [error, mounted, refetch])
+  }, [error, mounted]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Mostrar loading inicial si no está montado
   if (!mounted) {
@@ -232,7 +253,7 @@ export default function ProductsPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div className="flex items-center gap-4">
           <span className="text-sm text-muted-foreground">
-            {isLoading ? 'Cargando...' : `${products?.length || 0} productos encontrados`}
+            {isLoading ? 'Cargando...' : `${totalItems} productos encontrados`}
           </span>
         </div>
         
@@ -316,6 +337,15 @@ export default function ProductsPage() {
                 Limpiar filtros
               </Button>
             </div>
+          )}
+          
+          {/* Paginación */}
+          {!isLoading && products && products.length > 0 && totalPages > 1 && (
+            <ProductPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
           )}
         </div>
       </div>

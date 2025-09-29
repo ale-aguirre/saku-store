@@ -36,6 +36,21 @@
 
 ## Done (history)
 
+- [x] (TB-002) Implementar paginación de productos en PLP — TS done: 2025-09-29 15:58
+  - How: Integrada paginación completa en /productos con navegación por páginas y límite configurable
+  - Scope: Componente ProductPagination, actualización getProducts(), manejo URL state, UI responsive
+  - Files: src/app/productos/page.tsx, src/lib/supabase/products.ts, src/components/product/product-pagination.tsx
+  - Branch: feature/product-pagination
+  - Checks: ESLint ✅ | Types ✅ | Preview ✅ (http://localhost:3000/productos)
+  - Notes: Paginación funcional con 12 productos por página, navegación completa, info de resultados
+
+- [x] (TB-006) Actualización de documentación con tareas faltantes — TS done: 2025-01-27 16:45
+  - How: Identificadas y documentadas 4 tareas críticas faltantes en ROADMAP.md y TASKS_BOARD.md
+  - Scope: Paginación PLP, Filtros productos, Panel Admin TiendaNube, Simulación compras
+  - Files: docs/ROADMAP.md, docs/TASKS_BOARD.md
+  - Branch: docs/update-roadmap-missing-features
+  - Notes: Reorganización de prioridades por fases F1 MVP Sales
+
 - [x] (FP-001) Corrección masiva de precios — TS done: 2025-09-26 14:30
   - How: Script fix-prices-massive.js corrigió 51 productos y 765 variantes dividiendo precios por 100
   - Checks: ESLint ✅ | Types ✅ | Tests ✅ | Preview ✅
@@ -44,13 +59,31 @@
 
 ---
 
-## Backlog (próximas 5)
+## Backlog (próximas tareas)
 
-1. [ ] (UI-001) Mejorar selector de variantes en PDP — Rationale: UX más clara para talle/color
-2. [ ] (PERF-001) Optimizar carga de imágenes de productos — Rationale: Performance en PLP
-3. [ ] (ADMIN-001) Panel de gestión de cupones — Rationale: Facilitar creación/edición de descuentos
-4. [ ] (EMAIL-001) Templates de emails transaccionales — Rationale: Comunicación profesional con clientes
-5. [ ] (SEO-001) Implementar schema.org para productos — Rationale: Mejor indexación en buscadores
+### **Prioridad Alta (F1 MVP Sales)**
+
+1. [ ] (TB-002) Paginación de productos en PLP — Rationale: Manejar catálogos grandes eficientemente
+   - Estimación: 2-3 días | Componente Pagination + URL state + testing E2E
+   
+2. [ ] (TB-003) Sistema de filtros de productos — Rationale: Mejorar experiencia de búsqueda
+   - Estimación: 3-4 días | Filtros por categoría/talle/color/precio + URL state
+
+### **Prioridad Media**
+
+3. [ ] (TB-004) Panel de administración estilo TiendaNube — Rationale: Gestión completa del e-commerce
+   - Estimación: 5-7 días | Dashboard + CRUD productos/órdenes/stock según admin-panel-design-specs.md
+   
+4. [ ] (TB-005) Mejora sistema de simulación de compras — Rationale: Testing automatizado robusto
+   - Estimación: 2-3 días | Scripts E2E + datos prueba + integración Playwright
+
+### **Prioridad Baja (Optimizaciones)**
+
+5. [ ] (UI-001) Mejorar selector de variantes en PDP — Rationale: UX más clara para talle/color
+6. [ ] (PERF-001) Optimizar carga de imágenes de productos — Rationale: Performance en PLP
+7. [ ] (ADMIN-001) Panel de gestión de cupones — Rationale: Facilitar creación/edición de descuentos
+8. [ ] (EMAIL-001) Templates de emails transaccionales — Rationale: Comunicación profesional con clientes
+9. [ ] (SEO-001) Implementar schema.org para productos — Rationale: Mejor indexación en buscadores
 
 ---
 
