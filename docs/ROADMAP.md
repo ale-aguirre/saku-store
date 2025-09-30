@@ -49,6 +49,29 @@
 - `next.config.ts` - Simplificación de configuración de Webpack
 - `src/app/admin/page.tsx` - Mejoras de UI/UX en dashboard
 
+### **2025-09-30 18:51 - Corrección de Errores TypeScript y ESLint** ✅
+
+**Errores corregidos:**
+- Error TypeScript: Campo `base_price` faltante en interfaces `Product` en admin pages
+- Error TypeScript: Propiedad `totalProducts` incorrecta (debía ser `totalItems`)
+- Warning ESLint: Dependencia `refetch` faltante en useEffect
+
+**Soluciones aplicadas:**
+- Agregado campo `base_price: number` a interfaces Product en `src/app/admin/page.tsx` y `src/app/admin/productos/page.tsx`
+- Corregido `totalProducts` por `totalItems` en `src/app/productos/page.tsx` para coincidir con el tipo de retorno de `getProducts`
+- Implementado `useCallback` para estabilizar función `refetch` y evitar bucles infinitos en useEffect
+- Agregado `stableRefetch` a dependencias del useEffect para cumplir con ESLint rules
+
+**Verificaciones realizadas:**
+- ✅ ESLint: Pasado sin warnings ni errores
+- ✅ TypeScript: Pasado sin errores de tipos
+- ✅ Funcionalidad preservada: refetch automático en caso de error sigue funcionando
+
+**Archivos modificados:**
+- `src/app/admin/page.tsx` - Agregado `base_price` a interface Product
+- `src/app/admin/productos/page.tsx` - Agregado `base_price` a interface Product  
+- `src/app/productos/page.tsx` - Corregido `totalProducts` → `totalItems` y estabilizado refetch con useCallback
+
 ### **2025-09-30 16:50 - Separación de Layouts: Admin vs Sitio Público** ✅
 
 **Problema identificado:**

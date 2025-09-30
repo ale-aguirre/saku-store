@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { mockProducts } from '@/lib/mock-data'
 import { getProductBySlug, getPriceRange, getProducts } from '@/lib/supabase/products'
-import type { ProductWithVariantsAndStock } from '@/types/catalog'
 
 export interface Product {
   id: string
@@ -68,36 +67,16 @@ export function useProducts({
 
   return useQuery({
     queryKey: ['products', { categoryId, sortBy, page, limit, search, sizes, colors, minPrice, maxPrice }],
-    queryFn: async () => {
-      try {
-        const filters = {
-          category_id: categoryId,
-          search,
-          sizes,
-          colors,
-          min_price: minPrice,
-          max_price: maxPrice
-        }
-        
-        const result = await getProducts(filters, sortBy as any, page, limit)
-        
-        // Adaptar la respuesta para que coincida con lo esperado
-        return {
-          products: result.products,
-          totalProducts: result.totalItems,
-          totalPages: result.totalPages,
-          currentPage: page
-        }
-      } catch (error) {
-        console.error('Error fetching products:', error)
-        // Fallback to empty array when there's an error
-        return {
-          products: [] as ProductWithVariantsAndStock[],
-          totalProducts: 0,
-          totalPages: 1,
-          currentPage: page
-        }
+    queryFn: () => {
+      const filters = {
+        category_id: categoryId,
+        search,
+        sizes,
+        colors,
+        min_price: minPrice,
+        max_price: maxPrice
       }
+      return getProducts(filters)
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes

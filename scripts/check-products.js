@@ -1,51 +1,57 @@
 const { createClient } = require('@supabase/supabase-js')
 require('dotenv').config()
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE
+
+if (!supabaseUrl || !supabaseServiceKey) {
+  console.error('Missing Supabase environment variables')
+  process.exit(1)
+}
+
+const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 async function checkProducts() {
   try {
-    console.log('Verificando conexión a Supabase...')
+    console.log('🔍 Verificando productos en Supabase...\n')
     
-    // Verificar productos
-    const { data: products, error: productsError } = await supabase
+    const { data: products, error } = await supabase
       .from('products')
-      .select('id, name, slug, is_active')
+      .select('id, name, base_price, sku, is_active, created_at')
       .limit(5)
 
-    if (productsError) {
-      console.error('Error al obtener productos:', productsError)
+    if (error) {
+      console.error('❌ Error:', error)
       return
     }
 
-    console.log(`Productos encontrados: ${products?.length || 0}`)
-    if (products && products.length > 0) {
-      console.log('Primeros productos:')
-      products.forEach(p => console.log(`- ${p.name} (slug: ${p.slug}, activo: ${p.is_active})`))
-    }
+    console.log(`📦 Productos encontrados: ${products.length}\n`)
+    
+    products.forEach((product, index) => {
+      console.log(`${index + 1}. ${product.name}`)
+      console.log(`   ID: ${product.id}`)
+      console.log(`   SKU: ${product.sku}`)
+      console.log(`   Base Price: ${product.base_price}`)
+      console.log(`   Activo: ${product.is_active}`)
+      console.log(`   Creado: ${new Date(product.created_at).toLocaleDateString('es-AR')}`)
+      console.log('')
+    })
 
-    // Verificar variantes
-    const { data: variants, error: variantsError } = await supabase
-      .from('product_variants')
-      .select('id, sku, size, color, stock_quantity')
-      .limit(5)
+    // Verificar estructura de tabla
+    console.log('🔍 Verificando estructura de tabla products...\n')
+    
+    const { data: columns, error: columnsError } = await supabase
+      .rpc('get_table_columns', { table_name: 'products' })
+      .single()
 
-    if (variantsError) {
-      console.error('Error al obtener variantes:', variantsError)
-      return
-    }
-
-    console.log(`\nVariantes encontradas: ${variants?.length || 0}`)
-    if (variants && variants.length > 0) {
-      console.log('Primeras variantes:')
-      variants.forEach(v => console.log(`- ${v.sku} (${v.size}/${v.color}, stock: ${v.stock_quantity})`))
+    if (columnsError) {
+      console.log('⚠️  No se pudo obtener estructura de tabla (función no existe)')
+    } else {
+      console.log('📋 Columnas de la tabla products:', columns)
     }
 
   } catch (error) {
-    console.error('Error general:', error)
+    console.error('❌ Error general:', error)
   }
 }
 

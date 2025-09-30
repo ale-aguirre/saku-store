@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Grid, List } from 'lucide-react'
@@ -56,8 +56,13 @@ export default function ProductsPage() {
 
   // Extraer datos de la respuesta
   const products = productsData?.products || []
-  const totalProducts = productsData?.totalProducts || 0
+  const totalProducts = productsData?.totalItems || 0
   const totalPages = productsData?.totalPages || 1
+
+  // Función estable para refetch
+  const stableRefetch = useCallback(() => {
+    refetch()
+  }, [refetch])
 
   // Si hay error, intentar refetch automáticamente
   useEffect(() => {
@@ -65,13 +70,13 @@ export default function ProductsPage() {
       console.error('Error loading products:', error)
       // Intentar refetch después de 3 segundos
       const timeoutId = setTimeout(() => {
-        refetch()
+        stableRefetch()
       }, 3000)
       
       // Cleanup timeout si el componente se desmonta o cambian las dependencias
       return () => clearTimeout(timeoutId)
     }
-  }, [error, mounted]) // Removido refetch de las dependencias para evitar bucle infinito
+  }, [error, mounted, stableRefetch])
 
   // Mostrar loading inicial si no está montado
   if (!mounted) {
@@ -175,7 +180,7 @@ export default function ProductsPage() {
       </div>
 
       {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Filters Sidebar */}
         <div className="lg:col-span-1">
           <div className="sticky top-8">
@@ -193,7 +198,7 @@ export default function ProductsPage() {
         {/* Products Grid */}
         <div className="lg:col-span-3">
           {isLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="animate-pulse">
                   <div className="aspect-[3/4] bg-gray-200 rounded-lg mb-4" />
@@ -205,9 +210,9 @@ export default function ProductsPage() {
               ))}
             </div>
           ) : products && products.length > 0 ? (
-            <div className={`grid gap-4 sm:gap-6 ${
+            <div className={`grid gap-6 ${
               viewMode === 'grid' 
-                ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3' 
+                ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' 
                 : 'grid-cols-1'
             }`}>
               {products.map((product) => (

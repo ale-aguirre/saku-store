@@ -81,9 +81,9 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
   const SidebarContent = () => (
     <div className="flex h-full flex-col">
       {/* Logo Area */}
-      <div className="flex h-20 items-center justify-center border-b border-slate-700 px-6">
+      <div className="flex h-20 items-center justify-center border-b border-border px-6">
         <Link href="/admin" className="flex items-center space-x-2">
-          <span className="text-2xl font-bold text-white" style={{ fontFamily: 'Razed Bold, sans-serif' }}>
+          <span className="text-2xl font-bold text-foreground" style={{ fontFamily: 'Razed Bold, sans-serif' }}>
             Sakú
           </span>
         </Link>
@@ -100,21 +100,21 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
               className={cn(
                 'group flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200',
                 active
-                  ? 'bg-[#d8ceb5] text-[#2c3e50] shadow-sm'
-                  : 'text-white/70 hover:bg-white/10 hover:text-white',
-                item.highlight && !active && 'ring-1 ring-[#d8ceb5]/30'
+                  ? 'bg-saku-base text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
+                item.highlight && !active && 'ring-1 ring-saku-base/30'
               )}
               onClick={() => setIsMobileOpen(false)}
             >
               <item.icon
                 className={cn(
                   'mr-3 h-5 w-5 flex-shrink-0',
-                  active ? 'text-[#2c3e50]' : 'text-white/70 group-hover:text-white'
+                  active ? 'text-foreground' : 'text-muted-foreground group-hover:text-accent-foreground'
                 )}
               />
               {item.name}
               {item.highlight && !active && (
-                <span className="ml-auto rounded-full bg-[#d8ceb5] px-2 py-0.5 text-xs font-medium text-[#2c3e50]">
+                <span className="ml-auto rounded-full bg-saku-base px-2 py-0.5 text-xs font-medium text-foreground">
                   Nuevo
                 </span>
               )}
@@ -124,14 +124,14 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
       </nav>
 
       {/* User Profile Area */}
-      <div className="border-t border-slate-700 p-4">
+      <div className="border-t border-border p-4">
         <div className="flex items-center space-x-3">
-          <div className="h-8 w-8 rounded-full bg-[#d8ceb5] flex items-center justify-center">
-            <span className="text-sm font-medium text-[#2c3e50]">A</span>
+          <div className="h-8 w-8 rounded-full bg-saku-base flex items-center justify-center">
+            <span className="text-sm font-medium text-foreground">A</span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-white">Admin</p>
-            <p className="text-xs text-white/70 truncate">admin@saku.com</p>
+            <p className="text-sm font-medium text-foreground">Admin</p>
+            <p className="text-xs text-muted-foreground truncate">admin@saku.com</p>
           </div>
         </div>
       </div>
@@ -146,7 +146,7 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
           variant="ghost"
           size="sm"
           onClick={() => setIsMobileOpen(true)}
-          className="fixed top-4 left-4 z-50 bg-white shadow-md hover:bg-gray-50"
+          className="fixed top-4 left-4 z-50 bg-background shadow-md hover:bg-accent"
         >
           <Menu className="h-5 w-5" />
         </Button>
@@ -156,13 +156,13 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
       {isMobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="fixed inset-0 bg-black/50" onClick={() => setIsMobileOpen(false)} />
-          <div className="fixed left-0 top-0 h-full w-64 bg-[#2c3e50]">
+          <div className="fixed left-0 top-0 h-full w-64 bg-background border-r border-border">
             <div className="absolute right-4 top-4">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsMobileOpen(false)}
-                className="text-white hover:bg-white/10"
+                className="text-foreground hover:bg-accent"
               >
                 <X className="h-5 w-5" />
               </Button>
@@ -174,7 +174,7 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
 
       {/* Desktop sidebar */}
       <div className={cn(
-        'hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:block lg:w-70 lg:bg-[#2c3e50]',
+        'hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:block lg:w-70 bg-background border-r border-border',
         className
       )}>
         <SidebarContent />

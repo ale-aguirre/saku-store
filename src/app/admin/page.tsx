@@ -53,6 +53,7 @@ interface Order {
 interface Product {
   id: string
   name: string
+  base_price: number
   price: number
   status: string
   created_at: string
@@ -129,7 +130,7 @@ export default function AdminDashboard() {
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
         supabase.from('orders').select('total').eq('status', 'paid'),
         supabase.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
-        supabase.from('product_variants').select('product_id, stock_quantity').lt('stock_quantity', 5),
+        supabase.from('product_variants').select('product_id, stock_quantity, low_stock_threshold').filter('stock_quantity', 'lte', 'low_stock_threshold'),
         supabase.from('orders').select('*', { count: 'exact', head: true }).gte('created_at', todayISO),
         supabase.from('orders').select('total').eq('status', 'paid').gte('created_at', todayISO)
       ])
@@ -516,7 +517,7 @@ export default function AdminDashboard() {
                           <div>
                             <p className="font-medium">{product.name}</p>
                             <p className="text-sm text-gray-600">
-                              {formatPrice(product.price)}
+                              {formatPrice(product.base_price)}
                             </p>
                             <p className="text-xs text-gray-500">
                               Stock total: {totalStock} unidades

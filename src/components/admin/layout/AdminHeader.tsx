@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 interface BreadcrumbItem {
   label: string
@@ -47,7 +48,7 @@ export function AdminHeader({
             {breadcrumbs.map((item, index) => (
               <div key={index} className="flex items-center space-x-2">
                 {index > 0 && <ChevronRight className="h-4 w-4" />}
-                <span className={index === breadcrumbs.length - 1 ? 'text-gray-900 font-medium' : 'hover:text-gray-700'}>
+                <span className={index === breadcrumbs.length - 1 ? 'text-foreground font-medium' : 'hover:text-foreground/70'}>
                   {item.label}
                 </span>
               </div>
@@ -56,7 +57,7 @@ export function AdminHeader({
         )}
         
         {/* Page Title */}
-        <h1 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Marcellus, serif' }}>
+        <h1 className="text-2xl font-bold text-foreground" style={{ fontFamily: 'Marcellus, serif' }}>
           {title}
         </h1>
       </div>
@@ -84,6 +85,9 @@ export function AdminHeader({
         {/* Custom Actions */}
         {actions}
 
+        {/* Theme Toggle */}
+        <ThemeToggle />
+
         {/* Notifications */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -103,19 +107,19 @@ export function AdminHeader({
             <DropdownMenuItem>
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium">Stock bajo detectado</p>
-                <p className="text-xs text-gray-500">3 productos necesitan restock</p>
+                <p className="text-xs text-muted-foreground">3 productos necesitan restock</p>
               </div>
             </DropdownMenuItem>
             <DropdownMenuItem>
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium">Nuevo pedido recibido</p>
-                <p className="text-xs text-gray-500">Pedido #1234 - $25.000</p>
+                <p className="text-xs text-muted-foreground">Pedido #1234 - $25.000</p>
               </div>
             </DropdownMenuItem>
             <DropdownMenuItem>
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium">Automatización completada</p>
-                <p className="text-xs text-gray-500">Email de carrito abandonado enviado</p>
+                <p className="text-xs text-muted-foreground">Email de carrito abandonado enviado</p>
               </div>
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -125,8 +129,8 @@ export function AdminHeader({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm" className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded-full bg-[#d8ceb5] flex items-center justify-center">
-                <User className="h-4 w-4 text-[#2c3e50]" />
+              <div className="h-8 w-8 rounded-full bg-saku-base flex items-center justify-center">
+                <User className="h-4 w-4 text-foreground" />
               </div>
               <span className="text-sm font-medium">Admin</span>
             </Button>

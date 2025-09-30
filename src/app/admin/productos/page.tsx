@@ -30,6 +30,7 @@ interface Product {
   id: string
   name: string
   description: string
+  base_price: number
   price: number
   status: string
   created_at: string
@@ -178,7 +179,7 @@ export default function AdminProductsPage() {
                   </TableCell>
                   <TableCell>
                     <span className="font-medium">
-                      {formatPrice(product.price)}
+                      {formatPrice(product.base_price)}
                     </span>
                   </TableCell>
                   <TableCell>
