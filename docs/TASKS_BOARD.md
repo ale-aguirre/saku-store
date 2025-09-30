@@ -14,11 +14,32 @@
 
 ## Today (focus del día)
 
-- [x] (TB-001) Implementar TASKS_BOARD.md — Owner: Saku — TS: 2025-09-26 15:03
-  - Goal: Crear sistema de seguimiento de tareas append-only
-  - Acceptance: Archivo creado con estructura completa y funcional
-  - Links: feature/tasks-board-implementation
-  - Notes: Primera implementación del sistema de tareas
+- [x] (TB-015) Implementar soporte completo para tema claro/oscuro en sección /admin — Owner: Saku — TS done: 2025-09-30 20:39
+  - Goal: Eliminar todas las clases hardcodeadas y hacer que la sección admin respete el tema seleccionado
+  - Scope: Layout admin, dashboard, sidebar, páginas de productos/órdenes/cupones
+  - Acceptance: Todas las clases text-gray-*, bg-white, etc. reemplazadas por clases de tema dinámico
+  - Priority: High
+  - How: Corregidas clases hardcodeadas en dashboard, órdenes y categorías. Error TypeScript resuelto.
+  - Files: src/app/admin/page.tsx, src/app/admin/ordenes/page.tsx, src/app/admin/ordenes/[id]/page.tsx, src/app/admin/categorias/page.tsx
+  - Checks: ESLint ✅ | Types ✅ | Preview ✅ (http://localhost:3000)
+
+- [ ] (TB-025) Implementar página de configuración del admin /admin/configuracion — Owner: Saku — TS: 2025-09-30 20:39
+  - Goal: Crear página donde el admin pueda modificar nombre, contraseña y foto de perfil
+  - Scope: Formulario de configuración personal, actualización de datos de usuario admin
+  - Acceptance: Página funcional con formulario para cambiar datos personales del admin
+  - Priority: High
+
+- [ ] (TB-026) Verificar y mejorar botón de cambio de tema en admin — Owner: Saku — TS: 2025-09-30 20:39
+  - Goal: Asegurar que el ThemeToggle esté visible y funcional en el panel admin
+  - Scope: AdminHeader, verificar posicionamiento y funcionalidad del botón de tema
+  - Acceptance: Botón de cambio de tema visible y funcional en todas las páginas admin
+  - Priority: Medium
+
+- [ ] (TB-016) Implementar página de edición de producto /admin/productos/[id] — Owner: Saku — TS: 2025-01-27 17:15
+  - Goal: Crear página funcional para editar productos existentes
+  - Scope: Formulario de edición, validación, actualización en DB
+  - Acceptance: Página funcional sin error 404, formulario completo
+  - Priority: High
 
 ---
 
@@ -31,6 +52,22 @@
 ## Blocked
 
 <!-- Tareas bloqueadas esperando resolución -->
+
+---
+
+## Backlog (tareas pendientes)
+
+### Tema claro/oscuro - Prioridad Media
+- [ ] (TB-017) Corregir AdminSidebar - revisar clases hardcodeadas restantes — Owner: Saku — TS: 2025-01-27 17:15
+- [ ] (TB-018) Corregir cards del dashboard admin - reemplazar text-gray-*, bg-gray-* por clases de tema — Owner: Saku — TS: 2025-01-27 17:15
+- [ ] (TB-019) Corregir layout de admin - reemplazar bg-white, text-gray-* por clases de tema — Owner: Saku — TS: 2025-01-27 17:15
+- [ ] (TB-020) Corregir página de productos admin - reemplazar text-gray-* por clases de tema — Owner: Saku — TS: 2025-01-27 17:15
+- [ ] (TB-021) Corregir página de órdenes admin - reemplazar text-gray-* por clases de tema — Owner: Saku — TS: 2025-01-27 17:15
+- [ ] (TB-022) Corregir página de cupones admin - reemplazar text-gray-* por clases de tema — Owner: Saku — TS: 2025-01-27 17:15
+
+### Mejoras UI/UX - Prioridad Baja
+- [ ] (TB-023) Corregir estado del botón de login cuando usuario está logueado en home — Owner: Saku — TS: 2025-01-27 17:15
+- [ ] (TB-024) Corregir lógica de badge de poco stock (no mostrar si stock > 20) — Owner: Saku — TS: 2025-01-27 17:15
 
 ---
 

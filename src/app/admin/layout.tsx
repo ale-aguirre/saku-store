@@ -12,12 +12,11 @@ import {
   LayoutDashboard,
   Package,
   ShoppingCart,
-  Users,
+  User,
   Ticket,
   Mail,
   BarChart3,
   Settings,
-  LogOut,
   Menu,
   X,
   ChevronRight,
@@ -74,7 +73,7 @@ const navigation: NavItem[] = [
 ]
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
-  const { user, loading, signOut } = useAuth()
+  const { user, loading } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -102,10 +101,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     }
   }, [user, loading, router])
 
-  const handleSignOut = async () => {
-    await signOut()
-    router.push('/')
-  }
+
 
   const getBreadcrumbs = () => {
     const segments = pathname.split('/').filter(Boolean)
@@ -167,30 +163,30 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const breadcrumbs = getBreadcrumbs()
 
   return (
-    <div className="min-h-screen bg-gray-50 lg:flex">
+    <div className="min-h-screen bg-background lg:flex">
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div 
           className="fixed inset-0 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         >
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-75" />
+          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm" />
         </div>
       )}
 
       {/* Sidebar */}
       <div className={cn(
-        "fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 lg:flex lg:flex-col",
+        "fixed inset-y-0 left-0 z-50 w-64 bg-background border-r shadow-lg transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 lg:flex lg:flex-col",
         sidebarOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         <div className="flex flex-col h-full lg:h-screen">
           {/* Logo */}
-          <div className="flex items-center justify-between h-16 px-6 border-b">
+          <div className="flex items-center justify-between h-16 px-6 border-b border-border">
             <Link href="/admin" className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">S</span>
               </div>
-              <span className="font-bold text-xl">Sakú Admin</span>
+              <span className="font-bold text-xl text-foreground">Sakú Admin</span>
             </Link>
             <Button
               variant="ghost"
@@ -203,7 +199,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-2">
+          <nav className="flex-1 px-6 py-4 space-y-2 bg-muted/50">
             {navigation.map((item) => {
               const isActive = pathname === item.href || 
                 (item.href !== '/admin' && pathname.startsWith(item.href))
@@ -215,8 +211,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   className={cn(
                     "flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                     isActive
-                      ? "bg-gray-100 text-gray-900"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                      ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white"
+                      : "text-foreground hover:text-foreground hover:bg-accent"
                   )}
                   onClick={() => setSidebarOpen(false)}
                 >
@@ -235,27 +231,20 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </nav>
 
           {/* User section */}
-          <div className="p-4 border-t">
-            <div className="flex items-center space-x-3 mb-3">
-              <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                <Users className="h-4 w-4 text-gray-600" />
+          <div className="p-6 border-t border-border bg-muted/30">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center">
+                <User className="w-4 h-4 text-white" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
-                  {user.email}
+                <p className="text-sm font-medium text-foreground truncate">
+                  {user?.email || 'Admin'}
                 </p>
-                <p className="text-xs text-gray-500">Administrador</p>
+                <p className="text-xs text-muted-foreground truncate">
+                  Administrador
+                </p>
               </div>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full"
-              onClick={handleSignOut}
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Cerrar Sesión
-            </Button>
           </div>
         </div>
       </div>
@@ -263,7 +252,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       {/* Main content */}
       <div className="flex-1 lg:flex lg:flex-col">
         {/* Top bar */}
-        <div className="sticky top-0 z-30 bg-white border-b px-4 py-3 lg:relative">
+        <div className="sticky top-0 z-30 bg-background border-b border-border px-4 py-3 lg:relative">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Button
@@ -279,20 +268,20 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <nav className="flex items-center space-x-2 text-sm">
                 {breadcrumbs.map((crumb, index) => (
                   <div key={crumb.href} className="flex items-center space-x-2">
-                    {index === 0 && <Home className="h-4 w-4 text-gray-400" />}
+                    {index === 0 && <Home className="h-4 w-4 text-muted-foreground" />}
                     <Link
                       href={crumb.href}
                       className={cn(
-                        "hover:text-gray-900 transition-colors",
+                        "hover:text-foreground transition-colors",
                         index === breadcrumbs.length - 1
-                          ? "text-gray-900 font-medium"
-                          : "text-gray-500"
+                          ? "text-foreground font-medium"
+                          : "text-muted-foreground"
                       )}
                     >
                       {crumb.title}
                     </Link>
                     {index < breadcrumbs.length - 1 && (
-                      <ChevronRight className="h-4 w-4 text-gray-400" />
+                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
                     )}
                   </div>
                 ))}

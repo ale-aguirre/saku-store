@@ -237,8 +237,8 @@ export default function OrdersPage() {
     return (
       <div className="py-8">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
+          <div className="h-8 bg-muted rounded w-1/4"></div>
+          <div className="h-64 bg-muted rounded"></div>
         </div>
       </div>
     )
@@ -247,8 +247,8 @@ export default function OrdersPage() {
   if (!user) {
     return (
       <div className="py-8 text-center">
-        <h1 className="text-2xl font-bold mb-4">Acceso restringido</h1>
-        <p className="text-gray-600">No tienes permisos para acceder a esta página.</p>
+        <h1 className="text-2xl font-bold mb-4 text-foreground">Acceso restringido</h1>
+        <p className="text-muted-foreground">No tienes permisos para acceder a esta página.</p>
       </div>
     )
   }
@@ -257,8 +257,8 @@ export default function OrdersPage() {
     <div className="py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold">Gestión de Órdenes</h1>
-          <p className="text-gray-600">Administra todas las órdenes de tu tienda</p>
+          <h1 className="text-3xl font-bold text-foreground">Gestión de Órdenes</h1>
+          <p className="text-muted-foreground">Administra todas las órdenes de tu tienda</p>
         </div>
         <Button 
           variant="outline" 
@@ -323,7 +323,7 @@ export default function OrdersPage() {
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   placeholder="Buscar por número de orden, email o nombre..."
                   value={searchTerm}
@@ -415,7 +415,7 @@ export default function OrdersPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead 
-                    className="cursor-pointer hover:bg-gray-50"
+                    className="cursor-pointer hover:bg-muted/50"
                     onClick={() => handleSort('order_number')}
                   >
                     <div className="flex items-center">
@@ -427,7 +427,7 @@ export default function OrdersPage() {
                   </TableHead>
                   <TableHead>Cliente</TableHead>
                   <TableHead 
-                    className="cursor-pointer hover:bg-gray-50"
+                    className="cursor-pointer hover:bg-muted/50"
                     onClick={() => handleSort('status')}
                   >
                     <div className="flex items-center">
@@ -438,7 +438,7 @@ export default function OrdersPage() {
                     </div>
                   </TableHead>
                   <TableHead 
-                    className="cursor-pointer hover:bg-gray-50"
+                    className="cursor-pointer hover:bg-muted/50"
                     onClick={() => handleSort('total_amount')}
                   >
                     <div className="flex items-center">
@@ -449,7 +449,7 @@ export default function OrdersPage() {
                     </div>
                   </TableHead>
                   <TableHead 
-                    className="cursor-pointer hover:bg-gray-50"
+                    className="cursor-pointer hover:bg-muted/50"
                     onClick={() => handleSort('created_at')}
                   >
                     <div className="flex items-center">
@@ -469,14 +469,14 @@ export default function OrdersPage() {
                   Array.from({ length: 5 }).map((_, index) => (
                     <TableRow key={`skeleton-${index}`}>
                       <TableCell colSpan={7}>
-                        <div className="h-10 bg-gray-100 animate-pulse rounded"></div>
+                        <div className="h-10 bg-muted animate-pulse rounded"></div>
                       </TableCell>
                     </TableRow>
                   ))
                 ) : filteredOrders.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={7} className="text-center py-8">
-                      <p className="text-gray-500">No se encontraron órdenes</p>
+                      <p className="text-muted-foreground">No se encontraron órdenes</p>
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -496,7 +496,7 @@ export default function OrdersPage() {
                             <div className="font-medium">
                               {order.profiles?.full_name || 'Sin nombre'}
                             </div>
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-muted-foreground">
                               {order.profiles?.email}
                             </div>
                           </div>
@@ -514,7 +514,7 @@ export default function OrdersPage() {
                           <div className="whitespace-nowrap">
                             {format(new Date(order.created_at), 'dd/MM/yyyy')}
                           </div>
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-muted-foreground">
                             {format(new Date(order.created_at), 'HH:mm')}
                           </div>
                         </TableCell>
@@ -536,7 +536,7 @@ export default function OrdersPage() {
                               )}
                             </div>
                           ) : (
-                            <span className="text-gray-400">Sin código</span>
+                            <span className="text-muted-foreground">Sin código</span>
                           )}
                         </TableCell>
                         <TableCell>

@@ -13,8 +13,8 @@ export default function CategoriesPage() {
     return (
       <div className="py-8">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
+          <div className="h-8 bg-muted rounded w-1/4"></div>
+          <div className="h-64 bg-muted rounded"></div>
         </div>
       </div>
     )
@@ -23,8 +23,8 @@ export default function CategoriesPage() {
   if (!user) {
     return (
       <div className="py-8 text-center">
-        <h1 className="text-2xl font-bold mb-4">Acceso restringido</h1>
-        <p className="text-gray-600">No tienes permisos para acceder a esta página.</p>
+        <h1 className="text-2xl font-bold mb-4 text-foreground">Acceso restringido</h1>
+        <p className="text-muted-foreground">No tienes permisos para acceder a esta página.</p>
       </div>
     )
   }

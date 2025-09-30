@@ -156,8 +156,8 @@ export default function NewProductPage() {
     return (
       <div className="py-8">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
+          <div className="h-8 bg-muted rounded w-1/4"></div>
+          <div className="h-64 bg-muted rounded"></div>
         </div>
       </div>
     )
@@ -166,8 +166,8 @@ export default function NewProductPage() {
   if (!user) {
     return (
       <div className="py-8 text-center">
-        <h1 className="text-2xl font-bold mb-4">Acceso restringido</h1>
-        <p className="text-gray-600">No tienes permisos para acceder a esta página.</p>
+        <h1 className="text-2xl font-bold mb-4 text-foreground">Acceso restringido</h1>
+        <p className="text-muted-foreground">No tienes permisos para acceder a esta página.</p>
       </div>
     )
   }
@@ -181,9 +181,9 @@ export default function NewProductPage() {
             Volver
           </Button>
         </Link>
-        <div>
-          <h1 className="text-3xl font-bold">Nuevo Producto</h1>
-          <p className="text-gray-600">Crea un nuevo producto para tu catálogo</p>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-foreground">Nuevo Producto</h1>
+          <p className="text-muted-foreground">Crea un nuevo producto para tu catálogo</p>
         </div>
       </div>
 
@@ -358,7 +358,7 @@ export default function NewProductPage() {
                 ))}
                 
                 {variants.length === 0 && (
-                  <p className="text-gray-500 text-sm text-center py-4">
+                  <p className="text-muted-foreground text-sm text-center py-4">
                     No hay variantes agregadas
                   </p>
                 )}

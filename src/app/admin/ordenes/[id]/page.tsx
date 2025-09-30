@@ -147,8 +147,8 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
     return (
       <div className="py-8">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
+          <div className="h-8 bg-muted rounded w-1/4"></div>
+        <div className="h-64 bg-muted rounded"></div>
         </div>
       </div>
     )
@@ -158,7 +158,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
     return (
       <div className="py-8 text-center">
         <h1 className="text-2xl font-bold mb-4">Acceso restringido</h1>
-        <p className="text-gray-600">No tienes permisos para acceder a esta página.</p>
+        <p className="text-muted-foreground">No tienes permisos para acceder a esta página.</p>
       </div>
     )
   }
@@ -167,7 +167,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
     return (
       <div className="py-8 text-center">
         <h1 className="text-2xl font-bold mb-4">Orden no encontrada</h1>
-        <p className="text-gray-600">La orden solicitada no existe o no tienes permisos para verla.</p>
+        <p className="text-muted-foreground">La orden solicitada no existe o no tienes permisos para verla.</p>
         <Link href="/admin/ordenes">
           <Button variant="outline" className="mt-4">
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -190,7 +190,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
           </Link>
           <div>
             <h1 className="text-3xl font-bold">Orden #{order.order_number}</h1>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               Creada el {new Date(order.created_at).toLocaleDateString('es-AR')}
             </p>
           </div>
@@ -257,7 +257,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
               <div className="space-y-4">
                 {order.order_items.map((item) => (
                   <div key={item.id} className="flex items-center gap-4 p-4 border rounded-lg">
-                    <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
                       {item.product_variants.products.image_url ? (
                         <ProductImage
                           src={item.product_variants.products.image_url}
@@ -267,19 +267,19 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                           className="object-cover rounded-lg"
                         />
                       ) : (
-                        <Package className="h-8 w-8 text-gray-400" />
+                        <Package className="h-8 w-8 text-muted-foreground" />
                       )}
                     </div>
                     <div className="flex-1">
                       <h3 className="font-medium">{item.product_variants.products.name}</h3>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-muted-foreground">
                         Talle: {item.product_variants.size} | Color: {item.product_variants.color}
                       </p>
-                      <p className="text-sm text-gray-600">SKU: {item.product_variants.sku}</p>
+                      <p className="text-sm text-muted-foreground">SKU: {item.product_variants.sku}</p>
                     </div>
                     <div className="text-right">
                       <p className="font-medium">Cantidad: {item.quantity}</p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-muted-foreground">
                         {formatPrice(item.price)} c/u
                       </p>
                       <p className="font-bold">

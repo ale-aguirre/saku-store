@@ -97,8 +97,8 @@ export default function AdminProductsPage() {
     return (
       <div className="py-8">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
+          <div className="h-8 bg-muted rounded w-1/4"></div>
+          <div className="h-64 bg-muted rounded"></div>
         </div>
       </div>
     )
@@ -107,8 +107,8 @@ export default function AdminProductsPage() {
   if (!user) {
     return (
       <div className="py-8 text-center">
-        <h1 className="text-2xl font-bold mb-4">Acceso restringido</h1>
-        <p className="text-gray-600">No tienes permisos para acceder a esta página.</p>
+        <h1 className="text-2xl font-bold mb-4 text-foreground">Acceso restringido</h1>
+        <p className="text-muted-foreground">No tienes permisos para acceder a esta página.</p>
       </div>
     )
   }
@@ -117,8 +117,8 @@ export default function AdminProductsPage() {
     <div className="py-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold">Gestión de Productos</h1>
-          <p className="text-gray-600">Administra tu catálogo de productos</p>
+          <h1 className="text-3xl font-bold text-foreground">Productos</h1>
+          <p className="text-muted-foreground">Administra tu catálogo de productos</p>
         </div>
         <Link href="/admin/productos/nuevo">
           <Button>
@@ -133,7 +133,7 @@ export default function AdminProductsPage() {
         <CardContent className="p-6">
           <div className="flex gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Buscar productos..."
                 value={searchTerm}
@@ -172,7 +172,7 @@ export default function AdminProductsPage() {
                   <TableCell>
                     <div>
                       <p className="font-medium">{product.name}</p>
-                      <p className="text-sm text-gray-600 truncate max-w-xs">
+                      <p className="text-sm text-muted-foreground truncate max-w-xs">
                         {product.description}
                       </p>
                     </div>
@@ -204,7 +204,7 @@ export default function AdminProductsPage() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-muted-foreground">
                       {new Date(product.created_at).toLocaleDateString('es-AR')}
                     </span>
                   </TableCell>
@@ -232,11 +232,11 @@ export default function AdminProductsPage() {
           
           {filteredProducts.length === 0 && (
             <div className="text-center py-8">
-              <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">
                 {searchTerm ? 'No se encontraron productos' : 'No hay productos'}
               </h3>
-              <p className="text-gray-600 mb-4">
+              <p className="text-muted-foreground mb-4">
                 {searchTerm 
                   ? 'Intenta con otros términos de búsqueda' 
                   : 'Comienza agregando tu primer producto'

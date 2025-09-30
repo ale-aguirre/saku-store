@@ -49,6 +49,59 @@
 - `next.config.ts` - Simplificación de configuración de Webpack
 - `src/app/admin/page.tsx` - Mejoras de UI/UX en dashboard
 
+### **2025-09-30 20:50 - Página de Configuración del Administrador** ✅
+
+**Funcionalidad implementada:**
+- Nueva página `/admin/configuracion` con formularios para gestión de perfil de administrador
+- Formulario de datos personales (nombre completo, email) con validación Zod
+- Formulario de cambio de contraseña con validación de seguridad
+- Integración completa con Supabase Auth para actualización de perfil y contraseña
+- UI responsiva con shadcn/ui components y manejo de estados de carga/error
+
+**Correcciones técnicas:**
+- Solucionado error `supabaseKey is required` corrigiendo configuración de cliente Supabase
+- Refactorizado `supabaseAdmin` a función `createSupabaseAdmin()` para uso exclusivo en servidor
+- Eliminado warning de ESLint por variable `signOut` no utilizada en layout
+
+**Verificaciones realizadas:**
+- ✅ ESLint: Pasado sin errores ni warnings
+- ✅ TypeScript: Pasado sin errores
+- ✅ Vista previa funcional en http://localhost:3000/admin/configuracion
+- ✅ Servidor ejecutándose correctamente en puerto 3000
+
+**Archivos modificados:**
+- `src/app/admin/configuracion/page.tsx` - Nueva página de configuración completa
+- `src/lib/supabase.ts` - Corrección de configuración de cliente admin
+- `src/app/admin/layout.tsx` - Eliminación de import no utilizado
+
+### **2025-09-30 20:07 - Corrección Completa de Clases Hardcodeadas en Panel Admin** ✅
+
+**Problema resuelto:**
+- Clases hardcodeadas de colores grises (`text-gray-*`, `bg-gray-*`, `dark:text-gray-*`, `dark:bg-gray-*`) en todo el panel de administración
+- Falta de soporte completo para tema claro/oscuro en secciones admin
+
+**Solución aplicada:**
+- Reemplazo sistemático de clases hardcodeadas por clases de tema dinámico:
+  - `text-gray-600` → `text-muted-foreground`
+  - `text-gray-500` → `text-muted-foreground`
+  - `text-gray-400` → `text-muted-foreground`
+  - `bg-gray-200` → `bg-muted`
+  - `bg-gray-100` → `bg-muted`
+- Eliminación de todas las clases `dark:text-gray-*` y `dark:bg-gray-*`
+- Corrección de error TypeScript en `categorias/page.tsx` (variable `isLoading` inexistente)
+
+**Archivos corregidos:**
+- `src/app/admin/page.tsx` - Dashboard principal (tarjetas de métricas, acciones rápidas, tabs)
+- `src/app/admin/ordenes/page.tsx` - Lista de órdenes
+- `src/app/admin/ordenes/[id]/page.tsx` - Detalle de orden
+- `src/app/admin/categorias/page.tsx` - Corrección error TypeScript
+
+**Verificaciones realizadas:**
+- ✅ ESLint: Pasado sin errores
+- ✅ TypeScript: Pasado sin errores (corregido error en categorías)
+- ✅ Preview funcional: http://localhost:3000 sin errores en consola
+- ✅ Soporte completo tema claro/oscuro en panel admin
+
 ### **2025-09-30 18:51 - Corrección de Errores TypeScript y ESLint** ✅
 
 **Errores corregidos:**
