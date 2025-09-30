@@ -8,7 +8,7 @@ import { AuthProvider } from '@/hooks/use-auth';
 import { CookieBanner } from "@/components/consent/cookie-banner";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { MetaPixel } from "@/components/analytics/meta-pixel";
-import { MainLayout } from "@/components/layout/main-layout";
+import { ConditionalLayout } from "@/components/layout/conditional-layout";
 import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({
@@ -49,7 +49,7 @@ export default function RootLayout({
           <QueryProvider>
             <AuthProvider>
               <ConsentProvider>
-                <MainLayout>{children}</MainLayout>
+                <ConditionalLayout>{children}</ConditionalLayout>
                 <CookieBanner />
                 <GoogleAnalytics />
                 <MetaPixel />

@@ -57,6 +57,20 @@
   - PR: feature/fix-prices-and-colors — Merge: sí, mergeado a develop
   - Notes: Error original en función priceToInteger que multiplicaba por 100 innecesariamente
 
+- [x] (LAY-001) Separación de layouts Admin vs Sitio Público — TS done: 2025-09-30 16:50
+  - How: Creado ConditionalLayout para detectar rutas admin vs públicas, modificado RootLayout
+  - Scope: Eliminación de header/footer público en panel admin, mantenimiento de layout específico admin
+  - Files: src/app/layout.tsx, src/components/layout/conditional-layout.tsx
+  - Checks: ESLint ✅ | Types ✅ | Preview ✅ (admin sin header/footer, páginas públicas con ellos)
+  - Notes: Separación clara entre experiencia pública y administrativa
+
+- [x] (FIX-001) Corrección error de stock en Admin/Productos — TS done: 2025-09-30 17:25
+  - How: Corregido campo en consulta Supabase de 'stock' a 'stock_quantity' en admin/productos/page.tsx
+  - Scope: Alineación con esquema real de tabla product_variants, consistencia en mapeo de campos
+  - Files: src/app/admin/productos/page.tsx (línea 62)
+  - Checks: ESLint ✅ | Types ✅ | Preview ✅ (todas las rutas admin funcionando)
+  - Notes: Error de runtime resuelto, panel de productos totalmente funcional
+
 ---
 
 ## Backlog (próximas tareas)

@@ -96,24 +96,25 @@ export default function RegisterPage() {
 
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+    <div className="min-h-screen flex items-center justify-center bg-background px-3 sm:px-4">
       <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">
+        <CardHeader className="space-y-1 px-4 sm:px-6 pt-4 sm:pt-6">
+          <CardTitle className="text-xl sm:text-2xl font-bold text-center">
             Crear Cuenta
           </CardTitle>
-          <CardDescription className="text-center">
+          <CardDescription className="text-center text-sm sm:text-base">
             Únete a Sakú Lencería
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleRegister} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+        <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+          <form onSubmit={handleRegister} className="space-y-3 sm:space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">Nombre</Label>
+                <Label htmlFor="firstName" className="text-sm sm:text-base">Nombre</Label>
                 <Input
                   id="firstName"
                   placeholder="Tu nombre"
+                  className="h-10 sm:h-11"
                   value={formData.firstName}
                   onChange={(e) => handleInputChange('firstName', e.target.value)}
                   required
@@ -121,10 +122,11 @@ export default function RegisterPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Apellido</Label>
+                <Label htmlFor="lastName" className="text-sm sm:text-base">Apellido</Label>
                 <Input
                   id="lastName"
                   placeholder="Tu apellido"
+                  className="h-10 sm:h-11"
                   value={formData.lastName}
                   onChange={(e) => handleInputChange('lastName', e.target.value)}
                   required
@@ -134,11 +136,12 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-sm sm:text-base">Email</Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="tu@email.com"
+                className="h-10 sm:h-11"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 required
@@ -147,11 +150,12 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone">Teléfono (opcional)</Label>
+              <Label htmlFor="phone" className="text-sm sm:text-base">Teléfono (opcional)</Label>
               <Input
                 id="phone"
                 type="tel"
                 placeholder="+54 9 11 1234-5678"
+                className="h-10 sm:h-11"
                 value={formData.phone}
                 onChange={(e) => handleInputChange('phone', e.target.value)}
                 disabled={loading}
@@ -159,12 +163,13 @@ export default function RegisterPage() {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="password">Contraseña</Label>
+              <Label htmlFor="password" className="text-sm sm:text-base">Contraseña</Label>
               <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Mínimo 6 caracteres"
+                  className="h-10 sm:h-11 pr-12"
                   value={formData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
                   required
@@ -174,26 +179,27 @@ export default function RegisterPage() {
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  className="absolute right-0 top-0 h-full px-2 sm:px-3 py-2 hover:bg-transparent min-w-[44px]"
                   onClick={() => setShowPassword(!showPassword)}
                   disabled={loading}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
+                    <EyeOff className="h-4 w-4 sm:h-5 sm:w-5" />
                   ) : (
-                    <Eye className="h-4 w-4" />
+                    <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
                   )}
                 </Button>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
+              <Label htmlFor="confirmPassword" className="text-sm sm:text-base">Confirmar Contraseña</Label>
               <div className="relative">
                 <Input
                   id="confirmPassword"
                   type={showConfirmPassword ? 'text' : 'password'}
                   placeholder="Repite tu contraseña"
+                  className="h-10 sm:h-11 pr-12"
                   value={formData.confirmPassword}
                   onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                   required
@@ -203,20 +209,20 @@ export default function RegisterPage() {
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  className="absolute right-0 top-0 h-full px-2 sm:px-3 py-2 hover:bg-transparent min-w-[44px]"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   disabled={loading}
                 >
                   {showConfirmPassword ? (
-                    <EyeOff className="h-4 w-4" />
+                    <EyeOff className="h-4 w-4 sm:h-5 sm:w-5" />
                   ) : (
-                    <Eye className="h-4 w-4" />
+                    <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
                   )}
                 </Button>
               </div>
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-start space-x-2 sm:space-x-3">
               <Checkbox
                 id="marketing"
                 checked={formData.marketingConsent}
@@ -224,19 +230,20 @@ export default function RegisterPage() {
                   handleInputChange('marketingConsent', checked as boolean)
                 }
                 disabled={loading}
+                className="mt-0.5"
               />
-              <Label htmlFor="marketing" className="text-sm">
+              <Label htmlFor="marketing" className="text-xs sm:text-sm leading-relaxed">
                 Quiero recibir ofertas y novedades por email
               </Label>
             </div>
 
             {error && (
               <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
+                <AlertDescription className="text-xs sm:text-sm">{error}</AlertDescription>
               </Alert>
             )}
 
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full h-10 sm:h-11" disabled={loading}>
               <ButtonLoader isLoading={loading} loadingText="Creando cuenta...">
                 Crear Cuenta
               </ButtonLoader>
@@ -245,8 +252,8 @@ export default function RegisterPage() {
 
 
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-muted-foreground">
+          <div className="mt-4 sm:mt-6 text-center">
+            <p className="text-xs sm:text-sm text-muted-foreground">
               ¿Ya tienes cuenta?{' '}
               <Link 
                 href="/auth/login" 

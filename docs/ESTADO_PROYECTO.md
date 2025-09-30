@@ -1,39 +1,68 @@
 # Estado del Proyecto - Sakú Store
 
-**Fecha**: Enero 2025  
-**Versión**: 0.1.0  
+**Fecha**: Septiembre 2025  
+**Versión**: 1.0.0-beta  
 **Rama principal**: `develop`
 
 ## Resumen Ejecutivo
 
-E-commerce de lencería femenina desarrollado con Next.js 15 + Supabase, enfocado en experiencia de usuario simple y performance optimizada.
+E-commerce de lencería femenina desarrollado con Next.js 15 + Supabase, enfocado en experiencia de usuario simple y performance optimizada. **MVP completado** con funcionalidades principales implementadas.
 
 ## Estado Actual
 
 ### ✅ Completado (Fase F0 - Fundaciones)
 
 #### Infraestructura Base
-- **Framework**: Next.js 15 con App Router
-- **UI Kit**: Tailwind + shadcn/ui + Radix UI
-- **Temas**: Dark/Light mode con next-themes
-- **Tipografía**: Marcellus (headings) + Inter (body)
-- **Paleta**: #d8ceb5 / #ffffff / #000000
+- **Framework**: Next.js 15 con App Router ✅
+- **UI Kit**: Tailwind + shadcn/ui + Radix UI ✅
+- **Temas**: Dark/Light mode con next-themes ✅
+- **Tipografía**: Marcellus (headings) + Inter (body) ✅
+- **Paleta**: #d8ceb5 / #ffffff / #000000 ✅
 
 #### Autenticación y Usuarios
-- **Google OAuth**: Implementado completamente
-- **Páginas**: Login, registro, callback, cuenta de usuario, forgot password
-- **Configuración**: Supabase Auth configurado
-- **Dashboard**: Página de cuenta básica implementada
+- **Google OAuth**: Implementado completamente ✅
+- **Páginas**: Login, registro, callback, cuenta de usuario, forgot password ✅
+- **Configuración**: Supabase Auth configurado ✅
+- **Dashboard**: Página de cuenta básica implementada ✅
 
 #### Páginas Legales
-- **Términos y Condiciones**: Implementado con contenido dinámico desde DB
-- **Política de Privacidad**: Implementado con contenido dinámico desde DB
-- **Política de Cookies**: Implementado con contenido dinámico desde DB
+- **Términos y Condiciones**: Implementado con contenido dinámico desde DB ✅
+- **Política de Privacidad**: Implementado con contenido dinámico desde DB ✅
+- **Política de Cookies**: Implementado con contenido dinámico desde DB ✅
 
 #### Optimizaciones
-- **Imágenes**: Hero convertida a WebP (89KB vs 484KB PNG)
-- **Assets**: Logo y favicon corregidos para usar exclusivamente assets proporcionados
-- **SEO**: Sitemap configurado con next-sitemap
+- **Imágenes**: Hero convertida a WebP (89KB vs 484KB PNG) ✅
+- **Assets**: Logo y favicon corregidos para usar exclusivamente assets proporcionados ✅
+- **SEO**: Sitemap configurado con next-sitemap ✅
+
+### ✅ Completado (Fase F1 - MVP Ventas)
+
+#### Catálogo de Productos
+- **PLP**: Página de listado con paginación y filtros ✅
+- **PDP**: Página de detalle con variantes (talle/color) ✅
+- **Filtros**: Por categoría, precio, talle y color ✅
+- **Paginación**: Sistema completo con navegación ✅
+- **Búsqueda**: Integrada con filtros ✅
+
+#### Carrito y Checkout
+- **Carrito**: Drawer lateral funcional ✅
+- **Cupones**: Sistema de descuentos (porcentaje y monto fijo) ✅
+- **Envío**: Tarifa nacional + Cadete Córdoba ✅
+- **Checkout**: Mercado Pago Checkout Pro integrado ✅
+- **Webhook**: Procesamiento automático de pagos ✅
+
+#### Administración
+- **Dashboard**: Panel con estadísticas y órdenes recientes ✅
+- **CRUD Productos**: Gestión completa de productos y variantes ✅
+- **Órdenes**: Gestión, estados y tracking ✅
+- **Cupones**: Administración completa ✅
+- **RLS**: Políticas de seguridad configuradas ✅
+
+#### Emails Transaccionales
+- **Configuración**: SMTP setup completo ✅
+- **Templates**: Confirmación, envío, bienvenida, newsletter ✅
+- **Integración**: Automática con webhook MP ✅
+- **Tracking**: Notificaciones de envío con Correo Argentino ✅
 
 ## Problemas Críticos Resueltos
 
@@ -63,45 +92,37 @@ E-commerce de lencería femenina desarrollado con Next.js 15 + Supabase, enfocad
 - **Estado**: ✅ Resuelto - Estructura limpia y organizada
 
 #### Workflow de Desarrollo
-- **Ramas**: Estructura main/develop/feature/* establecida
-- **Documentación**: Guía de contribución creada
-- **Commits**: Conventional Commits implementado
-
-### 🔄 En Progreso
+- **Ramas**: Estructura main/develop/feature/* establecida ✅
+- **Commits**: Conventional Commits implementado ✅
+- **Testing**: Vitest + Playwright configurado ✅
+- **CI/CD**: Vercel preview automático ✅
 
 #### Base de Datos (Supabase)
-- **Schema**: Definido en AI_QA_CONTEXT.md
-- **Migraciones**: Pendientes de implementar
-- **RLS**: Pendiente de configurar
+- **Schema**: Implementado completamente ✅
+- **Migraciones**: Aplicadas y funcionales ✅
+- **RLS**: Configurado con políticas de seguridad ✅
+- **Seed Data**: Productos y cupones de prueba ✅
 
-#### Páginas Legales
-- **Términos**: Estructura básica creada
-- **Privacidad**: Pendiente
-- **Cookies**: Pendiente
+### ⏳ Pendiente (Fase F2 - Operaciones & CRM)
 
-### ⏳ Pendiente (Fase F1 - MVP Ventas)
+#### Automatizaciones CRM
+- **n8n Cloud**: Integración para workflows
+- **Carritos abandonados**: Recuperación automática
+- **NPS**: Encuestas post-compra
+- **RFM**: Segmentación de clientes
+- **Winback**: Campañas de reactivación
 
-#### Catálogo de Productos
-- **PLP**: Página de listado de productos
-- **PDP**: Página de detalle con variantes (talle/color)
-- **Guía de talles**: Implementar
-- **Aviso de higiene**: Integrar en PDP
+#### WhatsApp Business
+- **BSP 360dialog**: Integración para notificaciones
+- **Templates**: Mensajes de confirmación y envío
+- **Automatización**: Notificaciones automáticas
 
-#### Carrito y Checkout
-- **Carrito**: Drawer lateral
-- **Cupones**: Sistema de descuentos
-- **Envío**: Tarifa nacional + Cadete Córdoba
-- **Checkout**: Mercado Pago Checkout Pro
-
-#### Administración
-- **CRUD**: Productos, variantes, stock
-- **Órdenes**: Gestión y tracking
-- **Cupones**: Administración
-- **Usuarios**: Panel básico
-
-#### Emails Transaccionales
-- **Configuración**: SMTP setup
-- **Templates**: Confirmación, envío, etc.
+#### Optimizaciones Avanzadas
+- **Bricks**: Checkout nativo de Mercado Pago
+- **Filtros avanzados**: Búsqueda por texto
+- **Wishlist**: Lista de deseos
+- **Reviews**: Sistema de reseñas
+- **Bundles**: Productos combinados
 
 ## Arquitectura Técnica
 
@@ -119,9 +140,14 @@ Pagos: Mercado Pago Checkout Pro
 ```
 NEXT_PUBLIC_SUPABASE_URL ✅
 NEXT_PUBLIC_SUPABASE_ANON_KEY ✅
-SUPABASE_SERVICE_ROLE ⏳
-MP_ACCESS_TOKEN ⏳
-SMTP_* ⏳
+SUPABASE_SERVICE_ROLE ✅
+MP_ACCESS_TOKEN ✅
+SMTP_HOST ✅
+SMTP_PORT ✅
+SMTP_SECURE ✅
+SMTP_USER ✅
+SMTP_PASS ✅
+SMTP_FROM ✅
 GA4_ID ⏳
 META_PIXEL_ID ⏳
 ```
@@ -154,20 +180,26 @@ PDP → Carrito → Cupón → Envío → MP Checkout → Webhook → Email
 
 ## Roadmap Próximos Pasos
 
-### Inmediato (Sprint 1-2)
-1. **Migraciones Supabase**: Schema completo + RLS
-2. **Páginas legales**: Términos, Privacidad, Cookies
-3. **Catálogo MVP**: PLP + PDP básico
+### ✅ Completado (MVP F1)
+1. **Migraciones Supabase**: Schema completo + RLS ✅
+2. **Páginas legales**: Términos, Privacidad, Cookies ✅
+3. **Catálogo MVP**: PLP + PDP con filtros y paginación ✅
+4. **Carrito funcional**: Add to cart + drawer ✅
+5. **Sistema de cupones**: Validación y aplicación ✅
+6. **Checkout MP**: Integración Checkout Pro ✅
+7. **Admin panel**: CRUD completo ✅
+8. **Webhook MP**: Actualización de órdenes ✅
+9. **Emails transaccionales**: Templates profesionales ✅
 
-### Corto Plazo (Sprint 3-4)
-1. **Carrito funcional**: Add to cart + drawer
-2. **Sistema de cupones**: Validación y aplicación
-3. **Checkout MP**: Integración Checkout Pro
+### Inmediato (Fase F2 - CRM)
+1. **Analytics**: GA4 + Meta Pixel
+2. **n8n Cloud**: Workflows de automatización
+3. **WhatsApp BSP**: Integración 360dialog
 
-### Medio Plazo (Sprint 5-8)
-1. **Admin panel**: CRUD básico
-2. **Webhook MP**: Actualización de órdenes
-3. **Emails transaccionales**: Templates básicos
+### Corto Plazo (Optimizaciones)
+1. **Performance**: Core Web Vitals optimization
+2. **SEO**: Schema.org + sitemap avanzado
+3. **A/B Testing**: Experimentos de conversión
 
 ## Riesgos y Consideraciones
 

@@ -39,3 +39,17 @@
 - Mantener interfaces sincronizadas con implementaciones
 - Usar tipos literales específicos en lugar de `string` genérico cuando sea apropiado
 - Verificar estructura de datos devueltos por hooks antes de acceder a propiedades
+
+## 2025-09-30 17:25 - Error de mapeo de campos en consultas Supabase
+
+**Issue**: Error de runtime en `/admin/productos` por inconsistencia entre nombres de campos en consulta Supabase (`stock`) y esquema real de base de datos (`stock_quantity`).
+
+**Cause**: La consulta de Supabase seleccionaba el campo `stock` mientras que el esquema de la tabla `product_variants` usa `stock_quantity`, causando que la función `getTotalStock` no pudiera acceder a `variant.stock_quantity`.
+
+**Fix**: Corrección del campo en la consulta de Supabase (línea 62 de `admin/productos/page.tsx`): cambio de `stock` a `stock_quantity` para alinear con el esquema real.
+
+**Prevention**:
+- Verificar nombres de campos en migraciones SQL antes de escribir consultas
+- Usar herramientas de introspección de esquema para confirmar estructura de tablas
+- Mantener consistencia entre definiciones de interfaces TypeScript y esquema de base de datos
+- Realizar búsquedas en el codebase para confirmar nombres de campos utilizados en otras partes

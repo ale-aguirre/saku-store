@@ -157,23 +157,23 @@ export function CartDrawer({ children }: CartDrawerProps) {
         </div>
       </SheetTrigger>
       
-      <SheetContent className="w-full sm:max-w-lg flex flex-col">
-        <SheetHeader className="px-4 md:px-6">
-          <SheetTitle className="flex items-center gap-2">
-            <ShoppingCart className="h-5 w-5" />
+      <SheetContent className="w-full sm:max-w-md lg:max-w-lg flex flex-col">
+        <SheetHeader className="px-3 sm:px-4 md:px-6">
+          <SheetTitle className="flex items-center gap-2 text-sm sm:text-base">
+            <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" />
             Carrito ({itemCount} {itemCount === 1 ? 'producto' : 'productos'})
           </SheetTitle>
         </SheetHeader>
 
         {cartItems.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center text-center space-y-4 px-4 md:px-6">
-            <ShoppingCart className="h-16 w-16 text-muted-foreground" />
+          <div className="flex-1 flex flex-col items-center justify-center text-center space-y-4 px-3 sm:px-4 md:px-6">
+            <ShoppingCart className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground" />
             <div>
-              <h3 className="font-medium mb-2">Tu carrito está vacío</h3>
-              <p className="text-sm text-muted-foreground mb-4">
+              <h3 className="font-medium mb-2 text-sm sm:text-base">Tu carrito está vacío</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground mb-4">
                 Agrega productos para comenzar tu compra
               </p>
-              <Button asChild className="bg-[#d8ceb5] text-black hover:bg-[#d8ceb5]/90">
+              <Button asChild className="bg-[#d8ceb5] text-black hover:bg-[#d8ceb5]/90 text-xs sm:text-sm h-8 sm:h-9">
                 <Link href="/productos">Ver Productos</Link>
               </Button>
             </div>
@@ -181,10 +181,10 @@ export function CartDrawer({ children }: CartDrawerProps) {
         ) : (
           <>
             {/* Cart Items */}
-            <div className="flex-1 overflow-y-auto space-y-4 py-4 px-4 md:px-6">
+            <div className="flex-1 overflow-y-auto space-y-3 sm:space-y-4 py-3 sm:py-4 px-3 sm:px-4 md:px-6">
               {cartItems.map((item) => (
-                <div key={item.id} data-testid="cart-item" className="flex gap-3 p-3 border rounded-lg">
-                  <div className="relative w-16 h-20 flex-shrink-0">
+                <div key={item.id} data-testid="cart-item" className="flex gap-2 sm:gap-3 p-2 sm:p-3 border rounded-lg">
+                  <div className="relative w-12 h-16 sm:w-16 sm:h-20 flex-shrink-0">
                     <Image
                       src={item.image}
                       alt={item.name}
@@ -193,10 +193,10 @@ export function CartDrawer({ children }: CartDrawerProps) {
                     />
                   </div>
                   
-                  <div className="flex-1 space-y-2">
+                  <div className="flex-1 space-y-1 sm:space-y-2">
                     <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-medium text-sm">{item.name}</h4>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-xs sm:text-sm truncate">{item.name}</h4>
                         <p className="text-xs text-muted-foreground">
                           Talle {item.size} • {item.color}
                         </p>
@@ -205,36 +205,36 @@ export function CartDrawer({ children }: CartDrawerProps) {
                         variant="ghost"
                         size="sm"
                         onClick={() => removeItem(item.id)}
-                        className="h-6 w-6 p-0 hover:bg-destructive hover:text-destructive-foreground"
+                        className="h-5 w-5 sm:h-6 sm:w-6 p-0 hover:bg-destructive hover:text-destructive-foreground ml-1"
                       >
                         <X className="h-3 w-3" />
                       </Button>
                     </div>
                     
                     <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1 sm:gap-2">
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
-                          className="h-6 w-6 p-0"
+                          className="h-5 w-5 sm:h-6 sm:w-6 p-0"
                         >
-                          <Minus className="h-3 w-3" />
+                          <Minus className="h-2 w-2 sm:h-3 sm:w-3" />
                         </Button>
-                        <span className="text-sm w-8 text-center">{item.quantity}</span>
+                        <span className="text-xs sm:text-sm w-6 sm:w-8 text-center">{item.quantity}</span>
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
                           disabled={item.quantity >= item.maxStock}
-                          className="h-6 w-6 p-0"
+                          className="h-5 w-5 sm:h-6 sm:w-6 p-0"
                         >
-                          <Plus className="h-3 w-3" />
+                          <Plus className="h-2 w-2 sm:h-3 sm:w-3" />
                         </Button>
                       </div>
                       
                       <div className="text-right">
-                        <div className="font-medium text-sm">
+                        <div className="font-medium text-xs sm:text-sm">
                           {formatPrice(item.price * item.quantity)}
                         </div>
                         {item.originalPrice && (
@@ -250,14 +250,14 @@ export function CartDrawer({ children }: CartDrawerProps) {
             </div>
 
             {/* Coupon and Shipping Section */}
-            <Accordion type="single" collapsible className="py-4 border-t px-4 md:px-6">
+            <Accordion type="single" collapsible className="py-3 sm:py-4 border-t px-3 sm:px-4 md:px-6">
               <AccordionItem value="coupon">
-                <AccordionTrigger className="py-2">
+                <AccordionTrigger className="py-2 text-sm">
                   <div className="flex items-center gap-2">
-                    <Tag className="h-4 w-4" />
+                    <Tag className="h-3 w-3 sm:h-4 sm:w-4" />
                     <span>Cupón de descuento</span>
                     {coupon && (
-                      <Badge variant="outline" className="ml-2 bg-green-50 text-green-700 border-green-200">
+                      <Badge variant="outline" className="ml-2 bg-green-50 text-green-700 border-green-200 text-xs">
                         Aplicado
                       </Badge>
                     )}
@@ -266,13 +266,13 @@ export function CartDrawer({ children }: CartDrawerProps) {
                 <AccordionContent>
                   {!coupon ? (
                     <div className="space-y-2 pt-2">
-                      <div className="flex gap-2">
+                      <div className="flex gap-1 sm:gap-2">
                         <Input
                           data-testid="coupon-input"
                           placeholder="Código de cupón"
                           value={couponCode}
                           onChange={(e) => setCouponCode(e.target.value)}
-                          className="flex-1"
+                          className="flex-1 text-xs sm:text-sm h-8 sm:h-9"
                         />
                         <Button 
                           data-testid="apply-coupon"
@@ -280,13 +280,14 @@ export function CartDrawer({ children }: CartDrawerProps) {
                           disabled={!couponCode.trim()}
                           variant="outline"
                           size="sm"
+                          className="text-xs h-8 sm:h-9 px-2 sm:px-3"
                         >
                           Aplicar
                         </Button>
                       </div>
                       {couponError && (
-                        <div className="flex items-center gap-2 text-sm text-destructive">
-                          <AlertCircle className="h-4 w-4" />
+                        <div className="flex items-center gap-2 text-xs sm:text-sm text-destructive">
+                          <AlertCircle className="h-3 w-3 sm:h-4 sm:w-4" />
                           {couponError}
                         </div>
                       )}
@@ -294,8 +295,8 @@ export function CartDrawer({ children }: CartDrawerProps) {
                   ) : (
                     <div data-testid="discount-applied" className="flex items-center justify-between p-2 mt-2 bg-green-50 dark:bg-green-950/20 rounded border border-green-200 dark:border-green-800">
                       <div className="flex items-center gap-2">
-                        <Tag className="h-4 w-4 text-green-600" />
-                        <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                        <Tag className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
+                        <span className="text-xs sm:text-sm font-medium text-green-700 dark:text-green-300">
                           {coupon.code}
                         </span>
                       </div>
@@ -303,7 +304,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
                         variant="ghost"
                         size="sm"
                         onClick={removeCoupon}
-                        className="h-6 w-6 p-0 text-green-600 hover:text-green-700"
+                        className="h-5 w-5 sm:h-6 sm:w-6 p-0 text-green-600 hover:text-green-700"
                       >
                         <X className="h-3 w-3" />
                       </Button>
@@ -313,12 +314,12 @@ export function CartDrawer({ children }: CartDrawerProps) {
               </AccordionItem>
               
               <AccordionItem value="shipping">
-                <AccordionTrigger className="py-2">
+                <AccordionTrigger className="py-2 text-sm">
                   <div className="flex items-center gap-2">
-                    <Truck className="h-4 w-4" />
+                    <Truck className="h-3 w-3 sm:h-4 sm:w-4" />
                     <span>Calcular envío</span>
                     {shippingMethod && (
-                      <Badge variant="outline" className="ml-2 bg-blue-50 text-blue-700 border-blue-200">
+                      <Badge variant="outline" className="ml-2 bg-blue-50 text-blue-700 border-blue-200 text-xs">
                         {shippingMethod === 'national' ? 'Nacional' : 'Córdoba'}
                       </Badge>
                     )}
@@ -326,9 +327,9 @@ export function CartDrawer({ children }: CartDrawerProps) {
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-3 pt-2">
-                    <div className="flex gap-2 items-start">
+                    <div className="flex gap-1 sm:gap-2 items-start">
                       <div className="flex-1 space-y-1">
-                        <div className="flex gap-2">
+                        <div className="flex gap-1 sm:gap-2">
                           <Input
                             placeholder="Código postal"
                             value={postalCode}
@@ -339,12 +340,13 @@ export function CartDrawer({ children }: CartDrawerProps) {
                               // Resetear método de envío si se cambia el código postal
                               if (shippingMethod) setShippingMethod(null)
                             }}
-                            className="flex-1"
+                            className="flex-1 text-xs sm:text-sm h-8 sm:h-9"
                           />
                           <Button 
                             variant="outline"
                             size="sm"
                             disabled={!postalCode || postalCode.length !== 4}
+                            className="text-xs h-8 sm:h-9 px-2 sm:px-3"
                             onClick={() => {
                               if (isCordobaPostalCode) {
                                 setShippingMethod('cordoba')
@@ -353,7 +355,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
                               }
                             }}
                           >
-                            <MapPin className="h-4 w-4 mr-1" />
+                            <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                             Calcular
                           </Button>
                         </div>
@@ -426,20 +428,20 @@ export function CartDrawer({ children }: CartDrawerProps) {
             </Accordion>
 
             {/* Order Summary */}
-            <div className="space-y-3 py-4 border-t px-4 md:px-6">
-              <div className="flex justify-between text-sm">
+            <div className="space-y-2 sm:space-y-3 py-3 sm:py-4 border-t px-3 sm:px-4 md:px-6">
+              <div className="flex justify-between text-xs sm:text-sm">
                 <span>Subtotal</span>
                 <span>{formatPrice(subtotal)}</span>
               </div>
               
               {discount > 0 && (
-                <div className="flex justify-between text-sm text-green-600">
+                <div className="flex justify-between text-xs sm:text-sm text-green-600">
                   <span>Descuento</span>
                   <span>-{formatPrice(discount)}</span>
                 </div>
               )}
               
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-xs sm:text-sm">
                 <span>Envío {shippingMethod ? `(${shippingMethod === 'national' ? 'Nacional' : 'Córdoba'})` : ''}</span>
                 <span>
                   {!shippingMethod ? (
@@ -460,7 +462,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
               
               <Separator />
               
-              <div className="flex justify-between font-semibold">
+              <div className="flex justify-between font-semibold text-sm sm:text-base">
                 <span>Total</span>
                 <span data-testid="cart-total">{formatPrice(finalTotal)}</span>
               </div>
@@ -474,10 +476,10 @@ export function CartDrawer({ children }: CartDrawerProps) {
             </div>
 
             {/* Checkout Button */}
-            <div className="px-4 md:px-6 pb-4">
+            <div className="px-3 sm:px-4 md:px-6 pb-3 sm:pb-4">
               <Button 
                 size="lg" 
-                className="w-full bg-[#d8ceb5] text-black hover:bg-[#d8ceb5]/90"
+                className="w-full bg-[#d8ceb5] text-black hover:bg-[#d8ceb5]/90 text-sm sm:text-base h-10 sm:h-11"
                 asChild
                 disabled={!shippingMethod}
               >

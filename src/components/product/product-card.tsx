@@ -115,16 +115,16 @@ export function ProductCard({ product, className }: ProductCardProps) {
         </div>
       </Link>
 
-      <CardContent className="p-4">
+      <CardContent className="p-3 sm:p-4">
         <Link href={`/productos/${product.slug}`} className="block">
-          <h3 className="font-medium text-sm line-clamp-2 mb-2 group-hover:text-primary transition-colors">
+          <h3 className="font-medium text-sm sm:text-base line-clamp-2 mb-2 group-hover:text-primary transition-colors">
             {product.name}
           </h3>
         </Link>
 
         {/* Available variants info */}
         {requiresSizes && (
-          <div className="flex flex-wrap gap-1 mb-3">
+          <div className="flex flex-wrap gap-1 mb-2 sm:mb-3">
             {product.available_sizes.length > 0 && (
               <div className="text-xs text-muted-foreground">
                 Talles: {product.available_sizes.join(', ')}
@@ -133,13 +133,13 @@ export function ProductCard({ product, className }: ProductCardProps) {
           </div>
         )}
 
-        <div className="flex flex-wrap gap-1 mb-3">
+        <div className="flex flex-wrap gap-1 mb-2 sm:mb-3">
           {product.available_colors.length > 0 && (
             <div className="flex gap-1">
               {product.available_colors.map((color) => (
                 <div
                   key={color}
-                  className="w-4 h-4 rounded-full border border-border"
+                  className="w-3 h-3 sm:w-4 sm:h-4 rounded-full border border-border"
                   style={{ 
                     backgroundColor: color.toLowerCase() === 'negro' ? '#000000' : 
                                    color.toLowerCase() === 'rojo' ? '#dc2626' : 
@@ -153,19 +153,19 @@ export function ProductCard({ product, className }: ProductCardProps) {
         </div>
 
         {/* Price */}
-        <div className="flex items-center gap-2 mb-3">
+        <div className="flex items-center gap-2 mb-2 sm:mb-3">
           {product.price_range.min === product.price_range.max ? (
-            <span className="font-semibold text-lg">
+            <span className="font-semibold text-base sm:text-lg">
               {formatPrice(product.price_range.min)}
             </span>
           ) : (
-            <span className="font-semibold text-lg">
+            <span className="font-semibold text-base sm:text-lg">
               {formatPrice(product.price_range.min)} - {formatPrice(product.price_range.max)}
             </span>
           )}
           
           {hasDiscount && (
-            <span className="text-sm text-muted-foreground line-through">
+            <span className="text-xs sm:text-sm text-muted-foreground line-through">
               {formatPrice(product.compare_at_price!)}
             </span>
           )}
@@ -173,21 +173,21 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
         {/* Hygiene notice */}
         {product.hygiene_notice && (
-          <p className="text-xs text-muted-foreground mb-3">
+          <p className="text-xs text-muted-foreground mb-2 sm:mb-3">
             Sin cambios ni devoluciones por higiene
           </p>
         )}
       </CardContent>
 
-      <CardFooter className="p-4 pt-0">
+      <CardFooter className="p-3 sm:p-4 pt-0">
         <div className="flex gap-2 w-full">
           <Button 
             asChild 
-            className="flex-1"
+            className="flex-1 text-xs sm:text-sm h-8 sm:h-9"
             disabled={!isInStock}
           >
             <Link href={`/productos/${product.slug}`}>
-              <Eye className="h-4 w-4 mr-2" />
+              <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
               Ver producto
             </Link>
           </Button>
@@ -197,10 +197,11 @@ export function ProductCard({ product, className }: ProductCardProps) {
               <Button
                 variant="outline"
                 size="icon"
+                className="h-8 w-8 sm:h-9 sm:w-9"
                 disabled={!isInStock}
                 aria-label="Agregar al carrito"
               >
-                <ShoppingCart className="h-4 w-4" />
+                <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">

@@ -93,127 +93,136 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="py-safe-y px-safe-x">
-      <div className="mb-safe-y">
+    <div className="py-4 sm:py-6 lg:py-8 px-3 sm:px-4 lg:px-6">
+      <div className="mb-4 sm:mb-6">
         <Link href="/productos" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Volver a productos
         </Link>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-8">
+      <div className="grid lg:grid-cols-2 gap-6 lg:gap-8">
         {/* Formulario de envío */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <MapPin className="mr-2 h-5 w-5" />
+            <CardHeader className="px-4 sm:px-6 pt-4 sm:pt-6">
+              <CardTitle className="flex items-center text-lg sm:text-xl">
+                <MapPin className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                 Información de Envío
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <form id="checkout-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+              <form id="checkout-form" onSubmit={handleSubmit(onSubmit)} className="space-y-3 sm:space-y-4">
                 {error && (
-                  <div className="p-4 bg-red-50 border border-red-200 rounded-md">
+                  <div className="p-3 sm:p-4 bg-red-50 border border-red-200 rounded-md">
                     <p className="text-red-600 text-sm">{error}</p>
                   </div>
                 )}
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
-                    <Label htmlFor="firstName">Nombre *</Label>
+                    <Label htmlFor="firstName" className="text-sm sm:text-base">Nombre *</Label>
                     <Input
                       id="firstName"
+                      className="h-10 sm:h-11"
                       {...register('firstName')}
                     />
                     {errors.firstName && (
-                      <p className="text-red-500 text-sm mt-1">{errors.firstName.message}</p>
+                      <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.firstName.message}</p>
                     )}
                   </div>
                   <div>
-                    <Label htmlFor="lastName">Apellido *</Label>
+                    <Label htmlFor="lastName" className="text-sm sm:text-base">Apellido *</Label>
                     <Input
                       id="lastName"
+                      className="h-10 sm:h-11"
                       {...register('lastName')}
                     />
                     {errors.lastName && (
-                      <p className="text-red-500 text-sm mt-1">{errors.lastName.message}</p>
+                      <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.lastName.message}</p>
                     )}
                   </div>
                 </div>
 
                 <div>
-                  <Label htmlFor="email">Email *</Label>
+                  <Label htmlFor="email" className="text-sm sm:text-base">Email *</Label>
                   <Input
                     id="email"
                     type="email"
+                    className="h-10 sm:h-11"
                     {...register('email')}
                   />
                   {errors.email && (
-                    <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                    <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.email.message}</p>
                   )}
                 </div>
 
                 <div>
-                  <Label htmlFor="phone">Teléfono *</Label>
+                  <Label htmlFor="phone" className="text-sm sm:text-base">Teléfono *</Label>
                   <Input
                     id="phone"
+                    className="h-10 sm:h-11"
                     {...register('phone')}
                   />
                   {errors.phone && (
-                    <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
+                    <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.phone.message}</p>
                   )}
                 </div>
 
                 <div>
-                  <Label htmlFor="address">Dirección *</Label>
+                  <Label htmlFor="address" className="text-sm sm:text-base">Dirección *</Label>
                   <Input
                     id="address"
+                    className="h-10 sm:h-11"
                     {...register('address')}
                   />
                   {errors.address && (
-                    <p className="text-red-500 text-sm mt-1">{errors.address.message}</p>
+                    <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.address.message}</p>
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
-                    <Label htmlFor="city">Ciudad *</Label>
+                    <Label htmlFor="city" className="text-sm sm:text-base">Ciudad *</Label>
                     <Input
                       id="city"
+                      className="h-10 sm:h-11"
                       {...register('city')}
                     />
                     {errors.city && (
-                      <p className="text-red-500 text-sm mt-1">{errors.city.message}</p>
+                      <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.city.message}</p>
                     )}
                   </div>
                   <div>
-                    <Label htmlFor="province">Provincia *</Label>
+                    <Label htmlFor="province" className="text-sm sm:text-base">Provincia *</Label>
                     <Input
                       id="province"
+                      className="h-10 sm:h-11"
                       {...register('province')}
                     />
                     {errors.province && (
-                      <p className="text-red-500 text-sm mt-1">{errors.province.message}</p>
+                      <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.province.message}</p>
                     )}
                   </div>
                 </div>
 
                 <div>
-                  <Label htmlFor="postalCode">Código Postal *</Label>
+                  <Label htmlFor="postalCode" className="text-sm sm:text-base">Código Postal *</Label>
                   <Input
                     id="postalCode"
+                    className="h-10 sm:h-11"
                     {...register('postalCode')}
                   />
                   {errors.postalCode && (
-                    <p className="text-red-500 text-sm mt-1">{errors.postalCode.message}</p>
+                    <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.postalCode.message}</p>
                   )}
                 </div>
 
                 <div>
-                  <Label htmlFor="notes">Notas adicionales</Label>
+                  <Label htmlFor="notes" className="text-sm sm:text-base">Notas adicionales</Label>
                   <Textarea
                     id="notes"
+                    className="min-h-[80px] sm:min-h-[100px] text-sm sm:text-base"
                     {...register('notes')}
                     placeholder="Instrucciones especiales para la entrega..."
                   />
@@ -224,13 +233,13 @@ export default function CheckoutPage() {
 
           {/* Método de envío */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Truck className="mr-2 h-5 w-5" />
+            <CardHeader className="px-4 sm:px-6 pt-4 sm:pt-6">
+              <CardTitle className="flex items-center text-lg sm:text-xl">
+                <Truck className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                 Método de Envío
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
               <RadioGroup
                  {...register('shippingMethod')}
                  value={shippingMethod}
@@ -240,13 +249,13 @@ export default function CheckoutPage() {
                  }}
                >
                 {availableShippingMethods.map((method) => (
-                  <div key={method.id} className="flex items-center space-x-2 p-4 border rounded-lg">
-                    <RadioGroupItem value={method.id} id={method.id} />
+                  <div key={method.id} className="flex items-start space-x-3 p-3 sm:p-4 border rounded-lg">
+                    <RadioGroupItem value={method.id} id={method.id} className="mt-1" />
                     <Label htmlFor={method.id} className="flex-1 cursor-pointer">
-                      <div className="flex justify-between items-center">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                         <div>
-                          <p className="font-medium">{method.name}</p>
-                          <p className="text-sm text-muted-foreground">{method.description}</p>
+                          <p className="font-medium text-sm sm:text-base">{method.name}</p>
+                          <p className="text-xs sm:text-sm text-muted-foreground">{method.description}</p>
                         </div>
                         <span className="font-medium">{formatPrice(method.cost)}</span>
                       </div>
@@ -270,15 +279,15 @@ export default function CheckoutPage() {
         </div>
 
         {/* Resumen del pedido */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <Card>
-            <CardHeader>
-              <CardTitle>Resumen del Pedido</CardTitle>
+            <CardHeader className="px-4 sm:px-6 pt-4 sm:pt-6">
+              <CardTitle className="text-lg sm:text-xl">Resumen del Pedido</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-3 sm:space-y-4">
               {items.map((item) => (
-                <div key={item.id} className="flex items-center space-x-4">
-                  <div className="relative h-16 w-16 rounded-md overflow-hidden">
+                <div key={item.id} className="flex items-center space-x-3 sm:space-x-4">
+                  <div className="relative h-12 w-12 sm:h-16 sm:w-16 rounded-md overflow-hidden flex-shrink-0">
                     <Image
                       src={item.image}
                       alt={item.name}
@@ -286,13 +295,13 @@ export default function CheckoutPage() {
                       className="object-cover"
                     />
                   </div>
-                  <div className="flex-1">
-                    <h4 className="font-medium">{item.name}</h4>
-                    <p className="text-sm text-muted-foreground">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-medium text-sm sm:text-base truncate">{item.name}</h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       {item.size} • {item.color} • Cantidad: {item.quantity}
                     </p>
                   </div>
-                  <span className="font-medium">
+                  <span className="font-medium text-sm sm:text-base flex-shrink-0">
                     {formatPrice(item.price * item.quantity)}
                   </span>
                 </div>
@@ -301,16 +310,16 @@ export default function CheckoutPage() {
               <Separator />
 
               <div className="space-y-2">
-                <div className="flex justify-between">
+                <div className="flex justify-between text-sm sm:text-base">
                   <span>Subtotal ({items.length} items)</span>
                   <span>{formatPrice(getTotalPrice())}</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between text-sm sm:text-base">
                   <span>Envío</span>
                   <span>{formatPrice(shippingCost)}</span>
                 </div>
                 <Separator />
-                <div className="flex justify-between text-lg font-bold">
+                <div className="flex justify-between text-base sm:text-lg font-bold">
                   <span>Total</span>
                   <span>{formatPrice(total)}</span>
                 </div>
@@ -319,7 +328,7 @@ export default function CheckoutPage() {
               <Button
                 type="submit"
                 form="checkout-form"
-                className="w-full bg-[#d8ceb5] text-black hover:bg-[#d8ceb5]/90"
+                className="w-full bg-[#d8ceb5] text-black hover:bg-[#d8ceb5]/90 h-10 sm:h-11 text-sm sm:text-base"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -335,7 +344,7 @@ export default function CheckoutPage() {
                 )}
               </Button>
 
-              <p className="text-xs text-muted-foreground text-center">
+              <p className="text-xs sm:text-sm text-muted-foreground text-center">
                 Al continuar, aceptas nuestros términos y condiciones
               </p>
             </CardContent>

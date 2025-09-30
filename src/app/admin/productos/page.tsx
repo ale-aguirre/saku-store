@@ -65,7 +65,7 @@ export default function AdminProductsPage() {
             id,
             size,
             color,
-            stock
+            stock_quantity
           )
         `)
         .order('created_at', { ascending: false })

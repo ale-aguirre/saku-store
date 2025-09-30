@@ -48,7 +48,7 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
+      <div className="container flex h-14 sm:h-16 items-center justify-between px-3 sm:px-4 lg:px-6">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
           <Image
@@ -56,13 +56,13 @@ export function Navbar() {
             alt="Sakú Lencería"
             width={120}
             height={40}
-            className="h-8 w-auto"
+            className="h-6 sm:h-8 w-auto"
             priority
           />
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6">
+        <nav className="hidden md:flex items-center space-x-4 lg:space-x-6">
           {navigation.map((item) => (
             <Link
               key={item.name}
@@ -75,9 +75,9 @@ export function Navbar() {
         </nav>
 
         {/* Right side actions */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1 sm:space-x-2">
           {/* Search */}
-          <Button variant="ghost" size="icon" className="hidden sm:flex">
+          <Button variant="ghost" size="icon" className="hidden sm:flex h-8 w-8 sm:h-10 sm:w-10">
             <Search className="h-4 w-4" />
             <span className="sr-only">Buscar</span>
           </Button>
@@ -86,11 +86,11 @@ export function Navbar() {
           <ThemeToggle />
 
           {/* Cart */}
-          <Button variant="ghost" size="icon" className="relative">
+          <Button variant="ghost" size="icon" className="relative h-8 w-8 sm:h-10 sm:w-10">
             <ShoppingCart className="h-4 w-4" />
             <Badge
               variant="destructive"
-              className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center text-xs"
+              className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center text-xs"
             >
               0
             </Badge>
@@ -99,11 +99,11 @@ export function Navbar() {
 
           {/* User Menu */}
           {loading ? (
-            <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+            <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-full bg-muted animate-pulse" />
           ) : user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
                   <User className="h-4 w-4" />
                   <span className="sr-only">Menú de usuario</span>
                 </Button>
@@ -150,10 +150,10 @@ export function Navbar() {
             </DropdownMenu>
           ) : (
             <div className="hidden sm:flex items-center space-x-2">
-              <Button variant="ghost" asChild>
+              <Button variant="ghost" asChild className="text-sm h-8 sm:h-9">
                 <Link href="/auth/login">Iniciar Sesión</Link>
               </Button>
-              <Button asChild>
+              <Button asChild className="text-sm h-8 sm:h-9">
                 <Link href="/auth/register">Registrarse</Link>
               </Button>
             </div>
@@ -162,7 +162,7 @@ export function Navbar() {
           {/* Mobile Menu */}
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
+              <Button variant="ghost" size="icon" className="md:hidden h-8 w-8">
                 <Menu className="h-4 w-4" />
                 <span className="sr-only">Menú</span>
               </Button>

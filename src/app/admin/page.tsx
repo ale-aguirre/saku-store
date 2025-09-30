@@ -14,9 +14,12 @@ import {
   TrendingUp,
   Eye,
   Edit,
-  Plus
+  Plus,
+  AlertTriangle,
+  Clock,
+  DollarSign,
+  Calendar
 } from 'lucide-react'
-
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/use-auth'
 
@@ -26,6 +29,11 @@ interface DashboardStats {
   totalUsers: number
   totalRevenue: number
   pendingOrders: number
+  lowStockProducts: number
+  todayOrders: number
+  todayRevenue: number
+  conversionRate: number
+  averageOrderValue: number
 }
 
 interface Order {
@@ -56,6 +64,11 @@ interface Product {
   }[]
 }
 
+interface LowStockVariant {
+  product_id: string
+  stock_quantity: number
+}
+
 const statusConfig = {
   pending: { label: 'Pendiente', color: 'bg-yellow-100 text-yellow-800' },
   paid: { label: 'Pagado', color: 'bg-green-100 text-green-800' },
@@ -73,7 +86,12 @@ export default function AdminDashboard() {
     totalOrders: 0,
     totalUsers: 0,
     totalRevenue: 0,
-    pendingOrders: 0
+    pendingOrders: 0,
+    lowStockProducts: 0,
+    todayOrders: 0,
+    todayRevenue: 0,
+    conversionRate: 0,
+    averageOrderValue: 0
   })
   const [recentOrders, setRecentOrders] = useState<Order[]>([])
   const [products, setProducts] = useState<Product[]>([])
@@ -90,29 +108,50 @@ export default function AdminDashboard() {
     try {
       const supabase = createClient()
 
+      // Get today's date for filtering
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      const todayISO = today.toISOString()
+      
       // Fetch stats
       const [
         { count: productsCount },
         { count: ordersCount },
         { count: usersCount },
         { data: revenueData },
-        { count: pendingCount }
+        { count: pendingCount },
+        { data: lowStockData },
+        { count: todayOrdersCount },
+        { data: todayRevenueData }
       ] = await Promise.all([
         supabase.from('products').select('*', { count: 'exact', head: true }),
         supabase.from('orders').select('*', { count: 'exact', head: true }),
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
         supabase.from('orders').select('total').eq('status', 'paid'),
-        supabase.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'pending')
+        supabase.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+        supabase.from('product_variants').select('product_id, stock_quantity').lt('stock_quantity', 5),
+        supabase.from('orders').select('*', { count: 'exact', head: true }).gte('created_at', todayISO),
+        supabase.from('orders').select('total').eq('status', 'paid').gte('created_at', todayISO)
       ])
 
       const totalRevenue = (revenueData as any)?.reduce((sum: number, order: any) => sum + order.total, 0) || 0
+      const todayRevenue = (todayRevenueData as any)?.reduce((sum: number, order: any) => sum + order.total, 0) || 0
+      const averageOrderValue = ordersCount && ordersCount > 0 ? totalRevenue / ordersCount : 0
+      
+      // Calculate unique products with low stock
+      const uniqueLowStockProducts = new Set((lowStockData as LowStockVariant[])?.map(variant => variant.product_id) || []).size
 
       setStats({
         totalProducts: productsCount || 0,
         totalOrders: ordersCount || 0,
         totalUsers: usersCount || 0,
         totalRevenue,
-        pendingOrders: pendingCount || 0
+        pendingOrders: pendingCount || 0,
+        lowStockProducts: uniqueLowStockProducts,
+        todayOrders: todayOrdersCount || 0,
+        todayRevenue,
+        conversionRate: 0, // This would need more complex calculation with analytics data
+        averageOrderValue
       })
 
       // Fetch recent orders
@@ -181,115 +220,231 @@ export default function AdminDashboard() {
 
   return (
     <div className="py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Panel de Administración</h1>
-        <p className="text-gray-600">Gestiona tu tienda desde aquí</p>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+          <p className="text-gray-600">Resumen de tu tienda Sakú Lencería</p>
+        </div>
+        <div className="flex items-center space-x-3">
+          <Badge variant="outline" className="text-sm">
+            <Calendar className="h-4 w-4 mr-1" />
+            {new Date().toLocaleDateString('es-AR', { 
+              weekday: 'long', 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}
+          </Badge>
+        </div>
+      </div>
+
+      {/* Today's Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <Card className="border-l-4 border-l-blue-500 shadow-sm hover:shadow-md transition-shadow">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-muted-foreground dark:text-gray-400">Órdenes Hoy</p>
+                <p className="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-1">{stats.todayOrders}</p>
+                <p className="text-sm text-muted-foreground dark:text-gray-500 mt-2 flex items-center">
+                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                    stats.todayOrders > 0 
+                      ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' 
+                      : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400'
+                  }`}>
+                    {stats.todayOrders > 0 ? '+' : ''}{stats.todayOrders} desde ayer
+                  </span>
+                </p>
+              </div>
+              <div className="p-4 bg-blue-100 dark:bg-blue-900/20 rounded-xl">
+                <ShoppingCart className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-l-4 border-l-green-500 shadow-sm hover:shadow-md transition-shadow">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-muted-foreground dark:text-gray-400">Ingresos Hoy</p>
+                <p className="text-3xl font-bold text-green-600 dark:text-green-400 mt-1">{formatPrice(stats.todayRevenue)}</p>
+                <p className="text-sm text-muted-foreground dark:text-gray-500 mt-2 flex items-center">
+                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                    stats.todayRevenue > 0 
+                      ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' 
+                      : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400'
+                  }`}>
+                    {stats.todayRevenue > 0 ? '+' : ''}{formatPrice(stats.todayRevenue)} desde ayer
+                  </span>
+                </p>
+              </div>
+              <div className="p-4 bg-green-100 dark:bg-green-900/20 rounded-xl">
+                <DollarSign className="h-8 w-8 text-green-600 dark:text-green-400" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-l-4 border-l-orange-500 shadow-sm hover:shadow-md transition-shadow">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-muted-foreground dark:text-gray-400">Ticket Promedio</p>
+                <p className="text-3xl font-bold text-orange-600 dark:text-orange-400 mt-1">{formatPrice(stats.averageOrderValue)}</p>
+                <p className="text-sm text-muted-foreground dark:text-gray-500 mt-2">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400">
+                    Promedio por orden
+                  </span>
+                </p>
+              </div>
+              <div className="p-4 bg-orange-100 dark:bg-orange-900/20 rounded-xl">
+                <TrendingUp className="h-8 w-8 text-orange-600 dark:text-orange-400" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Main Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <Card className="shadow-sm hover:shadow-md transition-shadow">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-muted-foreground dark:text-gray-400">Total Productos</p>
+                <p className="text-2xl font-bold text-foreground dark:text-white mt-1">{stats.totalProducts}</p>
+                {stats.lowStockProducts > 0 && (
+                  <div className="flex items-center mt-3">
+                    <div className="flex items-center px-2 py-1 rounded-full bg-red-100 dark:bg-red-900/20">
+                      <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400 mr-1" />
+                      <p className="text-xs font-medium text-red-700 dark:text-red-400">{stats.lowStockProducts} con stock bajo</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-xl">
+                <Package className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-sm hover:shadow-md transition-shadow">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-muted-foreground dark:text-gray-400">Total Órdenes</p>
+                <p className="text-2xl font-bold text-foreground dark:text-white mt-1">{stats.totalOrders}</p>
+                {stats.pendingOrders > 0 && (
+                  <div className="flex items-center mt-3">
+                    <div className="flex items-center px-2 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900/20">
+                      <Clock className="h-4 w-4 text-yellow-600 dark:text-yellow-400 mr-1" />
+                      <p className="text-xs font-medium text-yellow-700 dark:text-yellow-400">{stats.pendingOrders} pendientes</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="p-3 bg-green-100 dark:bg-green-900/20 rounded-xl">
+                <ShoppingCart className="h-8 w-8 text-green-600 dark:text-green-400" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-sm hover:shadow-md transition-shadow">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-muted-foreground dark:text-gray-400">Clientes</p>
+                <p className="text-2xl font-bold text-foreground dark:text-white mt-1">{stats.totalUsers}</p>
+                <p className="text-sm text-muted-foreground dark:text-gray-500 mt-3">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400">
+                    Usuarios registrados
+                  </span>
+                </p>
+              </div>
+              <div className="p-3 bg-purple-100 dark:bg-purple-900/20 rounded-xl">
+                <Users className="h-8 w-8 text-purple-600 dark:text-purple-400" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-sm hover:shadow-md transition-shadow">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-muted-foreground dark:text-gray-400">Ingresos Totales</p>
+                <p className="text-2xl font-bold text-foreground dark:text-white mt-1">{formatPrice(stats.totalRevenue)}</p>
+                <p className="text-sm text-muted-foreground dark:text-gray-500 mt-3">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400">
+                    Órdenes pagadas
+                  </span>
+                </p>
+              </div>
+              <div className="p-3 bg-emerald-100 dark:bg-emerald-900/20 rounded-xl">
+                <TrendingUp className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => router.push('/admin/productos')}>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Gestionar Productos</p>
-                <p className="text-lg font-semibold text-blue-600">Ver todos</p>
+      <Card className="mb-8 shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-foreground dark:text-white">Acciones Rápidas</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Button 
+              variant="outline" 
+              className="h-24 flex-col space-y-3 border-2 hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-all"
+              onClick={() => router.push('/admin/productos/nuevo')}
+            >
+              <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
+                <Plus className="h-6 w-6 text-blue-600 dark:text-blue-400" />
               </div>
-              <Package className="h-8 w-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => router.push('/admin/ordenes')}>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Gestionar Órdenes</p>
-                <p className="text-lg font-semibold text-green-600">Ver todas</p>
+              <span className="text-sm font-medium text-foreground dark:text-white">Nuevo Producto</span>
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              className="h-24 flex-col space-y-3 border-2 hover:border-green-300 hover:bg-green-50 dark:hover:bg-green-950/20 transition-all"
+              onClick={() => router.push('/admin/ordenes')}
+            >
+              <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
+                <ShoppingCart className="h-6 w-6 text-green-600 dark:text-green-400" />
               </div>
-              <ShoppingCart className="h-8 w-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => router.push('/admin/cupones')}>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Gestionar Cupones</p>
-                <p className="text-lg font-semibold text-purple-600">Ver todos</p>
+              <span className="text-sm font-medium text-foreground dark:text-white">Ver Órdenes</span>
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              className="h-24 flex-col space-y-3 border-2 hover:border-orange-300 hover:bg-orange-50 dark:hover:bg-orange-950/20 transition-all"
+              onClick={() => router.push('/admin/productos')}
+            >
+              <div className="p-2 bg-orange-100 dark:bg-orange-900/20 rounded-lg">
+                <Package className="h-6 w-6 text-orange-600 dark:text-orange-400" />
               </div>
-              <Users className="h-8 w-8 text-purple-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => router.push('/admin/productos/nuevo')}>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Nuevo Producto</p>
-                <p className="text-lg font-semibold text-orange-600">Crear</p>
+              <span className="text-sm font-medium text-foreground dark:text-white">Gestionar Stock</span>
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              className="h-24 flex-col space-y-3 border-2 hover:border-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950/20 transition-all"
+              onClick={() => router.push('/admin/cupones')}
+            >
+              <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
+                <Users className="h-6 w-6 text-purple-600 dark:text-purple-400" />
               </div>
-              <Plus className="h-8 w-8 text-orange-600" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Productos</p>
-                <p className="text-2xl font-bold">{stats.totalProducts}</p>
-              </div>
-              <Package className="h-8 w-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Órdenes</p>
-                <p className="text-2xl font-bold">{stats.totalOrders}</p>
-                {stats.pendingOrders > 0 && (
-                  <p className="text-xs text-yellow-600">{stats.pendingOrders} pendientes</p>
-                )}
-              </div>
-              <ShoppingCart className="h-8 w-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Usuarios</p>
-                <p className="text-2xl font-bold">{stats.totalUsers}</p>
-              </div>
-              <Users className="h-8 w-8 text-purple-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Ingresos</p>
-                <p className="text-2xl font-bold">{formatPrice(stats.totalRevenue)}</p>
-              </div>
-              <TrendingUp className="h-8 w-8 text-orange-600" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+              <span className="text-sm font-medium text-foreground dark:text-white">Crear Cupón</span>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Tabs */}
       <Tabs defaultValue="orders" className="space-y-6">

@@ -175,7 +175,7 @@ export default function ProductsPage() {
       </div>
 
       {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
         {/* Filters Sidebar */}
         <div className="lg:col-span-1">
           <div className="sticky top-8">
@@ -193,7 +193,7 @@ export default function ProductsPage() {
         {/* Products Grid */}
         <div className="lg:col-span-3">
           {isLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="animate-pulse">
                   <div className="aspect-[3/4] bg-gray-200 rounded-lg mb-4" />
@@ -205,9 +205,9 @@ export default function ProductsPage() {
               ))}
             </div>
           ) : products && products.length > 0 ? (
-            <div className={`grid gap-6 ${
+            <div className={`grid gap-4 sm:gap-6 ${
               viewMode === 'grid' 
-                ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' 
+                ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3' 
                 : 'grid-cols-1'
             }`}>
               {products.map((product) => (
