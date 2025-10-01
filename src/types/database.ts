@@ -266,6 +266,7 @@ export type Database = {
           stock_quantity: number
           low_stock_threshold: number
           is_active: boolean
+          images: string[]
           created_at: string
           updated_at: string
         }
@@ -281,6 +282,7 @@ export type Database = {
           stock_quantity?: number
           low_stock_threshold?: number
           is_active?: boolean
+          images?: string[]
           created_at?: string
           updated_at?: string
         }
@@ -296,6 +298,7 @@ export type Database = {
           stock_quantity?: number
           low_stock_threshold?: number
           is_active?: boolean
+          images?: string[]
           created_at?: string
           updated_at?: string
         }

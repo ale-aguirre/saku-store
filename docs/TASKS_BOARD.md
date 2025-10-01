@@ -56,11 +56,23 @@
   - Acceptance: Botón de cambio de tema visible y funcional en todas las páginas admin
   - Priority: Medium
 
-- [ ] (TB-016) Implementar página de edición de producto /admin/productos/[id] — Owner: Saku — TS: 2025-01-27 17:15
+- [x] (TB-016) Implementar página de edición de producto /admin/productos/[id] — Owner: Saku — TS done: 2025-10-01 18:44
   - Goal: Crear página funcional para editar productos existentes
   - Scope: Formulario de edición, validación, actualización en DB
   - Acceptance: Página funcional sin error 404, formulario completo
   - Priority: High
+  - How: Implementada funcionalidad completa de carga de imágenes para productos y variantes
+  - Files: src/app/admin/productos/[id]/page.tsx
+  - Checks: ESLint ✅ | Types ✅ | Preview ✅ (http://localhost:3001)
+
+- [x] (TB-029) Implementar funcionalidad de carga de imágenes desde equipo local — Owner: Saku — TS done: 2025-10-01 18:44
+  - Goal: Permitir subir imágenes desde el equipo local para productos y variantes
+  - Scope: Integración componente ImageUpload, soporte múltiples imágenes, previsualización
+  - Acceptance: Funcionalidad completa de carga, previsualización y eliminación de imágenes
+  - Priority: High
+  - How: Integrado componente ImageUpload con límite de 3 imágenes por producto/variante
+  - Files: src/app/admin/productos/[id]/page.tsx
+  - Checks: ESLint ✅ | Types ✅ | Preview ✅ (http://localhost:3001)
 
 ---
 

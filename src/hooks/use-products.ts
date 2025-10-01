@@ -209,8 +209,8 @@ export function useProductColors() {
     queryKey: ['product-colors'],
     queryFn: async () => {
       try {
-        const _supabase = createClient()
-        const { data, error } = await _supabase
+        const supabase = createClient()
+        const { data, error } = await supabase
           .from('product_variants')
           .select('color')
           .eq('is_active', true)

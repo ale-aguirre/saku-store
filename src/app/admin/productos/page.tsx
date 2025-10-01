@@ -95,13 +95,13 @@ export default function AdminProductsPage() {
       // Aplicar filtros
       if (statusFilter !== 'all') {
         if (statusFilter === 'no_stock') {
-          // Este filtro se aplicará después en el cliente
+          // Este filtro se aplicara despues en el cliente
         } else {
           query = query.eq('status', statusFilter)
         }
       }
 
-      // Aplicar búsqueda
+      // Aplicar busqueda
       if (searchTerm) {
         query = query.or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
       }
@@ -122,7 +122,7 @@ export default function AdminProductsPage() {
           break
       }
 
-      // Aplicar paginación
+      // Aplicar paginacion
       const from = (currentPage - 1) * ITEMS_PER_PAGE
       const to = from + ITEMS_PER_PAGE - 1
       query = query.range(from, to)
@@ -189,7 +189,7 @@ export default function AdminProductsPage() {
     return (
       <div className="py-8 text-center">
         <h1 className="text-2xl font-bold mb-4 text-foreground">Acceso restringido</h1>
-        <p className="text-muted-foreground">No tienes permisos para acceder a esta página.</p>
+        <p className="text-muted-foreground">No tienes permisos para acceder a esta pagina.</p>
       </div>
     )
   }
@@ -261,8 +261,8 @@ export default function AdminProductsPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="newest">Más nuevo</SelectItem>
-                  <SelectItem value="oldest">Más antiguo</SelectItem>
+                  <SelectItem value="newest">Mas nuevo</SelectItem>
+                  <SelectItem value="oldest">Mas antiguo</SelectItem>
                   <SelectItem value="a_z">A-Z</SelectItem>
                   <SelectItem value="z_a">Z-A</SelectItem>
                 </SelectContent>
@@ -447,7 +447,7 @@ export default function AdminProductsPage() {
               </h3>
               <p className="text-muted-foreground mb-4">
                 {searchTerm || statusFilter !== 'all'
-                  ? 'Intenta ajustar los filtros de búsqueda' 
+                  ? 'Intenta ajustar los filtros de busqueda' 
                   : 'Comienza agregando tu primer producto'
                 }
               </p>
