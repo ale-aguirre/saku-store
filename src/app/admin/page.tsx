@@ -65,11 +65,6 @@ interface Product {
   }[]
 }
 
-interface LowStockVariant {
-  product_id: string
-  stock_quantity: number
-}
-
 const statusConfig = {
   pending: { label: 'Pendiente', color: 'bg-yellow-100 text-yellow-800' },
   paid: { label: 'Pagado', color: 'bg-green-100 text-green-800' },
@@ -130,7 +125,7 @@ export default function AdminDashboard() {
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
         supabase.from('orders').select('total').eq('status', 'paid'),
         supabase.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
-        supabase.from('product_variants').select('product_id, stock_quantity, low_stock_threshold').filter('stock_quantity', 'lte', 'low_stock_threshold'),
+        supabase.from('product_variants').select('product_id, stock_quantity, low_stock_threshold'),
         supabase.from('orders').select('*', { count: 'exact', head: true }).gte('created_at', todayISO),
         supabase.from('orders').select('total').eq('status', 'paid').gte('created_at', todayISO)
       ])
@@ -139,8 +134,11 @@ export default function AdminDashboard() {
       const todayRevenue = (todayRevenueData as any)?.reduce((sum: number, order: any) => sum + order.total, 0) || 0
       const averageOrderValue = ordersCount && ordersCount > 0 ? totalRevenue / ordersCount : 0
       
-      // Calculate unique products with low stock
-      const uniqueLowStockProducts = new Set((lowStockData as LowStockVariant[])?.map(variant => variant.product_id) || []).size
+      // Calculate unique products with low stock - filter on client side
+      const lowStockVariants = (lowStockData as any[])?.filter(variant => 
+        variant.stock_quantity <= variant.low_stock_threshold
+      ) || []
+      const uniqueLowStockProducts = new Set(lowStockVariants.map(variant => variant.product_id)).size
 
       setStats({
         totalProducts: productsCount || 0,

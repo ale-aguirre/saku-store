@@ -48,6 +48,73 @@
 
 **Prevención futura:**
 - Usar `npm run dev` limpio después de cambios importantes
+
+### **2025-10-01 15:06 - Corrección Error 400 en Dashboard Admin** ✅
+
+**Problema resuelto:**
+- ✅ **Error 400 Bad Request**: Corregida consulta malformada en dashboard admin
+- ✅ **Consulta PostgREST**: Eliminado filtro directo entre columnas `stock_quantity` y `low_stock_threshold`
+- ✅ **Filtrado cliente**: Implementado filtrado de variantes con stock bajo en el cliente
+
+**Acciones realizadas:**
+- Creación de rama `fix/admin-dashboard-low-stock-query`
+- Modificación de consulta en `src/app/admin/page.tsx` línea 133
+- Eliminación del filtro `.filter('stock_quantity', 'lte', 'low_stock_threshold')`
+- Implementación de filtrado en cliente: `allVariants.filter(v => v.stock_quantity <= v.low_stock_threshold)`
+- Verificación exitosa del dashboard sin errores en consola
+
+**Verificaciones realizadas:**
+- ✅ Dashboard admin carga correctamente: http://localhost:3000/admin
+- ✅ Sin errores 400 en consola del navegador
+- ✅ Servidor de desarrollo funcionando sin errores
+- ✅ Consulta a `product_variants` ejecutándose correctamente
+
+**Archivos modificados:**
+- `src/app/admin/page.tsx` - Corrección de consulta de stock bajo
+
+**Causa raíz:**
+- PostgREST no permite comparar directamente dos columnas en filtros
+- La consulta `.filter('stock_quantity', 'lte', 'low_stock_threshold')` es inválida
+- Solución: obtener todos los datos y filtrar en el cliente
+
+**Prevención futura:**
+- Usar filtros PostgREST solo con valores literales, no referencias a columnas
+- Para comparaciones entre columnas, filtrar en el cliente después de la consulta
+
+### **2025-10-01 14:37 - Merge Exitoso y Limpieza de Ramas** ✅
+
+**Proceso completado:**
+- ✅ **Merge a develop**: Rama `feature/admin-profile-photo-upload` mergeada exitosamente a `develop`
+- ✅ **Merge a master**: Rama `develop` mergeada exitosamente a `master` (rama principal)
+- ✅ **Push remoto**: Cambios pusheados a repositorio remoto en GitHub
+- ✅ **Limpieza de ramas**: Eliminadas ramas temporales locales y remotas
+- ✅ **Deployment verificado**: Vercel deployment funcionando correctamente
+
+**Acciones realizadas:**
+- Commit de cambios pendientes con configuración de variables de entorno Vercel
+- Merge sin conflictos de `feature/admin-profile-photo-upload` → `develop`
+- Merge sin conflictos de `develop` → `master`
+- Push exitoso de ambas ramas al repositorio remoto
+- Eliminación de rama feature local: `git branch -d feature/admin-profile-photo-upload`
+- Eliminación de rama feature remota: `git push origin --delete feature/admin-profile-photo-upload`
+- Limpieza de referencias remotas obsoletas: `git remote prune origin`
+
+**Estado actual del repositorio:**
+- ✅ **Ramas activas**: `develop`, `master` (limpias y sincronizadas)
+- ✅ **Ramas eliminadas**: `feature/admin-profile-photo-upload` (local y remota)
+- ✅ **Deployment**: Producción activa en https://saku-store-o7bpbv4i2-alexis-aguirres-projects.vercel.app
+- ✅ **Servidor local**: Funcionando en http://localhost:3000
+
+**Archivos incluidos en el merge:**
+- `docs/VERCEL_ENV_SETUP.md` - Documentación completa de variables de entorno
+- `vercel-env-example.txt` - Actualizado con configuración actual
+- Configuración completa de variables de entorno en Vercel para todos los entornos
+
+**Verificaciones realizadas:**
+- ✅ Sin conflictos de merge en ninguna rama
+- ✅ Deployment de producción funcionando correctamente
+- ✅ Variables de entorno configuradas para Production, Preview y Development
+- ✅ Servidor local operativo sin errores
 - Ejecutar `scripts/close-ports.js` antes de iniciar desarrollo
 - Considerar `rm -rf .next && npm run dev` si aparecen errores similares
 
