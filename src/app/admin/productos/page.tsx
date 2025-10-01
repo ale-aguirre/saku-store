@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
@@ -74,13 +74,7 @@ export default function AdminProductsPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalProducts, setTotalProducts] = useState(0)
 
-  useEffect(() => {
-    if (!loading && user) {
-      fetchProducts()
-    }
-  }, [user, loading, currentPage, searchTerm, statusFilter, sortBy])
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setIsLoading(true)
       const supabase = createClient()
@@ -141,7 +135,7 @@ export default function AdminProductsPage() {
 
       // Filtrar productos sin stock en el cliente
       if (statusFilter === 'no_stock') {
-        filteredData = filteredData.filter(product => 
+        filteredData = filteredData.filter((product: Product) => 
           getTotalStock(product.product_variants) === 0
         )
       }
@@ -153,7 +147,13 @@ export default function AdminProductsPage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [currentPage, searchTerm, statusFilter, sortBy])
+
+  useEffect(() => {
+    if (!loading && user) {
+      fetchProducts()
+    }
+  }, [user, loading, fetchProducts])
 
   const getTotalStock = (variants: ProductVariant[]) => {
     return variants.reduce((sum, variant) => sum + variant.stock_quantity, 0)
