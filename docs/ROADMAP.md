@@ -49,6 +49,67 @@
 **Prevención futura:**
 - Usar `npm run dev` limpio después de cambios importantes
 
+### **2025-10-01 15:48 - Requerimientos para Página Admin de Productos** 📋
+
+**Objetivo:**
+Crear página `/admin/productos` similar al dashboard de productos de TiendaNube para gestión completa del catálogo.
+
+**Requerimientos funcionales:**
+
+**1. Header y Navegación**
+- ✅ Título "Productos" prominente
+- ✅ Botón "Agregar producto" (acción primaria)
+- ✅ Botón "Organizar" (ordenamiento manual)
+- ✅ Botón "Exportar o importar" (gestión masiva)
+
+**2. Búsqueda y Filtros**
+- ✅ Barra de búsqueda: "Busca por nombre, SKU o tags"
+- ✅ Filtro por estado (activo, inactivo, sin stock)
+- ✅ Ordenamiento: "Más nuevo", "Más antiguo", "A-Z", "Z-A"
+- ✅ Contador total: "X productos"
+
+**3. Tabla de Productos**
+- ✅ **Columna Producto**: Imagen miniatura + nombre del producto
+- ✅ **Columna Stock**: Cantidad disponible + indicador "Sin stock"
+- ✅ **Columna Precio**: Precio base formateado ($X.XXX)
+- ✅ **Columna Promocional**: Precio con descuento (si aplica)
+- ✅ **Columna Variantes**: Chips con talles (85, 90, 95, 100) y colores
+- ✅ **Columna Acciones**: Editar, Duplicar, Eliminar
+
+**4. Paginación**
+- ✅ Mostrar máximo 20 productos por página
+- ✅ Navegación: Anterior/Siguiente + números de página
+- ✅ Selector de cantidad por página (10, 20, 50)
+
+**5. Funcionalidades Específicas**
+- ✅ **Tags visuales**: Mostrar tags asociados a productos
+- ✅ **Estado de stock**: Indicador visual para productos sin stock
+- ✅ **Variantes expandibles**: Click para ver detalles de variantes
+- ✅ **Acciones masivas**: Selección múltiple para operaciones en lote
+- ✅ **Responsive**: Adaptable a móvil y tablet
+
+**Especificaciones técnicas:**
+- **Framework**: Next.js 15 + App Router
+- **UI**: Tailwind + shadcn/ui + Radix UI
+- **Datos**: Supabase con RLS habilitado
+- **Estado**: TanStack Query para cache y sincronización
+- **Validación**: Zod para formularios
+- **Paginación**: Server-side con parámetros URL
+
+**Archivos a crear/modificar:**
+- `src/app/admin/productos/page.tsx` - Página principal
+- `src/components/admin/products-table.tsx` - Tabla de productos
+- `src/components/admin/product-search.tsx` - Búsqueda y filtros
+- `src/components/admin/product-actions.tsx` - Botones de acción
+- `src/hooks/use-admin-products.ts` - Hook para gestión de datos
+
+**Criterios de aceptación:**
+- ✅ Página carga en <2 segundos con 50+ productos
+- ✅ Búsqueda funciona en tiempo real
+- ✅ Paginación no recarga la página completa
+- ✅ Responsive en móvil, tablet y desktop
+- ✅ Accesibilidad AA (navegación por teclado, screen readers)
+
 ### **2025-10-01 15:06 - Corrección Error 400 en Dashboard Admin** ✅
 
 **Problema resuelto:**
