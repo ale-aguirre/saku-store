@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import {
   LayoutDashboard,
@@ -13,10 +13,12 @@ import {
   Zap,
   Settings,
   Menu,
-  X
+  X,
+  LogOut
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
+import { useAuth } from '@/hooks/use-auth'
 
 const navigation = [
   {
@@ -69,6 +71,8 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ className }: AdminSidebarProps) {
   const pathname = usePathname()
+  const router = useRouter()
+  const { user, profile, signOut } = useAuth()
   const [isMobileOpen, setIsMobileOpen] = useState(false)
 
   const isActive = (item: typeof navigation[0]) => {
@@ -76,6 +80,11 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
       return pathname === item.href
     }
     return pathname.startsWith(item.href)
+  }
+
+  const handleSignOut = async () => {
+    await signOut()
+    router.push('/auth/login')
   }
 
   const SidebarContent = () => (
@@ -124,16 +133,36 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
       </nav>
 
       {/* User Profile Area */}
-      <div className="border-t border-border p-4">
+      <div className="border-t border-border p-4 space-y-3">
         <div className="flex items-center space-x-3">
           <div className="h-8 w-8 rounded-full bg-saku-base flex items-center justify-center">
-            <span className="text-sm font-medium text-foreground">A</span>
+            <span className="text-sm font-medium text-foreground">
+              {profile?.first_name?.[0] || user?.email?.[0]?.toUpperCase() || 'A'}
+            </span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-foreground">Admin</p>
-            <p className="text-xs text-muted-foreground truncate">admin@saku.com</p>
+            <p className="text-sm font-medium text-foreground">
+              {profile?.first_name && profile?.last_name 
+                ? `${profile.first_name} ${profile.last_name}`
+                : profile?.first_name || 'Admin'
+              }
+            </p>
+            <p className="text-xs text-muted-foreground truncate">
+              {profile?.role === 'admin' ? 'Administrador' : profile?.role || 'admin'}
+            </p>
           </div>
         </div>
+        
+        {/* Logout Button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleSignOut}
+          className="w-full justify-start text-muted-foreground hover:text-foreground hover:bg-accent"
+        >
+          <LogOut className="mr-2 h-4 w-4" />
+          Cerrar Sesión
+        </Button>
       </div>
     </div>
   )

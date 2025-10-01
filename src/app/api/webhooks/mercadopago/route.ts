@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createSupabaseAdmin } from "@/lib/supabase";
 import { sendOrderConfirmationEmail } from "@/lib/email";
 import { z } from "zod";
 
@@ -94,12 +94,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Buscar la orden por external_reference
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    const supabase = createSupabaseAdmin();
 
-    const { data: order, error: orderError } = await supabase
+    const { data: order, error: orderError } = await (supabase as any)
       .from("orders")
       .select("*")
       .eq("external_reference", payment.external_reference)
@@ -110,8 +107,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: "Order not found" }, { status: 404 });
     }
 
+    // Asegurar que order tiene el tipo correcto
+    const orderData = order as any;
+
     // Mapear estados de Mercado Pago a nuestros estados
-    let newStatus = order.status;
+    let newStatus = orderData.status;
     switch (payment.status) {
       case "approved":
         newStatus = "paid";
@@ -131,8 +131,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Actualizar la orden solo si el estado cambió
-    if (newStatus !== order.status) {
-      const { error: updateError } = await supabase
+    if (newStatus !== orderData.status) {
+      const { error: updateError } = await (supabase as any)
         .from("orders")
         .update({
           status: newStatus,
@@ -141,7 +141,7 @@ export async function POST(request: NextRequest) {
           payment_method: payment.payment_method_id,
           updated_at: new Date().toISOString(),
         })
-        .eq("id", order.id);
+        .eq("id", orderData.id);
 
       if (updateError) {
         console.error("Error updating order:", updateError);
@@ -152,8 +152,8 @@ export async function POST(request: NextRequest) {
       }
 
       // Crear evento de orden
-      const { error: eventError } = await supabase.from("order_events").insert({
-        order_id: order.id,
+      const { error: eventError } = await (supabase as any).from("order_events").insert({
+        order_id: orderData.id,
         event_type:
           newStatus === "paid" ? "payment_confirmed" : "status_changed",
         description: `Payment ${payment.status} - ${
@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
           payment_id: payment.id,
           payment_status: payment.status,
           payment_method: payment.payment_method_id,
-          webhook_id: webhook.id,
+          webhook_id: Date.now(),
         },
       });
 
@@ -173,14 +173,14 @@ export async function POST(request: NextRequest) {
 
       // Si el pago fue aprobado, reducir stock
       if (newStatus === "paid") {
-        const { data: orderItems } = await supabase
+        const { data: orderItems } = await (supabase as any)
           .from("order_items")
           .select("product_variant_id, quantity")
-          .eq("order_id", order.id);
+          .eq("order_id", orderData.id);
 
         if (orderItems) {
-          for (const item of orderItems) {
-            await supabase.rpc("reduce_stock", {
+          for (const item of orderItems as any[]) {
+            await (supabase as any).rpc("reduce_stock", {
               variant_id: item.product_variant_id,
               quantity: item.quantity,
             });
@@ -188,10 +188,10 @@ export async function POST(request: NextRequest) {
         }
 
         // Enviar email de confirmación si es el primer pago
-        if (order.status === "pending") {
+        if (orderData.status === "pending") {
           try {
             // Obtener datos completos del pedido para el email
-            const { data: orderWithDetails } = await supabase
+            const { data: orderWithDetails } = await (supabase as any)
               .from("orders")
               .select(
                 `
@@ -208,7 +208,7 @@ export async function POST(request: NextRequest) {
                 profiles (email, first_name, last_name)
               `
               )
-              .eq("id", order.id)
+              .eq("id", orderData.id)
               .single();
 
             if (orderWithDetails && (orderWithDetails as any).profiles) {

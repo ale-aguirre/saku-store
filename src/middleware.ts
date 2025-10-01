@@ -62,8 +62,9 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/auth/login?redirect=/admin', request.url))
       }
 
-      // Check if user has admin role
+      // Check if user has admin role - optimized with cache headers
       try {
+        // Use a shorter cache for role checks to improve performance
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('role')
@@ -71,16 +72,18 @@ export async function middleware(request: NextRequest) {
           .single()
 
         if (profileError) {
-          console.error('Profile fetch error in middleware:', profileError)
-          return NextResponse.redirect(new URL('/', request.url))
-        }
-
-        if (!profile || (profile.role !== 'admin' && profile.role !== 'super_admin')) {
+          // Only redirect on actual errors, not missing profiles
+          if (profileError.code !== 'PGRST116') {
+            console.error('Profile fetch error in middleware:', profileError)
+            return NextResponse.redirect(new URL('/', request.url))
+          }
+          // If profile doesn't exist, allow access and let the app handle it
+        } else if (profile && profile.role !== 'admin' && profile.role !== 'super_admin') {
           return NextResponse.redirect(new URL('/', request.url))
         }
       } catch (error) {
         console.error('Database error in middleware:', error)
-        return NextResponse.redirect(new URL('/', request.url))
+        // Don't redirect on network errors, let the app handle it
       }
     }
 

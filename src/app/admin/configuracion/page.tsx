@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { ProfilePhotoUpload } from '@/components/admin/profile-photo-upload'
 import { toast } from 'sonner'
 import { useAuth } from '@/hooks/use-auth'
 import { supabase } from '@/lib/supabase'
@@ -41,6 +41,7 @@ export default function ConfiguracionPage() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
   // Formulario para datos personales
   const personalForm = useForm<PersonalDataForm>({
@@ -60,6 +61,34 @@ export default function ConfiguracionPage() {
       confirm_password: ''
     }
   })
+
+  // Cargar perfil del usuario
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (!user) return
+
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('avatar_url')
+          .eq('id', user.id)
+          .single() as { data: { avatar_url: string | null } | null, error: any }
+
+        if (error) throw error
+
+        setAvatarUrl(data?.avatar_url || null)
+      } catch (error) {
+        console.error('Error loading profile:', error)
+      }
+    }
+
+    loadProfile()
+  }, [user])
+
+  // Manejar actualización de avatar
+  const handleAvatarUpdate = (newAvatarUrl: string | null) => {
+    setAvatarUrl(newAvatarUrl)
+  }
 
   // Actualizar datos personales
   const onUpdateProfile = async (data: PersonalDataForm) => {
@@ -146,22 +175,12 @@ export default function ConfiguracionPage() {
               Actualiza tu imagen de perfil
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex flex-col items-center space-y-4">
-              <Avatar className="h-24 w-24">
-                <AvatarImage src={user.user_metadata?.avatar_url} />
-                <AvatarFallback className="bg-saku-base text-foreground text-lg">
-                  <User className="h-8 w-8" />
-                </AvatarFallback>
-              </Avatar>
-              <Button variant="outline" size="sm" disabled>
-                <Camera className="h-4 w-4 mr-2" />
-                Cambiar foto
-              </Button>
-              <p className="text-xs text-muted-foreground text-center">
-                Próximamente disponible
-              </p>
-            </div>
+          <CardContent>
+            <ProfilePhotoUpload
+              currentAvatarUrl={avatarUrl}
+              userEmail={user?.email || ''}
+              onAvatarUpdate={handleAvatarUpdate}
+            />
           </CardContent>
         </Card>
 
@@ -173,7 +192,7 @@ export default function ConfiguracionPage() {
               Información personal
             </CardTitle>
             <CardDescription>
-              Actualiza tu nombre y email
+              Actualiza tu nombre completo y email
             </CardDescription>
           </CardHeader>
           <CardContent>

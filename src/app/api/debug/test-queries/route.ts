@@ -50,11 +50,11 @@ export async function POST(_request: NextRequest) {
       console.log('❌ Orders query failed:', results.orders)
     }
 
-    // Test 3: Verificar tabla profiles
+    // Test 3: Verificar tabla users
     try {
       const { count: usersCount, error: usersError } = await supabase
         .from('profiles')
-        .select('*', { count: 'exact', head: true })
+        .select('*', { count: 'exact', head: true });
       
       results.profiles = {
         count: usersCount,

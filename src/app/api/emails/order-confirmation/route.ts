@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     const emailResult = await sendOrderConfirmationEmail({
       order,
       customerEmail,
-      items: order.order_items || [],
+      items: (order as any).order_items || [],
     });
 
     if (!emailResult.success) {
@@ -60,10 +60,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Registrar el evento de email enviado
-    const { error: eventError } = await supabase.from("order_events").insert({
+    const { error: eventError } = await (supabase.from("order_events") as any).insert({
       order_id: orderId,
-      event_type: "email_sent",
-      event_data: {
+      type: "email_sent",
+      metadata: {
         email_type: "order_confirmation",
         recipient: customerEmail,
         message_id: emailResult.messageId,

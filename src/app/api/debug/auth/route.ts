@@ -67,7 +67,7 @@ export async function GET() {
       .from('profiles')
       .select('role, email')
       .eq('id', user.id)
-      .single()
+      .single();
     
     return NextResponse.json({
       message: 'Auth debug info',

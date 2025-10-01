@@ -23,11 +23,32 @@
   - Files: src/app/admin/page.tsx, src/app/admin/ordenes/page.tsx, src/app/admin/ordenes/[id]/page.tsx, src/app/admin/categorias/page.tsx
   - Checks: ESLint ✅ | Types ✅ | Preview ✅ (http://localhost:3000)
 
-- [ ] (TB-025) Implementar página de configuración del admin /admin/configuracion — Owner: Saku — TS: 2025-09-30 20:39
+- [x] (TB-025) Implementar página de configuración del admin /admin/configuracion — Owner: Saku — TS done: 2025-10-01 02:06
   - Goal: Crear página donde el admin pueda modificar nombre, contraseña y foto de perfil
   - Scope: Formulario de configuración personal, actualización de datos de usuario admin
   - Acceptance: Página funcional con formulario para cambiar datos personales del admin
   - Priority: High
+  - How: Corregidas referencias incorrectas a tabla 'users' por 'profiles' en 9 archivos. Error crítico resuelto.
+  - Files: src/app/auth/actions.ts, src/app/admin/page.tsx, src/app/api/debug/*, src/middleware.ts, src/hooks/use-auth.tsx, src/components/admin/profile-photo-upload.tsx, src/app/admin/configuracion/page.tsx, src/components/admin/layout/AdminHeader.tsx
+  - Checks: ESLint ✅ | Types ✅ | Preview ✅ (http://localhost:3000/admin/configuracion)
+
+- [x] (TB-027) Documentación de esquema de base de datos — Owner: Saku — TS done: 2025-10-01 02:06
+  - Goal: Mantener documentación actualizada del esquema de base de datos para evitar errores de mapeo
+  - Scope: Documentación completa de tablas, campos, tipos y convenciones de naming
+  - Acceptance: Archivo DATABASE_SCHEMA.md actualizado y verificado contra esquema real
+  - Priority: High
+  - How: Creado DATABASE_SCHEMA.md con documentación completa de tablas, campos y convenciones
+  - Files: docs/DATABASE_SCHEMA.md
+  - Checks: Documentación ✅
+
+- [x] (TB-028) Registro de cambios del proyecto — Owner: Saku — TS done: 2025-10-01 02:06
+  - Goal: Mantener un changelog detallado de todos los cambios significativos
+  - Scope: Archivo CHANGELOG.md con formato estándar y entradas por fecha
+  - Acceptance: Changelog actualizado con cambios de esta sesión
+  - Priority: Medium
+  - How: Creado CHANGELOG.md con formato estándar y documentados cambios de esta sesión
+  - Files: docs/CHANGELOG.md
+  - Checks: Documentación ✅
 
 - [ ] (TB-026) Verificar y mejorar botón de cambio de tema en admin — Owner: Saku — TS: 2025-09-30 20:39
   - Goal: Asegurar que el ThemeToggle esté visible y funcional en el panel admin
@@ -107,6 +128,41 @@
   - Files: src/app/admin/productos/page.tsx (línea 62)
   - Checks: ESLint ✅ | Types ✅ | Preview ✅ (todas las rutas admin funcionando)
   - Notes: Error de runtime resuelto, panel de productos totalmente funcional
+
+- [x] (TB-029) Implementar componente Loader apropiado — TS done: 2025-10-01 11:30
+  - How: Reemplazado icono Upload con animate-spin por componente Loader apropiado en ProfilePhotoUpload
+  - Scope: Mejora de UX en carga de imagen de perfil, componente reutilizable
+  - Files: src/components/admin/profile-photo-upload.tsx
+  - Checks: ESLint ✅ | Types ✅ | Preview ✅ (http://localhost:3000/admin/configuracion)
+  - Notes: Loader consistente con diseño del sistema, mejor experiencia de usuario
+
+- [x] (TB-030) Corregir funcionalidad de subida de imagen de perfil — TS done: 2025-10-01 11:30
+  - How: Corregida migración SQL para agregar columna avatar_url a tabla profiles
+  - Scope: Migración de base de datos, corrección de tipos TypeScript
+  - Files: supabase/migrations/20241001142643_add_avatar_url_to_profiles.sql, src/components/admin/profile-photo-upload.tsx
+  - Checks: ESLint ✅ | Types ✅ | Preview ✅ (subida de imagen funcional)
+  - Notes: Migración aplicada correctamente, funcionalidad de avatar completamente operativa
+
+- [x] (TB-033) Restaurar botón de cerrar sesión en sidebar del admin — TS done: 2025-10-01 11:30
+  - How: Integrado hook useAuth en AdminSidebar, agregado botón logout con redirección
+  - Scope: Funcionalidad de logout, información de usuario en sidebar
+  - Files: src/components/admin/AdminSidebar.tsx
+  - Checks: ESLint ✅ | Types ✅ | Preview ✅ (http://localhost:3000/admin)
+  - Notes: Botón de logout funcional, redirección correcta a página de login
+
+- [x] (TB-034) Cambiar campo 'nombre' por 'nombre completo' en información personal — TS done: 2025-10-01 11:30
+  - How: Actualizadas etiquetas de 'Nombre' a 'Nombre completo' en páginas admin y cuenta
+  - Scope: Consistencia de etiquetas en formularios de información personal
+  - Files: src/app/admin/configuracion/page.tsx, src/app/cuenta/page.tsx
+  - Checks: ESLint ✅ | Types ✅ | Preview ✅ (etiquetas actualizadas)
+  - Notes: Terminología consistente en toda la aplicación
+
+- [x] (TB-035) Mostrar nombre completo del usuario en sidebar del admin — TS done: 2025-10-01 11:30
+  - How: Implementada lógica para mostrar nombre completo o email del usuario en AdminSidebar
+  - Scope: Información de usuario en sidebar, integración con hook useAuth
+  - Files: src/components/admin/AdminSidebar.tsx
+  - Checks: ESLint ✅ | Types ✅ | Preview ✅ (información de usuario visible)
+  - Notes: Sidebar muestra información personalizada del usuario logueado
 
 ---
 

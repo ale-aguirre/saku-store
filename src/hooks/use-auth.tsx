@@ -24,6 +24,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
   signOut: () => Promise<void>
   resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>
+  refreshProfile: () => Promise<void>
   isAdmin: boolean
 }
 
@@ -162,7 +163,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
-
+  const refreshProfile = async () => {
+    if (!user) return
+    
+    try {
+      const userProfile = await fetchUserProfile(user.id)
+      setProfile(userProfile)
+    } catch (error) {
+      console.error('Error refreshing profile:', error)
+    }
+  }
 
   const value = {
     user,
@@ -173,6 +183,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     signIn,
     signOut,
     resetPassword,
+    refreshProfile,
     isAdmin: profile?.role === 'admin',
   }
 

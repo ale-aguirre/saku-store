@@ -1,7 +1,9 @@
 'use client'
 
-import { ChevronRight, Calendar, Bell, User } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { ChevronRight, Calendar, Bell } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,6 +21,8 @@ import {
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { useAuth } from '@/hooks/use-auth'
+import { createClient } from '@/lib/supabase/client'
 
 interface BreadcrumbItem {
   label: string
@@ -38,6 +42,36 @@ export function AdminHeader({
   actions,
   showDateSelector = true 
 }: AdminHeaderProps) {
+  const { user } = useAuth()
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+  const [profile, setProfile] = useState<any>(null)
+  const supabase = createClient()
+
+  useEffect(() => {
+    async function loadProfile() {
+      if (!user?.id) return
+
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('avatar_url, first_name, last_name, email')
+          .eq('id', user.id)
+          .single() as { data: { avatar_url: string | null, first_name: string | null, last_name: string | null, email: string } | null, error: any }
+
+        if (error) {
+          console.error('Error loading profile:', error)
+          return
+        }
+
+        setProfile(data)
+        setAvatarUrl(data?.avatar_url as string | null || null)
+      } catch (error) {
+        console.error('Error loading profile:', error)
+      }
+    }
+
+    loadProfile()
+  }, [user?.id, supabase])
   return (
     <header className="h-20 bg-white border-b border-gray-200 px-6 flex items-center justify-between">
       {/* Left side: Breadcrumbs and Title */}
@@ -129,10 +163,15 @@ export function AdminHeader({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm" className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded-full bg-saku-base flex items-center justify-center">
-                <User className="h-4 w-4 text-foreground" />
-              </div>
-              <span className="text-sm font-medium">Admin</span>
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={avatarUrl || undefined} alt="Foto de perfil" />
+                <AvatarFallback className="bg-saku-base text-foreground">
+                  {profile?.first_name?.[0] || profile?.email?.[0]?.toUpperCase() || 'A'}
+                </AvatarFallback>
+              </Avatar>
+              <span className="text-sm font-medium">
+                {profile?.first_name || 'Admin'}
+              </span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">

@@ -102,7 +102,7 @@ export default function AccountPage() {
                 </div>
                 {user.user_metadata?.first_name && (
                   <div>
-                    <p className="text-sm font-medium">Nombre</p>
+                    <p className="text-sm font-medium">Nombre completo</p>
                     <p className="text-sm text-muted-foreground">
                       {user.user_metadata.first_name} {user.user_metadata.last_name}
                     </p>
