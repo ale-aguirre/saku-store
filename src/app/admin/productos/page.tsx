@@ -289,7 +289,7 @@ export default function AdminProductsPage() {
             <TableBody>
               {products.map((product) => {
                 const totalStock = getTotalStock(product.product_variants)
-                const { sizes, colors } = getVariantChips(product.product_variants)
+                const { colors } = getVariantChips(product.product_variants)
                 const lowStock = hasLowStock(product.product_variants)
                 
                 return (
@@ -369,21 +369,53 @@ export default function AdminProductsPage() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <div className="space-y-1">
-                        <div className="flex flex-wrap gap-1">
-                          {sizes.map((size) => (
-                            <Badge key={size} variant="outline" className="text-xs">
-                              {size}
-                            </Badge>
-                          ))}
-                        </div>
-                        <div className="flex flex-wrap gap-1">
-                          {colors.map((color) => (
-                            <Badge key={color} variant="secondary" className="text-xs">
-                              {color}
-                            </Badge>
-                          ))}
-                        </div>
+                      <div className="space-y-2">
+                        {colors.map((color) => {
+                          const colorVariants = product.product_variants.filter(v => v.color === color);
+                          const availableSizes = colorVariants.map(v => v.size).sort();
+                          
+                          return (
+                            <div key={color} className="space-y-1">
+                              <div className="flex items-center gap-2">
+                                <Badge variant="secondary" className="text-xs font-medium">
+                                  {color}
+                                </Badge>
+                                <span className="text-xs text-muted-foreground">
+                                  {availableSizes.length} talle{availableSizes.length !== 1 ? 's' : ''}
+                                </span>
+                              </div>
+                              <div className="flex flex-wrap gap-1 ml-2">
+                                {availableSizes.map((size) => {
+                                   const variant = colorVariants.find(v => v.size === size);
+                                   const hasStock = variant && variant.stock_quantity > 0;
+                                   const isLowStock = variant && variant.stock_quantity > 0 && variant.stock_quantity <= 5;
+                                   
+                                   return (
+                                     <Badge 
+                                       key={`${color}-${size}`} 
+                                       variant="outline" 
+                                       className={`text-xs ${
+                                         !hasStock 
+                                           ? 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800' 
+                                           : isLowStock 
+                                           ? 'bg-yellow-50 text-yellow-600 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-400 dark:border-yellow-800'
+                                           : 'bg-green-50 text-green-600 border-green-200 dark:bg-green-950 dark:text-green-400 dark:border-green-800'
+                                       }`}
+                                       title={variant ? `Stock: ${variant.stock_quantity}` : 'Sin variante'}
+                                     >
+                                       {size}
+                                       {variant && (
+                                         <span className="ml-1 text-[10px] opacity-75">
+                                           ({variant.stock_quantity})
+                                         </span>
+                                       )}
+                                     </Badge>
+                                   );
+                                 })}
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
