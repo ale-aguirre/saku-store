@@ -32,7 +32,7 @@ export function VariantImage({
   priority = false
 }: VariantImageProps) {
   // Obtener la imagen primaria con lógica de fallback
-  const primaryImage = variant?.images?.[0] || productImages?.[0] || '/placeholder-product.jpg'
+  const primaryImage = variant?.images?.[0] || productImages?.[0] || '/images/placeholder-product.svg'
 
   return (
     <div className={cn('relative overflow-hidden', className)}>
@@ -46,7 +46,7 @@ export function VariantImage({
         onError={(e) => {
           // Fallback si la imagen falla al cargar
           const target = e.target as HTMLImageElement
-          target.src = '/placeholder-product.jpg'
+          target.src = '/images/placeholder-product.svg'
         }}
       />
     </div>

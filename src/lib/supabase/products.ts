@@ -28,7 +28,7 @@ type VariantQuery = ProductVariant & {
 const supabase = createClient()
 
 /**
- * Obtiene productos con sus variantes y stock (optimizado)
+ * Obtiene productos con sus variantes y stock (optimizado con JOIN)
  */
 export async function getProducts(
   filters: ProductFilters = {},
@@ -58,11 +58,30 @@ export async function getProducts(
       return { products: [], totalItems: 0, totalPages: 0 }
     }
 
-    // Construir query base con filtros aplicados
+    // Construir query optimizada con JOIN para obtener todo en una sola consulta
     let baseQuery = supabase
         .from('products')
-        .select('*', { count: 'exact' })
+        .select(`
+          *,
+          product_variants!inner (
+            id,
+            sku,
+            size,
+            color,
+            material,
+            price_adjustment,
+            stock_quantity,
+            low_stock_threshold,
+            is_active
+          ),
+          categories (
+            id,
+            name,
+            slug
+          )
+        `, { count: 'exact' })
         .eq('is_active', true)
+        .eq('product_variants.is_active', true)
 
     // Aplicar filtros
     if (filters.category_id) {
@@ -97,8 +116,8 @@ export async function getProducts(
         break
     }
 
-    // Obtener productos con paginación
-    const { data: products, error: productsError, count: totalItems } = await baseQuery
+    // Obtener productos con paginación (ya incluye variantes y categorías por JOIN)
+    const { data: rawProducts, error: productsError, count: totalItems } = await baseQuery
       .range((page - 1) * limit, page * limit - 1)
 
     if (productsError) {
@@ -106,59 +125,41 @@ export async function getProducts(
       return { products: [], totalItems: 0, totalPages: 0 }
     }
 
-    if (!products || products.length === 0) {
+    if (!rawProducts || rawProducts.length === 0) {
       return { products: [], totalItems: 0, totalPages: 0 }
     }
-
-    // Obtener variantes para los productos encontrados
-    const productIds = products.map((p: any) => p.id)
-    const { data: variants, error: variantsError } = await supabase
-      .from('product_variants')
-      .select(`
-        id,
-        product_id,
-        sku,
-        size,
-        color,
-        material,
-        price_adjustment,
-        stock_quantity,
-        low_stock_threshold,
-        is_active
-      `)
-      .in('product_id', productIds)
-      .eq('is_active', true)
-
-    if (variantsError) {
-      console.error('Error fetching variants:', variantsError)
-      return { products: [], totalItems: 0, totalPages: 0 }
-    }
-
-    // Obtener categorías para los productos encontrados
-    const categoryIds = [...new Set(products.map((p: any) => p.category_id).filter(Boolean))]
-    const { data: categories } = await supabase
-      .from('categories')
-      .select('id, name, slug')
-      .in('id', categoryIds)
-
-    const categoriesMap = new Map(categories?.map((cat: any) => [cat.id, cat]) || [])
-    const variantsMap = new Map<string, any[]>()
-    
-    // Agrupar variantes por producto
-    variants?.forEach((variant: any) => {
-      if (!variantsMap.has(variant.product_id)) {
-        variantsMap.set(variant.product_id, [])
-      }
-      variantsMap.get(variant.product_id)!.push(variant)
-    })
 
     const totalPages = Math.ceil((totalItems || 0) / limit)
 
+    // Agrupar productos por ID (ya que el JOIN puede duplicar productos con múltiples variantes)
+    const productsMap = new Map<string, any>()
+    
+    rawProducts.forEach((item: any) => {
+      if (!productsMap.has(item.id)) {
+        productsMap.set(item.id, {
+          ...item,
+          product_variants: [],
+          categories: item.categories
+        })
+      }
+      
+      // Agregar variantes al producto
+      if (item.product_variants && item.product_variants.length > 0) {
+        const existingProduct = productsMap.get(item.id)!
+        item.product_variants.forEach((variant: any) => {
+          // Evitar duplicados de variantes
+          if (!existingProduct.product_variants.find((v: any) => v.id === variant.id)) {
+            existingProduct.product_variants.push(variant)
+          }
+        })
+      }
+    })
+
     // Procesar productos con variantes y stock (optimizado)
-    const processedProducts: ProductWithVariantsAndStock[] = products
+    const processedProducts: ProductWithVariantsAndStock[] = Array.from(productsMap.values())
       .map((product: any) => {
-        const variants = variantsMap.get(product.id) || []
-        const category = categoriesMap.get(product.category_id)
+        const variants = product.product_variants || []
+        const category = product.categories
         
         const variantsWithStock: VariantWithStock[] = variants.map((variant: any) => ({
           ...variant,

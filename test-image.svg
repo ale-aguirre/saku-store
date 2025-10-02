@@ -1,0 +1,10 @@
+<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="400" fill="#d8ceb5"/>
+  <circle cx="200" cy="200" r="100" fill="#ffffff"/>
+  <text x="200" y="210" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" fill="#000000">
+    Test Image
+  </text>
+  <text x="200" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#000000">
+    Supabase Storage
+  </text>
+</svg>

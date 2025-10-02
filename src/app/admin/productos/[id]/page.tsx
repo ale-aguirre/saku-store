@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -68,7 +69,6 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     price: '',
     category: '',
     is_active: true,
-    image_url: '',
     images: [] as string[]
   })
   
@@ -106,14 +106,17 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
       setProduct(productData)
       const product = productData as any
+      // Asegurar que images sea siempre un array
+      const productImages = Array.isArray(product.images) ? product.images : []
+      console.log('🖼️ Imágenes del producto cargadas:', productImages)
+      
       setFormData({
         name: product.name,
         description: product.description,
-        price: (product.price / 100).toString(), // Convert from cents
+        price: (product.base_price / 100).toString(), // Convert from cents
         category: product.category,
         is_active: product.is_active ?? true,
-        image_url: product.image_url || '',
-        images: product.images || (product.image_url ? [product.image_url] : [])
+        images: productImages
       })
 
       // Fetch variants
@@ -252,40 +255,65 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log('🔥 handleSubmit ejecutándose...')
     e.preventDefault()
     
-    if (!user || !product) return
+    console.log('📝 Datos del formulario:', formData)
+    console.log('👤 Usuario:', user?.email)
+    console.log('📦 Producto:', product?.name)
+    
+    if (!user || !product) {
+      console.log('❌ Falta usuario o producto')
+      return
+    }
     if (!formData.name || !formData.description || !formData.price || !formData.category) {
+      console.log('❌ Faltan campos obligatorios')
       alert('Por favor completa todos los campos obligatorios')
       return
     }
 
+    console.log('✅ Iniciando guardado...')
     setIsSubmitting(true)
     
     try {
+      console.log('🔌 Creando cliente Supabase...')
       const supabase = createClient()
+      
+      const updateData = {
+        name: formData.name,
+        description: formData.description,
+        base_price: Math.round(parseFloat(formData.price) * 100), // Convert to cents
+        category: formData.category,
+        is_active: formData.is_active,
+        images: Array.isArray(formData.images) ? formData.images : []
+      }
+      
+      // Asegurar que images sea un array válido y no null/undefined
+      console.log('🖼️ Imágenes a guardar:', updateData.images)
+      
+      console.log('📤 Datos a actualizar:', updateData)
+      console.log('🆔 Product ID:', productId)
       
       // Update product
       const { error: productError } = await (supabase as any)
         .from('products')
-        .update({
-          name: formData.name,
-          description: formData.description,
-          price: Math.round(parseFloat(formData.price) * 100), // Convert to cents
-          category: formData.category,
-          is_active: formData.is_active,
-          image_url: formData.image_url || null,
-          images: formData.images || []
-        })
+        .update(updateData)
         .eq('id', productId)
 
-      if (productError) throw productError
+      if (productError) {
+        console.log('❌ Error de Supabase:', productError)
+        throw productError
+      }
 
-      router.push('/admin/productos')
+      console.log('✅ Producto actualizado exitosamente')
+      toast.success('Producto guardado correctamente')
+      // Refrescar datos del producto en la misma página para reflejar cambios
+      await fetchProduct()
     } catch (error) {
-      console.error('Error updating product:', error)
+      console.error('💥 Error updating product:', error)
       alert('Error al actualizar el producto. Intenta nuevamente.')
     } finally {
+      console.log('🏁 Finalizando guardado...')
       setIsSubmitting(false)
     }
   }
@@ -431,8 +459,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               value={formData.images}
               onChange={(images) => setFormData(prev => ({ 
                 ...prev, 
-                images,
-                image_url: images[0] || '' // Mantener compatibilidad con image_url
+                images
               }))}
               multiple={true}
               maxImages={5}

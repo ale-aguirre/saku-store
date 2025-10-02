@@ -1,5 +1,41 @@
 # Learning Log - Sakú Lencería
 
+## 2025-10-01 23:03 - Error de hostname no configurado en next/image para Supabase
+
+**Issue**: Runtime Error al cargar imágenes de productos desde Supabase Storage, indicando que el hostname "yhddnpcwhmeupwsjkchb.supabase.co" no está configurado en `next.config.js` para el componente `next/image`.
+
+**Cause**: Next.js requiere que todos los dominios externos de imágenes sean explícitamente permitidos en la configuración `images.remotePatterns` para usar el componente optimizado `next/image`. El hostname de Supabase no estaba configurado.
+
+**Fix**: 
+1. Agregada configuración de `images.remotePatterns` en `next.config.ts`
+2. Incluido el hostname específico de Supabase: `yhddnpcwhmeupwsjkchb.supabase.co`
+3. También agregado `via.placeholder.com` para imágenes de prueba
+4. Reinicio del servidor de desarrollo para aplicar cambios
+
+**Prevention**:
+- Configurar todos los dominios de imágenes externas en `next.config.js` antes de usarlos
+- Verificar la configuración de imágenes cuando se integren nuevos servicios de storage
+- Documentar los hostnames permitidos en la configuración del proyecto
+- Probar la carga de imágenes después de cambios en la configuración
+
+## 2025-10-01 20:52 - Error de columna inexistente en actualización de productos
+
+**Issue**: Error `PGRST204` al intentar actualizar productos desde el panel de administración, indicando que la columna `image_url` no existe en la tabla `products` de Supabase.
+
+**Cause**: Inconsistencia entre el esquema de la base de datos y el código de la aplicación. La tabla `products` solo tiene la columna `images` (array) pero el código intentaba actualizar también `image_url` (string) que no existe.
+
+**Fix**: 
+1. Eliminación de todas las referencias a `image_url` en el código de administración
+2. Uso exclusivo de la columna `images` para almacenar las imágenes del producto
+3. Corrección de la inicialización de `formData` para usar solo campos existentes
+4. Actualización de la función `handleSubmit` para usar `base_price` en lugar de `price`
+
+**Prevention**:
+- Verificar el esquema actual de la base de datos antes de hacer cambios en el código
+- Mantener sincronización entre migraciones de DB y código de aplicación
+- Usar scripts de verificación de esquema para detectar inconsistencias
+- Documentar cambios de esquema en `AI_QA_CONTEXT.md` cuando se realicen
+
 ## 2025-10-01 13:20 - Errores ENOENT por archivos faltantes en .next
 
 **Issue**: Errores constantes `ENOENT: no such file or directory, open '.next/routes-manifest.json'` al acceder a páginas de la aplicación, especialmente `/admin/configuracion`.
@@ -130,3 +166,25 @@
 - Verificar que el patrón singleton esté funcionando correctamente en el archivo client.ts
 - Documentar en el README que todos los clientes de Supabase deben usar la función centralizada
 - Revisar periódicamente la consola del navegador para detectar warnings similares
+
+## 2025-10-01 20:34 - Error recurrente de chunks de TanStack Query
+
+**Issue**: Error en tiempo de ejecución "Cannot find module './vendor-chunks/@tanstack.js'" al intentar acceder a páginas de productos, especialmente al visualizar productos específicos como "Lory".
+
+**Cause**: Caché corrupto de Next.js que genera chunks malformados o referencias incorrectas a módulos de TanStack Query. Este problema es recurrente y ha ocurrido múltiples veces en el proyecto, sugiriendo un problema sistémico con la gestión de chunks de dependencias grandes como TanStack Query.
+
+**Fix**: Limpieza completa del entorno de desarrollo:
+1. Detener servidor de desarrollo (`Ctrl+C` o `npm run stop`)
+2. Eliminar caché de Next.js (`rm -rf .next`)
+3. Eliminar node_modules (`rm -rf node_modules`)
+4. Eliminar package-lock.json (`rm -f package-lock.json`)
+5. Reinstalar dependencias (`npm install`)
+6. Reiniciar servidor (`npm run dev`)
+
+**Prevention**:
+- **NUNCA** modificar configuraciones de `splitChunks` en `next.config.ts` sin documentar el motivo
+- Ejecutar limpieza de caché (`rm -rf .next`) cuando aparezcan errores de módulos no encontrados
+- Mantener `next.config.ts` simple y dejar que Next.js maneje automáticamente la división de código
+- Documentar cualquier cambio en configuraciones de Webpack o bundling
+- Crear script automatizado para limpieza completa (`npm run clean:all`)
+- Verificar que el problema se resuelva completamente antes de continuar desarrollo

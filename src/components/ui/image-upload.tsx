@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
-import { Upload, X, Image as ImageIcon } from 'lucide-react'
+import { Upload, X } from 'lucide-react'
 import Image from 'next/image'
+import { uploadImage, deleteImage, getPathFromUrl } from '@/lib/storage'
 
 interface ImageUploadProps {
   value?: string[]
@@ -48,26 +49,39 @@ export function ImageUpload({
           continue
         }
 
-        // Validar tamaño (máximo 5MB)
-        if (file.size > 5 * 1024 * 1024) {
-          console.warn(`Archivo ${file.name} es demasiado grande (máximo 5MB)`)
+        // Validar tamaño (máximo 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+          console.warn(`Archivo ${file.name} es demasiado grande (máximo 10MB)`)
           continue
         }
 
-        // Convertir a base64 para preview (en producción se subiría a un servicio)
-        const base64 = await fileToBase64(file)
-        newImages.push(base64)
+        // Subir imagen a Supabase Storage
+        const result = await uploadImage(file, 'products', 'uploads')
+        
+        if (result.error) {
+          console.error(`Error subiendo ${file.name}:`, result.error)
+          continue
+        }
+
+        newImages.push(result.url)
 
         // Si no es múltiple, solo tomar la primera imagen
         if (!multiple) break
       }
 
+      // Asegurar que value sea siempre un array
+      const currentValue = Array.isArray(value) ? value : [];
+      console.log('🖼️ Imágenes actuales:', currentValue);
+      console.log('🖼️ Nuevas imágenes:', newImages);
+
       if (multiple) {
         // Combinar con imágenes existentes, respetando el límite
-        const combinedImages = [...value, ...newImages].slice(0, maxImages)
+        const combinedImages = [...currentValue, ...newImages].slice(0, maxImages)
+        console.log('🖼️ Imágenes combinadas:', combinedImages);
         onChange(combinedImages)
       } else {
         // Reemplazar imagen existente
+        console.log('🖼️ Reemplazando con:', newImages.slice(0, 1));
         onChange(newImages.slice(0, 1))
       }
     } catch (error) {
@@ -81,7 +95,21 @@ export function ImageUpload({
     }
   }
 
-  const removeImage = (index: number) => {
+  const removeImage = async (index: number) => {
+    const imageUrl = value[index]
+    
+    // Si es una URL de Supabase Storage, eliminar el archivo
+    if (imageUrl && imageUrl.includes('supabase')) {
+      try {
+        const path = getPathFromUrl(imageUrl)
+        if (path) {
+          await deleteImage(path, 'products')
+        }
+      } catch (error) {
+        console.error('Error eliminando imagen:', error)
+      }
+    }
+    
     const newImages = value.filter((_, i) => i !== index)
     onChange(newImages)
   }
@@ -138,7 +166,7 @@ export function ImageUpload({
 
       {/* Preview de imágenes */}
       {value.length > 0 && (
-        <div className="space-y-3">
+        <div className="space-y-3" data-testid="uploaded-images">
           <Label className="text-sm font-medium">
             Imágenes seleccionadas ({value.length})
           </Label>
@@ -147,27 +175,35 @@ export function ImageUpload({
               <Card key={index} className="relative group">
                 <CardContent className="p-2">
                   <div className="relative aspect-square rounded-md overflow-hidden bg-muted">
-                    {image.startsWith('data:') ? (
-                      <Image
-                        src={image}
-                        alt={`Imagen ${index + 1}`}
-                        fill
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full">
-                        <ImageIcon className="h-8 w-8 text-muted-foreground" />
-                        <span className="sr-only">URL: {image}</span>
-                      </div>
-                    )}
+                    <Image
+                      src={image}
+                      alt={`Imagen ${index + 1}`}
+                      fill
+                      className="object-cover"
+                      onError={(e) => {
+                        // Si la imagen falla al cargar, mostrar placeholder
+                        const target = e.target as HTMLImageElement
+                        target.style.display = 'none'
+                        const parent = target.parentElement
+                        if (parent) {
+                          parent.innerHTML = `
+                            <div class="flex items-center justify-center h-full">
+                              <svg class="h-8 w-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                              </svg>
+                            </div>
+                          `
+                        }
+                      }}
+                    />
                     
                     {/* Botón de eliminar */}
                     <Button
                       type="button"
                       variant="destructive"
                       size="sm"
+                      className="absolute top-2 right-2 h-6 w-6 p-0"
                       onClick={() => removeImage(index)}
-                      className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       <X className="h-3 w-3" />
                     </Button>
@@ -189,14 +225,4 @@ export function ImageUpload({
       )}
     </div>
   )
-}
-
-// Función auxiliar para convertir archivo a base64
-function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = () => resolve(reader.result as string)
-    reader.onerror = error => reject(error)
-  })
 }
