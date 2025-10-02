@@ -44,13 +44,14 @@ interface Coupon {
   code: string
   type: 'percentage' | 'fixed'
   value: number
-  min_order_amount: number | null
-  max_uses: number | null
-  used_count: number
-  valid_from: string
+  minimum_amount: number | null
+  usage_limit: number | null
+  used_count: number | null
+  valid_from: string | null
   valid_until: string | null
-  is_active: boolean
-  created_at: string
+  is_active: boolean | null
+  created_at: string | null
+  updated_at: string | null
 }
 
 export default function CouponsPage() {
@@ -64,8 +65,8 @@ export default function CouponsPage() {
     code: '',
     type: 'percentage' as 'percentage' | 'fixed',
     value: '',
-    min_order_amount: '',
-    max_uses: '',
+    minimum_amount: '',
+    usage_limit: '',
     valid_from: '',
     valid_until: '',
     is_active: true
@@ -106,8 +107,8 @@ export default function CouponsPage() {
         code: formData.code.toUpperCase(),
         type: formData.type,
         value: parseInt(formData.value) * (formData.type === 'percentage' ? 1 : 100), // Store cents for fixed amounts
-        min_order_amount: formData.min_order_amount ? parseInt(formData.min_order_amount) * 100 : null,
-        max_uses: formData.max_uses ? parseInt(formData.max_uses) : null,
+        minimum_amount: formData.minimum_amount ? parseInt(formData.minimum_amount) * 100 : null,
+      usage_limit: formData.usage_limit ? parseInt(formData.usage_limit) : null,
         valid_from: formData.valid_from,
         valid_until: formData.valid_until || null,
         is_active: formData.is_active
@@ -143,11 +144,11 @@ export default function CouponsPage() {
       code: coupon.code,
       type: coupon.type,
       value: coupon.type === 'percentage' ? coupon.value.toString() : (coupon.value / 100).toString(),
-      min_order_amount: coupon.min_order_amount ? (coupon.min_order_amount / 100).toString() : '',
-      max_uses: coupon.max_uses?.toString() || '',
-      valid_from: coupon.valid_from.split('T')[0],
+      minimum_amount: coupon.minimum_amount ? (coupon.minimum_amount / 100).toString() : '',
+      usage_limit: coupon.usage_limit?.toString() || '',
+      valid_from: coupon.valid_from ? coupon.valid_from.split('T')[0] : '',
       valid_until: coupon.valid_until ? coupon.valid_until.split('T')[0] : '',
-      is_active: coupon.is_active
+      is_active: coupon.is_active ?? false
     })
     setIsDialogOpen(true)
   }
@@ -195,8 +196,8 @@ export default function CouponsPage() {
       code: '',
       type: 'percentage',
       value: '',
-      min_order_amount: '',
-      max_uses: '',
+      minimum_amount: '',
+      usage_limit: '',
       valid_from: '',
       valid_until: '',
       is_active: true
@@ -214,8 +215,8 @@ export default function CouponsPage() {
   }
 
   const isMaxUsesReached = (coupon: Coupon) => {
-    if (!coupon.max_uses) return false
-    return coupon.used_count >= coupon.max_uses
+    if (!coupon.usage_limit) return false
+    return (coupon.used_count || 0) >= coupon.usage_limit
   }
 
   if (authLoading || loading) {
@@ -303,23 +304,23 @@ export default function CouponsPage() {
               </div>
 
               <div>
-                <Label htmlFor="min_order_amount">Monto Mínimo de Orden ($)</Label>
+                <Label htmlFor="minimum_amount">Monto Mínimo de Orden ($)</Label>
                 <Input
-                  id="min_order_amount"
+                  id="minimum_amount"
                   type="number"
-                  value={formData.min_order_amount}
-                  onChange={(e) => setFormData(prev => ({ ...prev, min_order_amount: e.target.value }))}
+                  value={formData.minimum_amount}
+                  onChange={(e) => setFormData(prev => ({ ...prev, minimum_amount: e.target.value }))}
                   placeholder="1000"
                 />
               </div>
 
               <div>
-                <Label htmlFor="max_uses">Máximo de Usos</Label>
+                <Label htmlFor="usage_limit">Máximo de Usos</Label>
                 <Input
-                  id="max_uses"
+                  id="usage_limit"
                   type="number"
-                  value={formData.max_uses}
-                  onChange={(e) => setFormData(prev => ({ ...prev, max_uses: e.target.value }))}
+                  value={formData.usage_limit}
+                  onChange={(e) => setFormData(prev => ({ ...prev, usage_limit: e.target.value }))}
                   placeholder="100"
                 />
               </div>
@@ -424,12 +425,12 @@ export default function CouponsPage() {
                     }
                   </TableCell>
                   <TableCell>
-                    {coupon.used_count}
-                    {coupon.max_uses && ` / ${coupon.max_uses}`}
+                    {coupon.used_count || 0}
+                        {coupon.usage_limit && ` / ${coupon.usage_limit}`}
                   </TableCell>
                   <TableCell>
                     <div className="text-sm">
-                      <div>Desde: {new Date(coupon.valid_from).toLocaleDateString('es-AR')}</div>
+                      <div>Desde: {coupon.valid_from ? new Date(coupon.valid_from).toLocaleDateString('es-AR') : '-'}</div>
                       {coupon.valid_until && (
                         <div>Hasta: {new Date(coupon.valid_until).toLocaleDateString('es-AR')}</div>
                       )}

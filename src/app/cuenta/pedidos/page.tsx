@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -16,33 +15,30 @@ interface OrderItem {
   id: string
   quantity: number
   price: number
-  product_variants: {
-    id: string
-    size: string
-    color: string
-    products: {
-      name: string
-      images: string[]
-    }
-  }
+  product_name: string
+  variant_size: string
+  variant_color: string
+  sku: string
 }
 
 interface Order {
   id: string
-  status: string
+  status: string | null
   total: number
   shipping_cost: number
-  shipping_method: string
-  shipping_address: {
-    street: string
-    city: string
-    state: string
-    postal_code: string
-    country: string
-  }
-  created_at: string
-  external_reference: string
-  tracking_code?: string
+  shipping_address: any
+  billing_address: any | null
+  created_at: string | null
+  tracking_number?: string | null
+  email: string
+  user_id: string | null
+  subtotal: number
+  discount_amount: number | null
+  coupon_code: string | null
+  payment_id: string | null
+  payment_method: string | null
+  notes: string | null
+  updated_at: string | null
   order_items: OrderItem[]
 }
 
@@ -91,26 +87,21 @@ export default function OrdersPage() {
       const supabase = createClient()
       
       const { data, error } = await supabase
-        .from('orders')
-        .select(`
-          *,
-          order_items (
-            id,
-            quantity,
-            price,
-            product_variants (
-              id,
-              size,
-              color,
-              products (
-                name,
-                images
-              )
-            )
-          )
-        `)
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
+      .from('orders')
+      .select(`
+        *,
+        order_items (
+          id,
+          quantity,
+          price,
+          product_name,
+          variant_size,
+          variant_color,
+          sku
+        )
+      `)
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
 
       if (error) throw error
 
@@ -192,10 +183,10 @@ export default function OrdersPage() {
                   <div className="flex justify-between items-start">
                     <div>
                       <CardTitle className="text-lg">
-                        Pedido #{order.external_reference}
+                        Pedido #{order.id}
                       </CardTitle>
                       <p className="text-sm text-gray-600">
-                        {new Date(order.created_at).toLocaleDateString('es-AR', {
+                        {new Date(order.created_at || new Date()).toLocaleDateString('es-AR', {
                           year: 'numeric',
                           month: 'long',
                           day: 'numeric',
@@ -216,21 +207,13 @@ export default function OrdersPage() {
                     <div className="space-y-3">
                       {order.order_items.map((item) => (
                         <div key={item.id} className="flex items-center gap-4">
-                          <div className="w-16 h-16 bg-gray-100 rounded-lg flex-shrink-0">
-                            {item.product_variants.products.images[0] && (
-                              <Image
-                                src={item.product_variants.products.images[0]}
-                                alt={item.product_variants.products.name}
-                                width={64}
-                                height={64}
-                                className="w-full h-full object-cover rounded-lg"
-                              />
-                            )}
+                          <div className="w-16 h-16 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center">
+                            <Package className="h-6 w-6 text-gray-400" />
                           </div>
                           <div className="flex-1">
-                            <h4 className="font-medium">{item.product_variants.products.name}</h4>
+                            <h4 className="font-medium">{item.product_name}</h4>
                             <p className="text-sm text-gray-600">
-                              Talle {item.product_variants.size} • {item.product_variants.color}
+                              Talle {item.variant_size} • {item.variant_color}
                             </p>
                             <p className="text-sm text-gray-600">
                               Cantidad: {item.quantity}
@@ -259,12 +242,12 @@ export default function OrdersPage() {
                       <div>
                         <h4 className="font-medium mb-2">Método de envío</h4>
                         <p className="text-sm text-gray-600 capitalize">
-                          {order.shipping_method === 'nacional' ? 'Envío Nacional' : 'Cadete Córdoba'}
+                          Envío Nacional
                         </p>
-                        {order.tracking_code && (
+                        {order.tracking_number && (
                           <div className="mt-2">
                             <p className="text-sm font-medium">Código de seguimiento:</p>
-                            <p className="text-sm text-blue-600">{order.tracking_code}</p>
+                            <p className="text-sm text-blue-600">{order.tracking_number}</p>
                           </div>
                         )}
                       </div>

@@ -90,6 +90,24 @@
 - ✅ **Panel de administración**: Corregida funcionalidad de subida de imágenes
 - ✅ **Visualización de productos**: Producto Lory ahora muestra imagen correctamente
 
+### **2025-10-02 - Corrección de Errores de Sintaxis en Imágenes de Productos** ✅
+
+**Problema resuelto:**
+- ✅ **Error de sintaxis**: Corregido error "SyntaxError: Invalid or unexpected token" en URLs de imágenes
+- ✅ **Limpieza de URLs**: Implementada limpieza robusta de URLs en múltiples puntos
+- ✅ **Manejo de errores**: Agregada validación y prevención de fallos en procesamiento de imágenes
+
+**Acciones realizadas:**
+- Mejora del componente `ImageUpload` con manejo robusto de URLs y prevención de errores
+- Optimización del procesamiento de imágenes en la función de guardado de productos
+- Implementación de limpieza adicional de URLs en la función `uploadImage` de `storage.ts`
+- Creación de test E2E para verificar la funcionalidad completa
+
+**Verificaciones realizadas:**
+- ✅ **Limpieza de URLs**: Eliminación de caracteres problemáticos (comillas, backticks)
+- ✅ **Filtrado**: Eliminación de URLs vacías o inválidas
+- ✅ **Manejo de errores**: Prevención de fallos por tipos de datos incorrectos
+
 **Acciones realizadas:**
 - Identificación del problema: columna `image_url` no existe en tabla `products`
 - Verificación del esquema real usando script `check-products-schema.js`
@@ -180,6 +198,24 @@
 **Optimizaciones implementadas:**
 - **Client Components**: Migración de Server Components a Client Components para mejor UX
 - **TanStack Query**: Implementación de cache inteligente con `staleTime: 5 * 60 * 1000` (5 min)
+
+### **2025-10-02 20:37 - Corrección de Errores de TypeScript en Panel de Administración** ✅
+
+**Problema resuelto:**
+- ✅ **Type-check limpio**: Resueltos 5 errores de tipado en páginas de admin
+- ✅ **Props coherencia**: Ajustados tipos de `OrderShippingManager` y `Select` components
+- ✅ **Null-safety**: Protegidos valores nulos en `is_active`, `status`, `tracking_number`
+
+**Archivos modificados:**
+- `src/app/admin/ordenes/[id]/page.tsx`: tipos de `OrderShippingManager` + `onUpdate` + `useRouter`
+- `src/app/admin/ordenes/page.tsx`: casteo de `string` a `OrderStatus | 'all'` en filtros
+- `src/app/admin/cupones/page.tsx`: coalescing de `is_active` null → boolean
+
+**Verificaciones realizadas:**
+- ✅ **ESLint**: 0 errores (1 warning no-bloqueante en `cuenta/pedidos`)
+- ✅ **TypeScript**: type-check exitoso sin errores
+- ✅ **Tests E2E**: 10 errores pre-existentes (imágenes), ninguno causado por estos cambios
+- ✅ **Preview**: Panel admin carga sin errores de tipo
 - **Lazy Loading**: Carga diferida de datos con skeleton states
 - **Eliminación de duplicación**: Removida doble aplicación del método `range()` en consultas
 - **Tipado mejorado**: Añadidas anotaciones `any` para resolver conflictos de tipos

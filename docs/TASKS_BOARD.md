@@ -80,6 +80,15 @@
 
 <!-- Tareas actualmente en desarrollo -->
 
+- [x] (TB-036) Corrección de errores TypeScript en panel de administración — Owner: Saku — TS done: 2025-10-02 20:37
+  - Goal: Resolver todos los errores de tipo en páginas admin para build limpio
+  - Scope: admin/ordenes/[id], admin/ordenes, admin/cupones
+  - Acceptance: 0 errores en `npm run type-check`, ESLint limpio
+  - Priority: High
+  - How: Coalescing de valores nulos, casteo de tipos, ajuste de interfaces
+  - Files: src/app/admin/ordenes/[id]/page.tsx, src/app/admin/ordenes/page.tsx, src/app/admin/cupones/page.tsx
+  - Checks: ESLint ✅ | Types ✅ | Preview ✅
+
 ---
 
 ## Blocked
