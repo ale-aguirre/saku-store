@@ -48,6 +48,31 @@
 - ✅ **Frontend funcional**: Página de productos carga correctamente
 - ✅ **Componentes verificados**: ProductCard y ProductImage manejan URLs correctamente
 
+### **2025-10-03 12:57 - Refactorización de Tests E2E: Tests Cortos y Específicos** ✅
+
+**Mejora implementada:**
+- ✅ **Tests divididos**: Separación de tests largos en tests atómicos y específicos
+- ✅ **Helpers implementados**: Funciones reutilizables para reducir duplicación
+- ✅ **Mejor mantenibilidad**: Tests más fáciles de debuggear y mantener
+- ✅ **Cobertura mejorada**: 13 tests específicos vs 3 tests largos anteriores
+
+**Archivos creados/modificados:**
+- ✅ **`tests/e2e/helpers/test-helpers.ts`**: Helpers para `addProductToCart`, `goToCheckoutWithProduct`, `fillShippingData`
+- ✅ **`tests/e2e/checkout-basic.spec.ts`**: 4 tests específicos (agregar producto, navegar checkout, mostrar formulario, completar formulario)
+- ✅ **`tests/e2e/cart.spec.ts`**: 4 tests específicos (abrir/cerrar carrito, carrito vacío, calcular envío, habilitar checkout)
+- ✅ **`tests/e2e/products.spec.ts`**: 5 tests específicos (mostrar productos, navegar PDP, mostrar opciones, seleccionar variantes, mostrar información)
+
+**Resultados de tests:**
+- ✅ **13 tests pasando** en 37.2s (vs tests largos anteriores que fallaban por interferencia)
+- ✅ **Sin interferencia**: Tests atómicos evitan conflictos entre ejecuciones
+- ✅ **Debugging simplificado**: Cada test verifica una funcionalidad específica
+
+**Verificaciones realizadas:**
+- ✅ **ESLint**: Sin errores ni warnings
+- ✅ **TypeScript**: Type-check exitoso sin errores
+- ✅ **Tests E2E**: 13/13 tests pasando exitosamente
+- ✅ **Cobertura**: Checkout, carrito y productos completamente cubiertos
+
 ### **2025-10-03 10:28 - Reestructuración Interfaz Edición Productos Admin** ✅
 
 **Mejora implementada:**

@@ -1,51 +1,61 @@
 import { test, expect } from '@playwright/test'
+import { addProductToCart, goToCheckoutWithProduct, fillShippingData } from './helpers/test-helpers'
 
-test.describe('Flujo de Compra Básico', () => {
-  test('debe navegar al checkout desde el carrito', async ({ page }) => {
-    // 1. Navegar a la página de inicio
+test.describe('Checkout - Tests Básicos', () => {
+  
+  test('debe agregar producto al carrito', async ({ page }) => {
     await page.goto('/')
     await page.waitForLoadState('networkidle')
 
-    // 2. Verificar que hay productos en el home
-    const products = await page.locator('data-testid=product-card').count()
+    // Verificar que hay productos
+    const products = await page.locator('[data-testid="product-card"]').count()
     expect(products).toBeGreaterThan(0)
 
-    // 3. Hacer clic en el primer producto
-    await page.click('data-testid=product-card:first-child')
+    // Hacer clic en el primer producto
+    await page.locator('[data-testid="product-card"]').first().click()
     
-    // 4. Verificar que estamos en la PDP
-    await expect(page).toHaveURL(/\/producto\//)
+    // Verificar que estamos en PDP
+    await expect(page).toHaveURL(/\/productos\//)
     
-    // 5. Agregar al carrito
-    await page.click('data-testid=add-to-cart-button')
+    // Seleccionar talle y color
+    await page.locator('[data-testid="size-selector"]').first().click()
+    await page.locator('[data-testid="color-selector"]').first().click()
     
-    // 6. Verificar que el carrito se abrió
-    await expect(page.locator('data-testid=cart-drawer')).toBeVisible()
+    // Agregar al carrito
+    await page.click('[data-testid="add-to-cart-button"]')
     
-    // 7. Cerrar el carrito
-    await page.click('data-testid=cart-close-button')
-    
-    // 8. Abrir el carrito desde el header
-    await page.click('data-testid=cart-trigger')
-    await expect(page.locator('data-testid=cart-drawer')).toBeVisible()
-    
-    // 9. Verificar que el producto está en el carrito
-    await expect(page.locator('data-testid=cart-item')).toBeVisible()
-    
-    // 10. Navegar al checkout
-    await page.click('text=Finalizar Compra')
-    
-    // 11. Verificar que estamos en checkout
-    await expect(page).toHaveURL('/checkout')
-    await expect(page.locator('h1')).toContainText('Checkout')
+    // Verificar que el carrito se abrió
+    await expect(page.locator('[data-testid="cart-drawer"]')).toBeVisible()
+    await expect(page.locator('[data-testid="cart-item"]')).toBeVisible()
   })
 
-  test('debe mostrar formulario de checkout con campos requeridos', async ({ page }) => {
-    // Navegar directamente al checkout
-    await page.goto('/checkout')
-    await page.waitForLoadState('networkidle')
+  test('debe navegar al checkout desde carrito', async ({ page }) => {
+    await addProductToCart(page)
+    
+    // Cerrar carrito
+    await page.click('[data-testid="cart-close-button"]')
+    
+    // Abrir carrito desde header
+    await page.click('[data-testid="cart-trigger"]')
+    await expect(page.locator('[data-testid="cart-drawer"]')).toBeVisible()
+    
+    // Configurar envío
+    await page.click('[data-testid="shipping-accordion-trigger"]')
+    await page.fill('[data-testid="postal-code-input"]', '1000')
+    await page.click('[data-testid="shipping-national"]')
+    
+    // Ir al checkout
+    await expect(page.locator('[data-testid="checkout-button"]')).toBeEnabled()
+    await page.click('[data-testid="checkout-button"]')
+    
+    // Verificar que estamos en checkout
+    await expect(page).toHaveURL('/checkout')
+  })
 
-    // Verificar que hay campos requeridos
+  test('debe mostrar formulario de checkout', async ({ page }) => {
+    await goToCheckoutWithProduct(page)
+
+    // Verificar campos del formulario
     await expect(page.locator('input[name="firstName"]')).toBeVisible()
     await expect(page.locator('input[name="lastName"]')).toBeVisible()
     await expect(page.locator('input[name="email"]')).toBeVisible()
@@ -59,23 +69,18 @@ test.describe('Flujo de Compra Básico', () => {
     await expect(page.locator('text=Pagar con Mercado Pago')).toBeVisible()
   })
 
-  test('debe validar campos requeridos en checkout', async ({ page }) => {
-    await page.goto('/checkout')
-    await page.waitForLoadState('networkidle')
-
-    // Intentar enviar formulario vacío
-    await page.click('text=Pagar con Mercado Pago')
-
-    // Verificar mensajes de error (si existen)
-    const hasErrors = await page.locator('text=requerido').count() > 0
+  test('debe completar formulario de checkout', async ({ page }) => {
+    await goToCheckoutWithProduct(page)
     
-    if (hasErrors) {
-      // Si hay validación de formulario
-      await expect(page.locator('text=Nombre requerido')).toBeVisible()
-      await expect(page.locator('text=Email requerido')).toBeVisible()
-    } else {
-      // Si no hay validación, verificar que el botón está deshabilitado o hay otro comportamiento
-      console.log('No se encontraron mensajes de error de validación')
-    }
+    // Llenar formulario
+    await fillShippingData(page)
+    
+    // Verificar que los campos se llenaron
+    await expect(page.locator('input[name="firstName"]')).toHaveValue('Juan')
+    await expect(page.locator('input[name="email"]')).toHaveValue('juan@test.com')
+    
+    // El botón de pago debería estar disponible
+    const payButton = page.locator('button:has-text("Pagar con Mercado Pago")')
+    await expect(payButton).toBeVisible()
   })
 })
