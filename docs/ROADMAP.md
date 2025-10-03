@@ -20,6 +20,39 @@
 
 ## **REGISTRO DE CAMBIOS RECIENTES**
 
+### **2025-10-03 18:49 - Mejoras de UX y Loading: Sistema de Carga Unificado** ✅
+
+**Mejora implementada:**
+- ✅ **LoadingSpinner reutilizable**: Componente unificado con diferentes tamaños (sm, md, lg) y texto opcional
+- ✅ **Mejora de autenticación**: Optimización del hook `useAuth` con mejor gestión de estados de carga
+- ✅ **Cache optimizado**: Incremento de `staleTime` a 5 minutos y `gcTime` a 10 minutos en QueryClient
+- ✅ **Loading global**: Componente `GlobalLoading` para transiciones de página
+- ✅ **UX mejorada**: Reemplazo de skeletons complejos por spinners más intuitivos
+
+**Acciones realizadas:**
+- Creación de `src/components/ui/loading-spinner.tsx` con variantes especializadas:
+  - `InlineLoadingSpinner` para elementos inline
+  - `SectionLoadingSpinner` para secciones
+  - `PageLoadingSpinner` para páginas completas
+- Optimización de `src/components/providers/query-provider.tsx`:
+  - `staleTime`: 5 minutos, `gcTime`: 10 minutos
+  - `retry`: 2 con backoff exponencial
+  - Configuración de refetch optimizada
+- Mejora de `src/hooks/use-auth.tsx`:
+  - Flag `initializationComplete` para evitar cambios prematuros de estado
+  - Mejor manejo de carga de perfil de usuario
+  - Procesamiento de eventos `onAuthStateChange` solo después de setup inicial
+- Actualización de `src/hooks/use-products.ts` con configuración de cache mejorada
+- Integración de `GlobalLoading` en `src/app/layout.tsx`
+- Simplificación de skeletons usando `LoadingSpinner`
+
+**Verificaciones realizadas:**
+- ✅ **ESLint**: Sin errores ni warnings
+- ✅ **TypeScript**: Type-check exitoso sin errores
+- ✅ **Preview funcional**: Aplicación carga correctamente con mejores indicadores visuales
+- ✅ **Autenticación**: Estados de loading más claros y consistentes
+- ✅ **Performance**: Reducción de re-renders innecesarios con cache optimizado
+
 ### **2025-10-01 21:53 - Implementación de Supabase Storage para Imágenes** ✅
 
 **Mejora implementada:**

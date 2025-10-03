@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useAuth } from '@/hooks/use-auth'
 import { AuthModal } from './auth-modal'
 import { User, LogOut, Settings, Package, Shield } from 'lucide-react'
+import { InlineLoadingSpinner } from '@/components/ui/loading-spinner'
 import Link from 'next/link'
 
 export function UserButton() {
@@ -23,7 +24,7 @@ export function UserButton() {
   if (loading) {
     return (
       <Button variant="ghost" size="sm" disabled>
-        <User className="h-4 w-4" />
+        <InlineLoadingSpinner size="sm" />
       </Button>
     )
   }

@@ -50,11 +50,14 @@
   - Files: docs/CHANGELOG.md
   - Checks: Documentación ✅
 
-- [ ] (TB-026) Verificar y mejorar botón de cambio de tema en admin — Owner: Saku — TS: 2025-09-30 20:39
+- [x] (TB-026) Verificar y mejorar botón de cambio de tema en admin — Owner: Saku — TS done: 2025-10-03 17:35
   - Goal: Asegurar que el ThemeToggle esté visible y funcional en el panel admin
   - Scope: AdminHeader, verificar posicionamiento y funcionalidad del botón de tema
   - Acceptance: Botón de cambio de tema visible y funcional en todas las páginas admin
   - Priority: Medium
+  - How: Verificado funcionamiento correcto del botón de tema en AdminHeader
+  - Files: src/components/admin/layout/AdminHeader.tsx
+  - Checks: ESLint ✅ | Types ✅ | Preview ✅
 
 - [x] (TB-016) Implementar página de edición de producto /admin/productos/[id] — Owner: Saku — TS done: 2025-10-01 18:44
   - Goal: Crear página funcional para editar productos existentes
@@ -92,12 +95,27 @@
 
 ## Backlog (tareas pendientes)
 
-### Tema claro/oscuro - Prioridad Media
-- [ ] (TB-017) Corregir AdminSidebar - revisar clases hardcodeadas restantes — Owner: Saku — TS: 2025-01-27 17:15
-- [ ] (TB-018) Corregir cards del dashboard admin - reemplazar text-gray-*, bg-gray-* por clases de tema — Owner: Saku — TS: 2025-01-27 17:15
-- [ ] (TB-019) Corregir layout de admin - reemplazar bg-white, text-gray-* por clases de tema — Owner: Saku — TS: 2025-01-27 17:15
-- [ ] (TB-020) Corregir página de productos admin - reemplazar text-gray-* por clases de tema — Owner: Saku — TS: 2025-01-27 17:15
-- [ ] (TB-021) Corregir página de órdenes admin - reemplazar text-gray-* por clases de tema — Owner: Saku — TS: 2025-01-27 17:15
+### Tema claro/oscuro - Prioridad Media - COMPLETADO
+- [x] (TB-017) Corregir AdminSidebar - revisar clases hardcodeadas restantes — Owner: Saku — TS done: 2025-10-03 17:35
+  - How: Clases hardcodeadas corregidas en implementación de sidebar fijo
+  - Files: src/app/admin/layout.tsx
+  - Checks: ESLint ✅ | Types ✅ | Preview ✅
+- [x] (TB-018) Corregir cards del dashboard admin - reemplazar text-gray-*, bg-gray-* por clases de tema — Owner: Saku — TS done: 2025-10-03 17:35
+  - How: Cards del dashboard actualizadas con clases de tema dinámico
+  - Files: src/app/admin/page.tsx
+  - Checks: ESLint ✅ | Types ✅ | Preview ✅
+- [x] (TB-019) Corregir layout de admin - reemplazar bg-white, text-gray-* por clases de tema — Owner: Saku — TS done: 2025-10-03 17:35
+  - How: Layout admin actualizado con clases de tema dinámico
+  - Files: src/app/admin/layout.tsx
+  - Checks: ESLint ✅ | Types ✅ | Preview ✅
+- [x] (TB-020) Corregir página de productos admin - reemplazar text-gray-* por clases de tema — Owner: Saku — TS done: 2025-10-03 17:35
+  - How: Página de productos actualizada con clases de tema dinámico
+  - Files: src/app/admin/productos/page.tsx
+  - Checks: ESLint ✅ | Types ✅ | Preview ✅
+- [x] (TB-021) Corregir página de órdenes admin - reemplazar text-gray-* por clases de tema — Owner: Saku — TS done: 2025-10-03 17:35
+  - How: Página de órdenes actualizada con clases de tema dinámico
+  - Files: src/app/admin/ordenes/page.tsx
+  - Checks: ESLint ✅ | Types ✅ | Preview ✅
 - [ ] (TB-022) Corregir página de cupones admin - reemplazar text-gray-* por clases de tema — Owner: Saku — TS: 2025-01-27 17:15
 
 ### Mejoras UI/UX - Prioridad Baja

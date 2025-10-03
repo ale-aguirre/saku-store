@@ -10,6 +10,7 @@ import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { MetaPixel } from "@/components/analytics/meta-pixel";
 import { ConditionalLayout } from "@/components/layout/conditional-layout";
 import { Toaster } from "@/components/ui/sonner";
+import { GlobalLoading } from "@/components/ui/global-loading";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -49,6 +50,7 @@ export default function RootLayout({
           <QueryProvider>
             <AuthProvider>
               <ConsentProvider>
+                <GlobalLoading />
                 <ConditionalLayout>{children}</ConditionalLayout>
                 <CookieBanner />
                 <GoogleAnalytics />

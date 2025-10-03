@@ -58,6 +58,10 @@ export function useProducts({
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
+    refetchOnWindowFocus: false,
+    refetchOnMount: false, // No refetch si hay datos en caché
+    retry: 2,
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
   })
 }
 
@@ -114,6 +118,12 @@ export function useProduct(id: string) {
       return data as Product
     },
     enabled: !!id,
+    staleTime: 10 * 60 * 1000, // 10 minutes para productos individuales
+    gcTime: 15 * 60 * 1000, // 15 minutes
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 2,
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
   })
 }
 

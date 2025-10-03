@@ -63,43 +63,84 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [supabase])
 
   useEffect(() => {
-    // Get initial session
-    const getInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setSession(session)
-      setUser(session?.user ?? null)
-      
-      if (session?.user) {
-        const userProfile = await fetchUserProfile(session.user.id)
-        setProfile(userProfile)
-      } else {
-        setProfile(null)
+    let mounted = true
+    let initializationComplete = false
+
+    const initializeAuth = async () => {
+      try {
+        // Verificar si hay una sesión almacenada
+        const { data: { session }, error } = await supabase.auth.getSession()
+        
+        if (error) {
+          console.error('Error getting session:', error)
+        }
+        
+        if (mounted) {
+          setSession(session)
+          setUser(session?.user ?? null)
+          
+          if (session?.user) {
+            // Cargar perfil de usuario de forma paralela
+            const userProfile = await fetchUserProfile(session.user.id)
+            if (mounted) {
+              setProfile(userProfile)
+            }
+          } else {
+            setProfile(null)
+          }
+          
+          // Marcar inicialización como completa
+          initializationComplete = true
+          setLoading(false)
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error)
+        if (mounted) {
+          initializationComplete = true
+          setLoading(false)
+        }
       }
-      
-      setLoading(false)
     }
 
-    getInitialSession()
+    // Inicializar inmediatamente
+    initializeAuth()
 
-    // Listen for auth changes
+    // Configurar listener para cambios de estado
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        if (!mounted) return
+
+        console.log('Auth state changed:', event, session?.user?.email)
+
+        // Solo procesar eventos después de la inicialización
+        if (event === 'INITIAL_SESSION' && !initializationComplete) {
+          return
+        }
+
         setSession(session)
         setUser(session?.user ?? null)
-        
+
         if (session?.user) {
-          // Fetch user profile
+          // Cargar perfil de forma asíncrona
           const userProfile = await fetchUserProfile(session.user.id)
-          setProfile(userProfile)
+          if (mounted) {
+            setProfile(userProfile)
+          }
         } else {
           setProfile(null)
         }
-        
-        setLoading(false)
+
+        // Solo cambiar loading si la inicialización ya se completó
+        if (initializationComplete) {
+          setLoading(false)
+        }
       }
     )
 
-    return () => subscription.unsubscribe()
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
+    }
   }, [supabase.auth, fetchUserProfile])
 
   const signUp = async (email: string, password: string, userData?: any) => {

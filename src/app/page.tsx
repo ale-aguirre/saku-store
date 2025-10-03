@@ -6,6 +6,7 @@ import { ArrowRight, Truck, Shield, Heart } from 'lucide-react'
 import { ProductCard } from '@/components/product/product-card'
 import { getFeaturedProducts } from '@/lib/supabase/products'
 import { Suspense } from 'react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 
 const features = [
   {
@@ -51,17 +52,8 @@ async function FeaturedProducts() {
 // Componente de carga para productos destacados
 function FeaturedProductsSkeleton() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-      {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="rounded-lg bg-muted animate-pulse">
-          <div className="aspect-square w-full bg-muted-foreground/10"></div>
-          <div className="p-4 space-y-3">
-            <div className="h-4 bg-muted-foreground/10 rounded w-3/4"></div>
-            <div className="h-4 bg-muted-foreground/10 rounded w-1/2"></div>
-            <div className="h-4 bg-muted-foreground/10 rounded w-1/4"></div>
-          </div>
-        </div>
-      ))}
+    <div className="flex justify-center items-center py-12">
+      <LoadingSpinner size="lg" text="Cargando productos destacados..." />
     </div>
   )
 }

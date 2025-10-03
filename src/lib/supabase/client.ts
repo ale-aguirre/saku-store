@@ -27,7 +27,15 @@ export const createClient = () => {
     auth: {
       autoRefreshToken: true,
       persistSession: true,
-      detectSessionInUrl: true
+      detectSessionInUrl: true,
+      storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+      storageKey: 'saku-auth-token',
+      flowType: 'pkce'
+    },
+    global: {
+      headers: {
+        'x-client-info': 'saku-store@1.0.0'
+      }
     }
   })
 
