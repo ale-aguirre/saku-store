@@ -15,20 +15,22 @@ export interface OrderEmailData {
   trackingCode?: string
   order: {
     id: string
-    order_number: string
-    user_id: string
-    status: 'pending' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded'
-    payment_status: 'pending' | 'paid' | 'failed' | 'refunded' | 'partially_refunded'
-    created_at: string
+    user_id: string | null
+    status: 'pending' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded' | null
+    created_at: string | null
     subtotal: number
-    discount_amount: number
-    shipping_amount: number
-    tax_amount: number
-    total_amount: number
+    discount_amount: number | null
+    shipping_cost: number
+    total: number
     shipping_address: any
-    billing_address: any
+    billing_address: any | null
     tracking_number?: string | null
-    tracking_url?: string | null
+    email: string
+    coupon_code?: string | null
+    payment_id?: string | null
+    payment_method?: string | null
+    notes?: string | null
+    updated_at?: string | null
   }
   customerEmail: string
   items: Array<{
@@ -617,24 +619,26 @@ export const sendOrderConfirmationEmail = async (data: OrderEmailData) => {
     cancelled: 'status-pending',
     refunded: 'status-pending'
   }
+
+  const currentStatus = order.status || 'pending'
   
   const content = `
     <h1>¡Gracias por tu compra!</h1>
-    <p>${statusMessages[order.status]}. Te enviaremos actualizaciones sobre el estado de tu pedido.</p>
+    <p>${statusMessages[currentStatus]}. Te enviaremos actualizaciones sobre el estado de tu pedido.</p>
     
     <div class="order-summary">
       <h3>Resumen del pedido</h3>
       <div class="order-info">
         <span><strong>Número de pedido:</strong></span>
-        <span>#${order.order_number}</span>
+        <span>#${order.id}</span>
       </div>
       <div class="order-info">
         <span><strong>Fecha:</strong></span>
-        <span>${new Date(order.created_at).toLocaleDateString('es-AR')}</span>
+        <span>${new Date(order.created_at || new Date()).toLocaleDateString('es-AR')}</span>
       </div>
       <div class="order-info">
         <span><strong>Estado:</strong></span>
-        <span class="status-badge ${statusClass[order.status]}">${statusMessages[order.status]}</span>
+        <span class="status-badge ${statusClass[currentStatus]}">${statusMessages[currentStatus]}</span>
       </div>
       
       <div style="margin-top: 20px;">
@@ -657,24 +661,24 @@ export const sendOrderConfirmationEmail = async (data: OrderEmailData) => {
           <span>Subtotal:</span>
           <span>${formatPrice(order.subtotal)}</span>
         </div>
-        ${order.discount_amount > 0 ? `
+        ${(order.discount_amount || 0) > 0 ? `
           <div class="total-line">
             <span>Descuento:</span>
-            <span>-${formatPrice(order.discount_amount)}</span>
+            <span>-${formatPrice(order.discount_amount || 0)}</span>
           </div>
         ` : ''}
         <div class="total-line">
           <span>Envío:</span>
-          <span>${formatPrice(order.shipping_amount)}</span>
+          <span>${formatPrice(order.shipping_cost)}</span>
         </div>
         <div class="total-line final">
           <span>Total:</span>
-          <span>${formatPrice(order.total_amount)}</span>
+          <span>${formatPrice(order.total)}</span>
         </div>
       </div>
     </div>
     
-    ${order.status === 'paid' ? `
+    ${currentStatus === 'paid' ? `
       <p><strong>¿Qué sigue?</strong></p>
       <p>Tu pedido será preparado en las próximas 24-48 horas. Te enviaremos un email con el código de seguimiento una vez que sea despachado.</p>
     ` : `
@@ -691,9 +695,9 @@ export const sendOrderConfirmationEmail = async (data: OrderEmailData) => {
   
   const emailConfig: EmailConfig = {
     to: customerEmail,
-    subject: `Confirmación de pedido #${order.order_number} - Sakú Lencería`,
+    subject: `Confirmación de pedido #${order.id} - Sakú Lencería`,
     html: getEmailTemplate(content),
-    text: `Gracias por tu compra. Tu pedido #${order.order_number} ha sido recibido y está ${statusMessages[order.status].toLowerCase()}.`
+    text: `Gracias por tu compra. Tu pedido #${order.id} ha sido recibido y está ${statusMessages[currentStatus].toLowerCase()}.`
   }
   
   return await sendEmail(emailConfig)

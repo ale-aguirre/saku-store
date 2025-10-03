@@ -8,11 +8,8 @@ export type Category = Database['public']['Tables']['categories']['Row']
 // Tipos extendidos para el catálogo
 export interface ProductWithVariants extends Product {
   variants: ProductVariant[]
-  category?: Category | null
-  images?: string[]
+  category_data?: Category | null
 }
-
-
 
 export interface VariantWithStock extends ProductVariant {
   is_in_stock: boolean
@@ -21,8 +18,7 @@ export interface VariantWithStock extends ProductVariant {
 
 export interface ProductWithVariantsAndStock extends Product {
   variants: VariantWithStock[]
-  category?: Category | null
-  images?: string[]
+  category_data?: Category | null
   available_sizes: string[]
   available_colors: string[]
   price_range: {

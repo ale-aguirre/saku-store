@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { updateProduct } from '../actions'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -30,22 +31,35 @@ import { useAuth } from '@/hooks/use-auth'
 interface Product {
   id: string
   name: string
-  description: string
-  price: number
-  category: string
-  status: string
-  image_url: string | null
-  created_at: string
+  description: string | null
+  base_price: number
+  sku: string
+  category_id: string | null
+  brand: string | null
+  category: string | null
+  is_active: boolean | null
+  is_featured: boolean | null
+  images: string[] | null
+  slug: string | null
+  created_at: string | null
+  updated_at: string | null
 }
 
 interface ProductVariant {
   id?: string
   size: string
   color: string
-  stock_quantity: number
+  stock_quantity: number | null
   sku: string
-  product_id?: string
-  images?: string[]
+  product_id?: string | null
+  images?: string[] | null
+  price?: number | null
+  price_adjustment?: number | null
+  material?: string | null
+  is_active?: boolean | null
+  low_stock_threshold?: number | null
+  created_at?: string | null
+  updated_at?: string | null
 }
 
 
@@ -66,6 +80,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    sku: '',
     price: '',
     category: '',
     is_active: true,
@@ -106,15 +121,17 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
       setProduct(productData)
       const product = productData as any
-      // Asegurar que images sea siempre un array
-      const productImages = Array.isArray(product.images) ? product.images : []
+      
+      // Cargar imágenes del producto desde el campo images
+      const productImages = product.images || []
       console.log('🖼️ Imágenes del producto cargadas:', productImages)
       
       setFormData({
         name: product.name,
-        description: product.description,
-        price: (product.base_price / 100).toString(), // Convert from cents
-        category: product.category,
+        description: product.description || '',
+        sku: product.sku || '',
+        price: product.base_price.toString(), // base_price ya es decimal
+        category: product.category_id || '',
         is_active: product.is_active ?? true,
         images: productImages
       })
@@ -129,8 +146,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
       setVariants(variantsData || [])
       
-      // Fetch product images
-      // Images are now handled by ProductImageManager component
+      // Images are now loaded from the products.images field
     } catch (error) {
       console.error('Error fetching product:', error)
       alert('Error al cargar el producto')
@@ -255,18 +271,13 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log('🔥 handleSubmit ejecutándose...')
+    console.log('🚀 Iniciando handleSubmit...')
     e.preventDefault()
     
-    console.log('📝 Datos del formulario:', formData)
-    console.log('👤 Usuario:', user?.email)
-    console.log('📦 Producto:', product?.name)
+    console.log('📋 FormData actual:', formData)
     
-    if (!user || !product) {
-      console.log('❌ Falta usuario o producto')
-      return
-    }
-    if (!formData.name || !formData.description || !formData.price || !formData.category) {
+    // Validar campos obligatorios
+    if (!formData.name || !formData.price || !formData.category) {
       console.log('❌ Faltan campos obligatorios')
       alert('Por favor completa todos los campos obligatorios')
       return
@@ -276,42 +287,53 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     setIsSubmitting(true)
     
     try {
-      console.log('🔌 Creando cliente Supabase...')
-      const supabase = createClient()
+      // Procesar imágenes: asegurar que sean un array válido, limpiar URLs y eliminar duplicados
+      console.log('🖼️ Procesando imágenes antes de guardar:', formData.images);
       
-      const updateData = {
-        name: formData.name,
-        description: formData.description,
-        base_price: Math.round(parseFloat(formData.price) * 100), // Convert to cents
-        category: formData.category,
-        is_active: formData.is_active,
-        images: Array.isArray(formData.images) ? formData.images : []
+      // Asegurar que formData.images sea un array
+      const imagesArray = Array.isArray(formData.images) ? formData.images : [];
+      console.log('🖼️ Array de imágenes confirmado:', imagesArray);
+      
+      // Limpiar y procesar imágenes de manera más estricta
+      const processedImages = imagesArray
+        .filter(img => img && typeof img === 'string' && img.trim() !== '') // Solo strings válidos
+        .map(img => img.replace(/[`'"]/g, '').trim()) // Limpiar caracteres problemáticos
+        .filter((img, index, self) => self.indexOf(img) === index); // Eliminar duplicados
+      
+      console.log('🖼️ Imágenes procesadas finales:', processedImages);
+      
+      // Crear FormData para la server action
+      const formDataToSend = new FormData()
+      formDataToSend.append('name', formData.name)
+      formDataToSend.append('slug', formData.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''))
+      formDataToSend.append('description', formData.description || '')
+      formDataToSend.append('sku', formData.sku || '')
+      formDataToSend.append('base_price', parseFloat(formData.price).toString())
+      formDataToSend.append('category_id', formData.category || '')
+      formDataToSend.append('is_active', formData.is_active.toString())
+      formDataToSend.append('is_featured', 'false')
+      formDataToSend.append('images', JSON.stringify(processedImages))
+      
+      console.log('🖼️ Imágenes a guardar (limpias):', processedImages)
+      console.log('🔄 Enviando datos a server action...')
+      
+      // Usar server action
+      const result = await updateProduct(productId, formDataToSend)
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Error desconocido')
       }
       
-      // Asegurar que images sea un array válido y no null/undefined
-      console.log('🖼️ Imágenes a guardar:', updateData.images)
-      
-      console.log('📤 Datos a actualizar:', updateData)
-      console.log('🆔 Product ID:', productId)
-      
-      // Update product
-      const { error: productError } = await (supabase as any)
-        .from('products')
-        .update(updateData)
-        .eq('id', productId)
+      console.log('✅ Producto actualizado correctamente:', result.data);
+      console.log('✅ Imágenes guardadas:', result.data?.images);
 
-      if (productError) {
-        console.log('❌ Error de Supabase:', productError)
-        throw productError
-      }
-
-      console.log('✅ Producto actualizado exitosamente')
       toast.success('Producto guardado correctamente')
       // Refrescar datos del producto en la misma página para reflejar cambios
       await fetchProduct()
     } catch (error) {
       console.error('💥 Error updating product:', error)
-      alert('Error al actualizar el producto. Intenta nuevamente.')
+      const errorMessage = error instanceof Error ? error.message : 'Error al actualizar el producto'
+      toast.error(errorMessage)
     } finally {
       console.log('🏁 Finalizando guardado...')
       setIsSubmitting(false)
@@ -374,13 +396,24 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-medium">Nombre del Producto *</Label>
+              <Label htmlFor="name" className="text-sm font-medium">Nombre del producto *</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
                 placeholder="Ej: Conjunto Elegance"
                 required
+                className="h-11"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="sku" className="text-sm font-medium">SKU</Label>
+              <Input
+                id="sku"
+                value={formData.sku}
+                onChange={(e) => handleInputChange('sku', e.target.value)}
+                placeholder="Ej: CONJ-ELE-001"
                 className="h-11"
               />
             </div>
@@ -538,7 +571,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 <Input
                   type="number"
                   min="0"
-                  value={newVariant.stock_quantity}
+                  value={newVariant.stock_quantity || ''}
                   onChange={(e) => setNewVariant(prev => ({ ...prev, stock_quantity: parseInt(e.target.value) || 0 }))}
                   placeholder="Cantidad inicial en stock"
                   className="h-11"
@@ -607,7 +640,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                             <Input
                               type="number"
                               min="0"
-                              value={variant.stock_quantity}
+                              value={variant.stock_quantity || ''}
                               onChange={(e) => updateVariantStock(variant.id!, parseInt(e.target.value) || 0)}
                               className="w-24 h-9"
                             />

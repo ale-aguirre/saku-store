@@ -38,30 +38,47 @@ interface DashboardStats {
 
 interface Order {
   id: string
-  external_reference: string
-  status: string
+  status: string | null
   total: number
-  created_at: string
-  user_id: string
+  created_at: string | null
+  user_id: string | null
   profiles: {
     email: string
-    first_name: string
-    last_name: string
-  }
+    first_name: string | null
+    last_name: string | null
+  } | null
 }
 
 interface Product {
   id: string
   name: string
   base_price: number
-  price: number
-  status: string
-  created_at: string
+  sku: string
+  description: string | null
+  images: string[] | null
+  is_active: boolean | null
+  is_featured: boolean | null
+  brand: string | null
+  category: string | null
+  category_id: string | null
+  slug: string | null
+  created_at: string | null
+  updated_at: string | null
   product_variants: {
     id: string
     size: string
     color: string
-    stock_quantity: number
+    stock_quantity: number | null
+    sku: string
+    price: number | null
+    price_adjustment: number | null
+    images: string[] | null
+    material: string | null
+    is_active: boolean | null
+    low_stock_threshold: number | null
+    product_id: string | null
+    created_at: string | null
+    updated_at: string | null
   }[]
 }
 
@@ -178,7 +195,17 @@ export default function AdminDashboard() {
             id,
             size,
             color,
-            stock_quantity
+            stock_quantity,
+            sku,
+            price,
+            price_adjustment,
+            images,
+            material,
+            is_active,
+            low_stock_threshold,
+            product_id,
+            created_at,
+            updated_at
           )
         `)
         .order('created_at', { ascending: false })
@@ -467,12 +494,12 @@ export default function AdminDashboard() {
                       <div className="flex-1">
                         <div className="flex items-center gap-4">
                           <div>
-                            <p className="font-medium">#{order.external_reference}</p>
+                            <p className="font-medium">#{order.id.slice(-8)}</p>
                             <p className="text-sm text-muted-foreground">
-                              {order.profiles?.first_name} {order.profiles?.last_name}
+                              {order.profiles ? `${order.profiles.first_name || ''} ${order.profiles.last_name || ''}`.trim() || 'Sin nombre' : 'Sin nombre'}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {new Date(order.created_at).toLocaleDateString('es-AR')}
+                              {order.created_at ? new Date(order.created_at).toLocaleDateString('es-AR') : 'Sin fecha'}
                             </p>
                           </div>
                         </div>
@@ -506,7 +533,7 @@ export default function AdminDashboard() {
             <CardContent>
               <div className="space-y-4">
                 {products.map((product) => {
-                  const totalStock = product.product_variants.reduce((sum, variant) => sum + variant.stock_quantity, 0)
+                  const totalStock = product.product_variants.reduce((sum, variant) => sum + (variant.stock_quantity || 0), 0)
                   
                   return (
                     <div key={product.id} className="flex items-center justify-between p-4 border rounded-lg">
@@ -524,8 +551,8 @@ export default function AdminDashboard() {
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
-                        <Badge variant={product.status === 'active' ? 'default' : 'secondary'}>
-                          {product.status === 'active' ? 'Activo' : 'Inactivo'}
+                        <Badge variant={product.is_active ? 'default' : 'secondary'}>
+                          {product.is_active ? 'Activo' : 'Inactivo'}
                         </Badge>
                         <div className="flex gap-2">
                           <Button variant="outline" size="sm">

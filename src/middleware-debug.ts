@@ -8,7 +8,7 @@ export async function middleware(request: NextRequest) {
   console.log('🔍 Middleware called for:', request.nextUrl.pathname)
   
   try {
-    let response = NextResponse.next({
+    const response = NextResponse.next({
       request: {
         headers: request.headers,
       },

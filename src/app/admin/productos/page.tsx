@@ -44,21 +44,34 @@ interface ProductVariant {
   id: string
   size: string
   color: string
-  stock_quantity: number
-  low_stock_threshold: number
+  stock_quantity: number | null
+  low_stock_threshold: number | null
+  sku: string
+  price: number | null
+  price_adjustment: number | null
+  images: string[] | null
+  material: string | null
+  is_active: boolean | null
+  product_id: string | null
+  created_at: string | null
+  updated_at: string | null
 }
 
 interface Product {
   id: string
   name: string
-  description: string
+  description: string | null
   base_price: number
-  price: number
-  promotional_price?: number
-  status: string
-  created_at: string
-  tags?: string[]
-  images?: string[]
+  sku: string
+  category_id: string | null
+  brand: string | null
+  category: string | null
+  is_active: boolean | null
+  is_featured: boolean | null
+  images: string[] | null
+  slug: string | null
+  created_at: string | null
+  updated_at: string | null
   product_variants: ProductVariant[]
 }
 
@@ -88,7 +101,16 @@ export default function AdminProductsPage() {
             size,
             color,
             stock_quantity,
-            low_stock_threshold
+            low_stock_threshold,
+            sku,
+            price,
+            price_adjustment,
+            images,
+            material,
+            is_active,
+            product_id,
+            created_at,
+            updated_at
           )
         `, { count: 'exact' })
 
@@ -156,7 +178,7 @@ export default function AdminProductsPage() {
   }, [user, loading, fetchProducts])
 
   const getTotalStock = (variants: ProductVariant[]) => {
-    return variants.reduce((sum, variant) => sum + variant.stock_quantity, 0)
+    return variants.reduce((sum, variant) => sum + (variant.stock_quantity || 0), 0)
   }
 
   const getVariantChips = (variants: ProductVariant[]) => {
@@ -168,7 +190,10 @@ export default function AdminProductsPage() {
 
   const hasLowStock = (variants: ProductVariant[]) => {
     return variants.some(variant => 
-      variant.stock_quantity <= variant.low_stock_threshold && variant.stock_quantity > 0
+      variant.stock_quantity !== null && 
+      variant.low_stock_threshold !== null &&
+      variant.stock_quantity <= variant.low_stock_threshold && 
+      variant.stock_quantity > 0
     )
   }
 
@@ -312,22 +337,8 @@ export default function AdminProductsPage() {
                         <div className="min-w-0 flex-1">
                           <p className="font-medium truncate">{product.name}</p>
                           <p className="text-sm text-muted-foreground truncate">
-                            {product.description}
+                            {product.description || 'Sin descripción'}
                           </p>
-                          {product.tags && product.tags.length > 0 && (
-                            <div className="flex gap-1 mt-1">
-                              {product.tags.slice(0, 2).map((tag, index) => (
-                                <Badge key={index} variant="outline" className="text-xs">
-                                  {tag}
-                                </Badge>
-                              ))}
-                              {product.tags.length > 2 && (
-                                <Badge variant="outline" className="text-xs">
-                                  +{product.tags.length - 2}
-                                </Badge>
-                              )}
-                            </div>
-                          )}
                         </div>
                       </div>
                     </TableCell>
@@ -360,13 +371,7 @@ export default function AdminProductsPage() {
                       </span>
                     </TableCell>
                     <TableCell>
-                      {product.promotional_price ? (
-                        <span className="font-medium text-green-600">
-                          {formatPrice(product.promotional_price)}
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground">-</span>
-                      )}
+                      <span className="text-muted-foreground">-</span>
                     </TableCell>
                     <TableCell>
                       <div className="space-y-2">
@@ -387,8 +392,8 @@ export default function AdminProductsPage() {
                               <div className="flex flex-wrap gap-1 ml-2">
                                 {availableSizes.map((size) => {
                                    const variant = colorVariants.find(v => v.size === size);
-                                   const hasStock = variant && variant.stock_quantity > 0;
-                                   const isLowStock = variant && variant.stock_quantity > 0 && variant.stock_quantity <= 5;
+                                   const hasStock = variant && variant.stock_quantity !== null && variant.stock_quantity > 0;
+                                   const isLowStock = variant && variant.stock_quantity !== null && variant.stock_quantity > 0 && variant.stock_quantity <= 5;
                                    
                                    return (
                                      <Badge 

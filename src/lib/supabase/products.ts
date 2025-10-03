@@ -193,7 +193,7 @@ export async function getProducts(
             min: minPrice,
             max: maxPrice
           },
-          total_stock: variantsWithStock.reduce((sum, v) => sum + v.stock_quantity, 0),
+          total_stock: variantsWithStock.reduce((sum, v) => sum + (v.stock_quantity || 0), 0),
           categories: category
         }
       })
@@ -273,7 +273,7 @@ export async function getProductBySlug(slug: string): Promise<ProductWithVariant
     }))
 
     // Calcular rangos de precio
-    const prices = variants.map(v => product.base_price + v.price_adjustment)
+    const prices = variants.map(v => (product.base_price || 0) + (v.price_adjustment || 0))
     const minPrice = prices.length > 0 ? Math.min(...prices) : product.base_price
     const maxPrice = prices.length > 0 ? Math.max(...prices) : product.base_price
 
@@ -286,7 +286,7 @@ export async function getProductBySlug(slug: string): Promise<ProductWithVariant
         min: minPrice,
         max: maxPrice
       },
-      total_stock: variants.reduce((sum, v) => sum + v.stock_quantity, 0)
+      total_stock: variants.reduce((sum, v) => sum + (v.stock_quantity || 0), 0)
     }
   } catch (error) {
     console.error('Error fetching product by slug:', error)

@@ -4,32 +4,10 @@ import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { mockProducts } from '@/lib/mock-data'
 import { getProductBySlug, getPriceRange, getProducts } from '@/lib/supabase/products'
+import type { Database } from '@/types/database'
 
-export interface Product {
-  id: string
-  name: string
-  description: string
-  category: string
-  image_url: string
-  is_active: boolean
-  created_at: string
-  updated_at: string
-  product_variants: ProductVariant[]
-}
+type Product = Database['public']['Tables']['products']['Row']
 
-export interface ProductVariant {
-  id: string
-  product_id: string
-  size: string | null
-  color: string
-  price: number
-  compare_at_price: number | null
-  stock_quantity: number
-  sku: string
-  is_active: boolean
-  created_at: string
-  updated_at: string
-}
 
 export interface ProductFilters {
   category?: string
