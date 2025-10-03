@@ -41,7 +41,10 @@ export function ProductCard({ product, className }: ProductCardProps) {
   const discountPercentage = 0
 
   const isInStock = product.total_stock > 0
-  const isLowStock = product.variants.some(v => v.is_low_stock)
+  // Lógica mejorada para badges de inventario
+  // Mostrar "Últimas unidades" solo si hay menos de 5 unidades en total
+  // No mostrar si hay más de 30 unidades disponibles
+  const isLowStock = product.total_stock > 0 && product.total_stock < 5 && product.total_stock <= 30
 
   // Usar la primera imagen disponible o null para que ProductImage maneje el fallback
   const primaryImage = product.images?.[0] || null

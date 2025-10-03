@@ -152,9 +152,10 @@ export default function AdminDashboard() {
       const averageOrderValue = ordersCount && ordersCount > 0 ? totalRevenue / ordersCount : 0
       
       // Calculate unique products with low stock - filter on client side
-      const lowStockVariants = (lowStockData as any[])?.filter(variant => 
-        variant.stock_quantity <= variant.low_stock_threshold
-      ) || []
+      const lowStockVariants = (lowStockData as any[])?.filter(variant => {
+        // Lógica mejorada: considerar stock bajo solo si hay menos de 5 unidades
+        return variant.stock_quantity > 0 && variant.stock_quantity < 5 && variant.stock_quantity <= 30
+      }) || []
       const uniqueLowStockProducts = new Set(lowStockVariants.map(variant => variant.product_id)).size
 
       setStats({

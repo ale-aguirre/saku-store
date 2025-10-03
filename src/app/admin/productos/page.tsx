@@ -189,12 +189,10 @@ export default function AdminProductsPage() {
   }
 
   const hasLowStock = (variants: ProductVariant[]) => {
-    return variants.some(variant => 
-      variant.stock_quantity !== null && 
-      variant.low_stock_threshold !== null &&
-      variant.stock_quantity <= variant.low_stock_threshold && 
-      variant.stock_quantity > 0
-    )
+    const totalStock = variants.reduce((sum, variant) => sum + (variant.stock_quantity || 0), 0)
+    // Lógica mejorada: mostrar "Stock bajo" solo si hay menos de 5 unidades en total
+    // No mostrar si hay más de 30 unidades disponibles
+    return totalStock > 0 && totalStock < 5 && totalStock <= 30
   }
 
   const totalPages = Math.ceil(totalProducts / ITEMS_PER_PAGE)
