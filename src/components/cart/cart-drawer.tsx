@@ -480,12 +480,15 @@ export function CartDrawer({ children }: CartDrawerProps) {
               <Button 
                 size="lg" 
                 className="w-full bg-[#d8ceb5] text-black hover:bg-[#d8ceb5]/90 text-sm sm:text-base h-10 sm:h-11"
-                asChild
                 disabled={!shippingMethod}
+                onClick={() => {
+                  if (shippingMethod) {
+                    closeCart()
+                    window.location.href = '/checkout'
+                  }
+                }}
               >
-                <Link href={shippingMethod ? "/checkout" : "#"}>
-                  Finalizar Compra
-                </Link>
+                Finalizar Compra
               </Button>
             </div>
           </>

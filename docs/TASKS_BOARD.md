@@ -102,7 +102,7 @@
 
 ### Mejoras UI/UX - Prioridad Baja
 - [ ] (TB-023) Corregir estado del botón de login cuando usuario está logueado en home — Owner: Saku — TS: 2025-01-27 17:15
-- [ ] (TB-024) Corregir lógica de badge de poco stock (no mostrar si stock > 20) — Owner: Saku — TS: 2025-01-27 17:15
+- [x] (TB-024) Corregir lógica de badge de poco stock (no mostrar si stock > 20) — Owner: Saku — TS done: 2025-10-01 18:44
 
 ---
 

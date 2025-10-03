@@ -1,32 +1,15 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { updateProduct } from '../actions'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
-import { ImageUpload } from '@/components/ui/image-upload'
-import { 
-  ArrowLeft, 
-  Plus, 
-  Trash2,
-  Save
-} from 'lucide-react'
-import Link from 'next/link'
 import { useAuth } from '@/hooks/use-auth'
+import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
+import { EditProductFormSimple } from '@/components/admin/edit-product-form-simple'
+import { updateProduct } from '@/app/admin/productos/actions'
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 
 interface Product {
   id: string
@@ -64,13 +47,11 @@ interface ProductVariant {
 
 
 
-const SIZES = ['85', '90', '95', '100']
-const COLORS = ['Negro', 'Rojo', 'Blanco']
 const CATEGORIES = ['Brasieres', 'Conjuntos', 'Bombachas', 'Camisones']
 
 export default function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { user, loading: authLoading } = useAuth()
-  const router = useRouter()
+  const _router = useRouter()
   const [loading, setLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [product, setProduct] = useState<Product | null>(null)
@@ -372,6 +353,64 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     )
   }
 
+  // Adaptar datos para el nuevo componente
+  const productForForm = product ? {
+    id: product.id,
+    name: formData.name,
+    description: formData.description,
+    base_price: parseFloat(formData.price) || 0,
+    sku: formData.sku,
+    category_id: formData.category,
+    brand: null,
+    category: null,
+    is_active: formData.is_active,
+    is_featured: false,
+    images: formData.images,
+    slug: null,
+    created_at: null,
+    updated_at: null
+  } : null
+
+  const categoriesForForm = CATEGORIES.map(cat => ({ id: cat, name: cat }))
+
+  const handleProductChange = (field: string, value: any) => {
+    if (field === 'base_price') {
+      handleInputChange('price', value.toString())
+    } else if (field === 'category_id') {
+      handleInputChange('category', value)
+    } else {
+      handleInputChange(field, value)
+    }
+  }
+
+  const handleVariantChange = (index: number, field: string, value: any) => {
+    const variant = variants[index]
+    if (!variant?.id) return
+
+    if (field === 'stock_quantity') {
+      updateVariantStock(variant.id, value)
+    } else if (field === 'images') {
+      updateVariantImages(variant.id, value)
+    }
+    // Para size y color, necesitaríamos una función de actualización completa
+  }
+
+  const handleAddVariant = () => {
+    // Usar la función existente addVariant, pero necesitamos adaptar newVariant
+    if (newVariant.size && newVariant.color) {
+      addVariant()
+    }
+  }
+
+  const handleRemoveVariant = (index: number) => {
+    const variant = variants[index]
+    if (variant?.id) {
+      removeVariant(variant.id)
+    }
+  }
+
+  if (!productForForm) return null
+
   return (
     <div className="container mx-auto px-4 md:px-6 lg:px-8 py-6">
       <div className="flex items-center gap-4 mb-8">
@@ -387,318 +426,17 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-8">
-        {/* Información Básica del Producto */}
-        <Card className="shadow-sm">
-          <CardHeader className="pb-6">
-            <CardTitle className="text-xl font-semibold">Información Básica</CardTitle>
-            <p className="text-sm text-muted-foreground">Datos principales del producto</p>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-medium">Nombre del producto *</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => handleInputChange('name', e.target.value)}
-                placeholder="Ej: Conjunto Elegance"
-                required
-                className="h-11"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="sku" className="text-sm font-medium">SKU</Label>
-              <Input
-                id="sku"
-                value={formData.sku}
-                onChange={(e) => handleInputChange('sku', e.target.value)}
-                placeholder="Ej: CONJ-ELE-001"
-                className="h-11"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description" className="text-sm font-medium">Descripción *</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
-                placeholder="Describe las características del producto..."
-                rows={4}
-                required
-                className="min-h-[120px] resize-none"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="price" className="text-sm font-medium">Precio *</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  step="0.01"
-                  value={formData.price}
-                  onChange={(e) => handleInputChange('price', e.target.value)}
-                  placeholder="0.00"
-                  required
-                  className="h-11"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="category" className="text-sm font-medium">Categoría *</Label>
-                <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
-                  <SelectTrigger className="h-11">
-                    <SelectValue placeholder="Seleccionar" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {CATEGORIES.map((category) => (
-                      <SelectItem key={category} value={category}>
-                        {category}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="is_active" className="text-sm font-medium">Estado</Label>
-                <Select 
-                  value={formData.is_active ? 'true' : 'false'} 
-                  onValueChange={(value) => handleInputChange('is_active', value === 'true')}
-                >
-                  <SelectTrigger className="h-11">
-                    <SelectValue placeholder="Seleccionar estado" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="true">Activo</SelectItem>
-                    <SelectItem value="false">Inactivo</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Imágenes del Producto */}
-        <Card className="shadow-sm">
-          <CardHeader className="pb-6">
-            <CardTitle className="text-xl font-semibold">Imágenes del Producto</CardTitle>
-            <p className="text-sm text-muted-foreground">Galería principal del producto</p>
-          </CardHeader>
-          <CardContent>
-            <ImageUpload
-              value={formData.images}
-              onChange={(images) => setFormData(prev => ({ 
-                ...prev, 
-                images
-              }))}
-              multiple={true}
-              maxImages={5}
-              label="Imágenes del Producto"
-              description="Sube hasta 5 imágenes del producto. La primera será la imagen principal."
-            />
-          </CardContent>
-        </Card>
-
-        {/* Gestión de Variantes */}
-        <Card className="shadow-sm">
-          <CardHeader className="pb-6">
-            <CardTitle className="text-xl font-semibold">Variantes del Producto</CardTitle>
-            <p className="text-sm text-muted-foreground">Administra los talles, colores y stock de cada variante</p>
-          </CardHeader>
-          <CardContent className="space-y-8">
-            {/* Formulario para Agregar Nueva Variante */}
-            <div className="border rounded-lg p-6 space-y-6 bg-muted/30">
-              <div className="flex items-center gap-2">
-                <Plus className="h-5 w-5 text-primary" />
-                <h4 className="font-semibold text-lg">Agregar Nueva Variante</h4>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Talle</Label>
-                  <div className="space-y-2">
-                    <Select value={newVariant.size} onValueChange={(value) => setNewVariant(prev => ({ ...prev, size: value }))}>
-                      <SelectTrigger className="h-11">
-                        <SelectValue placeholder="Seleccionar talle" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {SIZES.map((size) => (
-                          <SelectItem key={size} value={size}>
-                            Talle {size}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Input
-                      placeholder="O escribir talle personalizado (ej: 120)"
-                      value={newVariant.size}
-                      onChange={(e) => setNewVariant(prev => ({ ...prev, size: e.target.value }))}
-                      className="h-11"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Color</Label>
-                  <div className="space-y-2">
-                    <Select value={newVariant.color} onValueChange={(value) => setNewVariant(prev => ({ ...prev, color: value }))}>
-                      <SelectTrigger className="h-11">
-                        <SelectValue placeholder="Seleccionar color" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {COLORS.map((color) => (
-                          <SelectItem key={color} value={color}>
-                            {color.charAt(0).toUpperCase() + color.slice(1)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Input
-                      placeholder="O escribir color personalizado (ej: rosa)"
-                      value={newVariant.color}
-                      onChange={(e) => setNewVariant(prev => ({ ...prev, color: e.target.value }))}
-                      className="h-11"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Stock Inicial</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  value={newVariant.stock_quantity || ''}
-                  onChange={(e) => setNewVariant(prev => ({ ...prev, stock_quantity: parseInt(e.target.value) || 0 }))}
-                  placeholder="Cantidad inicial en stock"
-                  className="h-11"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Imágenes de la Variante (Opcional)</Label>
-                <ImageUpload
-                  value={newVariant.images || []}
-                  onChange={(images) => setNewVariant(prev => ({ ...prev, images }))}
-                  multiple={true}
-                  maxImages={3}
-                  description="Sube hasta 3 imágenes específicas para esta variante."
-                />
-              </div>
-
-              <Button 
-                type="button" 
-                onClick={addVariant} 
-                className="w-full h-12"
-                disabled={!newVariant.size || !newVariant.color}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Agregar Variante
-              </Button>
-            </div>
-
-            {/* Lista de Variantes Existentes */}
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h4 className="font-semibold text-lg">Variantes Existentes</h4>
-                <Badge variant="secondary" className="text-sm">
-                  {variants.length} variante{variants.length !== 1 ? 's' : ''}
-                </Badge>
-              </div>
-              
-              {variants.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground border-2 border-dashed rounded-lg">
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="p-3 bg-muted rounded-full">
-                      <Plus className="h-6 w-6" />
-                    </div>
-                    <div>
-                      <p className="font-medium">No hay variantes creadas aún</p>
-                      <p className="text-sm">Agrega la primera variante usando el formulario de arriba</p>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {variants.map((variant) => (
-                    <div key={variant.id} className="p-6 border rounded-lg bg-card hover:bg-muted/30 transition-colors space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex gap-3 items-center">
-                          <div className="flex gap-2">
-                            <Badge variant="secondary" className="font-medium">
-                              Talle {variant.size}
-                            </Badge>
-                            <Badge variant="outline" className="font-medium">
-                              {variant.color?.charAt(0).toUpperCase() + variant.color?.slice(1)}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Label className="text-sm font-medium">Stock:</Label>
-                            <Input
-                              type="number"
-                              min="0"
-                              value={variant.stock_quantity || ''}
-                              onChange={(e) => updateVariantStock(variant.id!, parseInt(e.target.value) || 0)}
-                              className="w-24 h-9"
-                            />
-                            <span className="text-sm text-muted-foreground">unidades</span>
-                          </div>
-                        </div>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => removeVariant(variant.id!)}
-                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label className="text-sm font-medium">Imágenes de la variante</Label>
-                        <ImageUpload
-                           value={variant.images || []}
-                           onChange={(urls) => updateVariantImages(variant.id!, urls)}
-                           maxImages={3}
-                           className="w-full"
-                         />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Botones de Acción */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex flex-col sm:flex-row gap-4 justify-end">
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={() => router.push('/admin/productos')}
-                className="h-12 px-8"
-              >
-                Cancelar
-              </Button>
-              <Button 
-                type="submit" 
-                disabled={isSubmitting}
-                className="h-12 px-8"
-              >
-                <Save className="h-4 w-4 mr-2" />
-                {isSubmitting ? 'Guardando...' : 'Guardar Cambios'}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </form>
+      <EditProductFormSimple
+        product={productForForm}
+        variants={variants}
+        categories={categoriesForForm}
+        onProductChange={handleProductChange}
+        onVariantChange={handleVariantChange}
+        onAddVariant={handleAddVariant}
+        onRemoveVariant={handleRemoveVariant}
+        onSubmit={handleSubmit}
+        isLoading={isSubmitting}
+      />
     </div>
   )
 }
