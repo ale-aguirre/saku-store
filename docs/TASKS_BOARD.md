@@ -80,14 +80,7 @@
 
 <!-- Tareas actualmente en desarrollo -->
 
-- [x] (TB-036) Corrección de errores TypeScript en panel de administración — Owner: Saku — TS done: 2025-10-02 20:37
-  - Goal: Resolver todos los errores de tipo en páginas admin para build limpio
-  - Scope: admin/ordenes/[id], admin/ordenes, admin/cupones
-  - Acceptance: 0 errores en `npm run type-check`, ESLint limpio
-  - Priority: High
-  - How: Coalescing de valores nulos, casteo de tipos, ajuste de interfaces
-  - Files: src/app/admin/ordenes/[id]/page.tsx, src/app/admin/ordenes/page.tsx, src/app/admin/cupones/page.tsx
-  - Checks: ESLint ✅ | Types ✅ | Preview ✅
+<!-- Vacío - todas las tareas en progreso completadas -->
 
 ---
 
@@ -114,6 +107,15 @@
 ---
 
 ## Done (history)
+
+- [x] (TB-037) Merge de feature/admin-productos-page a develop — Owner: Saku — TS done: 2025-10-02 20:40
+  - Goal: Integrar todas las mejoras de gestión de productos e imágenes al branch develop
+  - Scope: CRUD productos, upload de imágenes, fixes TypeScript, tests E2E
+  - Acceptance: Merge exitoso sin conflictos, código funcional en develop
+  - Priority: High
+  - How: Merge con --no-ff desde feature/admin-productos-page
+  - Files: 35 archivos modificados incluyendo admin/productos/, componentes UI, tests
+  - Checks: Merge ✅ | Push ✅
 
 - [x] (TB-002) Implementar paginación de productos en PLP — TS done: 2025-09-29 15:58
   - How: Integrada paginación completa en /productos con navegación por páginas y límite configurable

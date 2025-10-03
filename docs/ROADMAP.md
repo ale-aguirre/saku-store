@@ -90,6 +90,28 @@
 - ✅ **Panel de administración**: Corregida funcionalidad de subida de imágenes
 - ✅ **Visualización de productos**: Producto Lory ahora muestra imagen correctamente
 
+### **2025-10-02 20:40 - Merge de feature/admin-productos-page a develop** ✅
+
+**Integración completada:**
+- ✅ **Merge exitoso**: Rama `feature/admin-productos-page` mergeada a `develop` sin conflictos
+- ✅ **Gestión de productos**: CRUD completo con acciones server-side integradas
+- ✅ **Upload de imágenes**: Sistema de carga con Supabase Storage funcional
+- ✅ **Tests E2E**: Tests de carga de imágenes y visualización de productos integrados
+- ✅ **TypeScript limpio**: Todos los errores de tipo en admin resueltos
+- ✅ **ESLint limpio**: Sin errores ni warnings tras el merge
+
+**Cambios integrados:**
+- **35 archivos modificados** incluyendo admin/productos/, componentes UI, utilidades
+- **Sistema de imágenes**: Upload, previsualización y gestión de imágenes por producto/variante
+- **Selector de variantes**: Mejorado con soporte para múltiples imágenes
+- **Tests E2E**: `admin-image-upload.spec.ts` y `product-images.spec.ts` agregados
+
+**Verificaciones post-merge:**
+- ✅ **Git**: Merge con --no-ff exitoso, push a develop completado
+- ✅ **Build**: Sin errores de compilación
+- ✅ **Preview**: Disponible para revisión en Vercel
+- ✅ **Rama actualizada**: develop actualizada con todos los cambios
+
 ### **2025-10-02 - Corrección de Errores de Sintaxis en Imágenes de Productos** ✅
 
 **Problema resuelto:**
