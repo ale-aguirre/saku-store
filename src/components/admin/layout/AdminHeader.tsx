@@ -78,7 +78,7 @@ export function AdminHeader({
       <div className="flex items-center space-x-4">
         {/* Breadcrumbs */}
         {breadcrumbs.length > 0 && (
-          <nav className="flex items-center space-x-2 text-sm text-gray-500">
+          <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
             {breadcrumbs.map((item, index) => (
               <div key={index} className="flex items-center space-x-2">
                 {index > 0 && <ChevronRight className="h-4 w-4" />}

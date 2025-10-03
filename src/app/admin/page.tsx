@@ -277,15 +277,15 @@ export default function AdminDashboard() {
                 <p className="text-sm text-muted-foreground mt-2 flex items-center">
                   <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                     stats.todayOrders > 0 
-                      ? 'bg-green-100 text-green-800' 
+                      ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' 
                       : 'bg-muted text-muted-foreground'
                   }`}>
                     {stats.todayOrders > 0 ? '+' : ''}{stats.todayOrders} desde ayer
                   </span>
                 </p>
               </div>
-              <div className="p-4 bg-blue-100 rounded-xl">
-                <ShoppingCart className="h-8 w-8 text-blue-600" />
+              <div className="p-4 bg-blue-100 dark:bg-blue-900/20 rounded-xl">
+                <ShoppingCart className="h-8 w-8 text-blue-600 dark:text-blue-400" />
               </div>
             </div>
           </CardContent>
@@ -296,19 +296,19 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <p className="text-sm font-medium text-muted-foreground">Ingresos Hoy</p>
-                <p className="text-3xl font-bold text-green-600 mt-1">{formatPrice(stats.todayRevenue)}</p>
+                <p className="text-3xl font-bold text-green-600 dark:text-green-400 mt-1">{formatPrice(stats.todayRevenue)}</p>
                 <p className="text-sm text-muted-foreground mt-2 flex items-center">
                   <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                     stats.todayRevenue > 0 
-                      ? 'bg-green-100 text-green-800' 
+                      ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' 
                       : 'bg-muted text-muted-foreground'
                   }`}>
                     {stats.todayRevenue > 0 ? '+' : ''}{formatPrice(stats.todayRevenue)} desde ayer
                   </span>
                 </p>
               </div>
-              <div className="p-4 bg-green-100 rounded-xl">
-                <DollarSign className="h-8 w-8 text-green-600" />
+              <div className="p-4 bg-green-100 dark:bg-green-900/20 rounded-xl">
+                <DollarSign className="h-8 w-8 text-green-600 dark:text-green-400" />
               </div>
             </div>
           </CardContent>
@@ -319,15 +319,15 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <p className="text-sm font-medium text-muted-foreground">Ticket Promedio</p>
-                <p className="text-3xl font-bold text-orange-600 mt-1">{formatPrice(stats.averageOrderValue)}</p>
+                <p className="text-3xl font-bold text-orange-600 dark:text-orange-400 mt-1">{formatPrice(stats.averageOrderValue)}</p>
                 <p className="text-sm text-muted-foreground mt-2">
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400">
                     Promedio por orden
                   </span>
                 </p>
               </div>
-              <div className="p-4 bg-orange-100 rounded-xl">
-                <TrendingUp className="h-8 w-8 text-orange-600" />
+              <div className="p-4 bg-orange-100 dark:bg-orange-900/20 rounded-xl">
+                <TrendingUp className="h-8 w-8 text-orange-600 dark:text-orange-400" />
               </div>
             </div>
           </CardContent>
@@ -362,8 +362,8 @@ export default function AdminDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <p className="text-sm font-medium text-muted-foreground dark:text-gray-400">Total Órdenes</p>
-                <p className="text-2xl font-bold text-foreground dark:text-white mt-1">{stats.totalOrders}</p>
+                <p className="text-sm font-medium text-muted-foreground">Total Órdenes</p>
+                <p className="text-2xl font-bold text-foreground mt-1">{stats.totalOrders}</p>
                 {stats.pendingOrders > 0 && (
                   <div className="flex items-center mt-3">
                     <div className="flex items-center px-2 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900/20">
@@ -373,8 +373,8 @@ export default function AdminDashboard() {
                   </div>
                 )}
               </div>
-              <div className="p-3 bg-green-100 rounded-xl">
-                <ShoppingCart className="h-8 w-8 text-green-600" />
+              <div className="p-3 bg-green-100 dark:bg-green-900/20 rounded-xl">
+                <ShoppingCart className="h-8 w-8 text-green-600 dark:text-green-400" />
               </div>
             </div>
           </CardContent>
@@ -428,44 +428,44 @@ export default function AdminDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Button 
               variant="outline" 
-              className="h-24 flex-col space-y-3 border-2 hover:border-blue-300 hover:bg-blue-50 transition-all"
+              className="h-24 flex-col space-y-3 border-2 hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
               onClick={() => router.push('/admin/productos/nuevo')}
             >
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Plus className="h-6 w-6 text-blue-600" />
+              <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
+                <Plus className="h-6 w-6 text-blue-600 dark:text-blue-400" />
               </div>
               <span className="text-sm font-medium text-foreground">Nuevo Producto</span>
             </Button>
             
             <Button 
               variant="outline" 
-              className="h-24 flex-col space-y-3 border-2 hover:border-green-300 hover:bg-green-50 transition-all"
+              className="h-24 flex-col space-y-3 border-2 hover:border-green-300 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all"
               onClick={() => router.push('/admin/ordenes')}
             >
-              <div className="p-2 bg-green-100 rounded-lg">
-                <ShoppingCart className="h-6 w-6 text-green-600" />
+              <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
+                <ShoppingCart className="h-6 w-6 text-green-600 dark:text-green-400" />
               </div>
               <span className="text-sm font-medium text-foreground">Ver Órdenes</span>
             </Button>
             
             <Button 
               variant="outline" 
-              className="h-24 flex-col space-y-3 border-2 hover:border-orange-300 hover:bg-orange-50 transition-all"
+              className="h-24 flex-col space-y-3 border-2 hover:border-orange-300 hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all"
               onClick={() => router.push('/admin/productos')}
             >
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <Package className="h-6 w-6 text-orange-600" />
+              <div className="p-2 bg-orange-100 dark:bg-orange-900/20 rounded-lg">
+                <Package className="h-6 w-6 text-orange-600 dark:text-orange-400" />
               </div>
               <span className="text-sm font-medium text-foreground">Gestionar Stock</span>
             </Button>
             
             <Button 
               variant="outline" 
-              className="h-24 flex-col space-y-3 border-2 hover:border-purple-300 hover:bg-purple-50 transition-all"
+              className="h-24 flex-col space-y-3 border-2 hover:border-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all"
               onClick={() => router.push('/admin/cupones')}
             >
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <Users className="h-6 w-6 text-purple-600" />
+              <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
+                <Users className="h-6 w-6 text-purple-600 dark:text-purple-400" />
               </div>
               <span className="text-sm font-medium text-foreground">Crear Cupón</span>
             </Button>

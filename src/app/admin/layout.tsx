@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useAuth } from '@/hooks/use-auth'
 import { createClient } from '@/lib/supabase/client'
+import { ThemeToggle } from '@/components/theme-toggle'
 import {
   LayoutDashboard,
   Package,
@@ -20,7 +21,8 @@ import {
   Menu,
   X,
   ChevronRight,
-  Home
+  Home,
+  LogOut
 } from 'lucide-react'
 
 interface AdminLayoutProps {
@@ -78,6 +80,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [pendingOrders, setPendingOrders] = useState(0)
+  const supabase = createClient()
 
   useEffect(() => {
     if (!loading && !user) {
@@ -151,7 +154,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-foreground"></div>
       </div>
     )
   }
@@ -163,7 +166,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const breadcrumbs = getBreadcrumbs()
 
   return (
-    <div className="min-h-screen bg-background lg:flex">
+    <div className="min-h-screen bg-background">
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div 
@@ -176,10 +179,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
       {/* Sidebar */}
       <div className={cn(
-        "fixed inset-y-0 left-0 z-50 w-64 bg-background border-r shadow-lg transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 lg:flex lg:flex-col",
+        "fixed inset-y-0 left-0 z-50 w-64 bg-background border-r shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0",
         sidebarOpen ? "translate-x-0" : "-translate-x-full"
       )}>
-        <div className="flex flex-col h-full lg:h-screen">
+        <div className="flex flex-col h-screen">
           {/* Logo */}
           <div className="flex items-center justify-between h-16 px-6 border-b border-border">
             <Link href="/admin" className="flex items-center space-x-2">
@@ -232,7 +235,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
           {/* User section */}
           <div className="p-6 border-t border-border bg-muted/30">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 mb-3">
               <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center">
                 <User className="w-4 h-4 text-white" />
               </div>
@@ -245,14 +248,32 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 </p>
               </div>
             </div>
+            
+            {/* Logout Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full flex items-center justify-center space-x-2 text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300 dark:text-red-400 dark:border-red-800 dark:hover:bg-red-900/20 dark:hover:border-red-700"
+              onClick={async () => {
+                try {
+                  await supabase.auth.signOut()
+                  router.push('/')
+                } catch (error) {
+                  console.error('Error al cerrar sesión:', error)
+                }
+              }}
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="text-sm font-medium">Cerrar Sesión</span>
+            </Button>
           </div>
         </div>
       </div>
 
       {/* Main content */}
-      <div className="flex-1 lg:flex lg:flex-col">
+      <div className="flex-1 lg:ml-64">
         {/* Top bar */}
-        <div className="sticky top-0 z-30 bg-background border-b border-border px-4 py-3 lg:relative">
+        <div className="sticky top-0 z-30 bg-background border-b border-border px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Button
@@ -289,6 +310,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             </div>
 
             <div className="flex items-center space-x-4">
+              <ThemeToggle />
               <Link href="/" target="_blank">
                 <Button variant="outline" size="sm">
                   Ver Tienda
