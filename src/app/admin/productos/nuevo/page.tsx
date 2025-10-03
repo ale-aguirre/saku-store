@@ -34,7 +34,7 @@ interface ProductVariant {
 
 const SIZES = ['85', '90', '95', '100']
 const COLORS = ['Negro', 'Rojo', 'Blanco']
-const CATEGORIES = ['Brasieres', 'Conjuntos', 'Bombachas', 'Camisones']
+
 
 export default function NewProductPage() {
   const { user, loading } = useAuth()
@@ -45,10 +45,13 @@ export default function NewProductPage() {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    price: '',
-    category: '',
-    status: 'active',
-    image_url: ''
+    sku: '',
+    base_price: '',
+    brand: '',
+    category_id: '',
+    is_active: true,
+    is_featured: false,
+    images: ['']
   })
   
   // Variants
@@ -97,8 +100,8 @@ export default function NewProductPage() {
     e.preventDefault()
     
     if (!user) return
-    if (!formData.name || !formData.description || !formData.price || !formData.category) {
-      alert('Por favor completa todos los campos obligatorios')
+    if (!formData.name || !formData.sku || !formData.base_price) {
+      alert('Por favor completa todos los campos obligatorios (nombre, SKU, precio base)')
       return
     }
     
@@ -117,11 +120,14 @@ export default function NewProductPage() {
         .from('products')
         .insert({
           name: formData.name,
-          description: formData.description,
-          price: Math.round(parseFloat(formData.price) * 100), // Convert to cents
-          category: formData.category,
-          status: formData.status,
-          image_url: formData.image_url || null
+          description: formData.description || null,
+          sku: formData.sku,
+          base_price: Math.round(parseFloat(formData.base_price) * 100), // Convert to cents
+          brand: formData.brand || null,
+          category_id: formData.category_id || null,
+          is_active: formData.is_active,
+          is_featured: formData.is_featured,
+          images: formData.images.filter(img => img.trim() !== '') // Remove empty strings
         })
         .select()
         .single()
@@ -218,58 +224,119 @@ export default function NewProductPage() {
                 />
               </div>
 
+              <div>
+                <Label htmlFor="sku">SKU *</Label>
+                <Input
+                  id="sku"
+                  value={formData.sku}
+                  onChange={(e) => handleInputChange('sku', e.target.value)}
+                  placeholder="SKU-001"
+                  required
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="price">Precio *</Label>
+                  <Label htmlFor="base_price">Precio Base *</Label>
                   <Input
-                    id="price"
+                    id="base_price"
                     type="number"
                     step="0.01"
-                    value={formData.price}
-                    onChange={(e) => handleInputChange('price', e.target.value)}
+                    value={formData.base_price}
+                    onChange={(e) => handleInputChange('base_price', e.target.value)}
                     placeholder="0.00"
                     required
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="category">Categoría *</Label>
-                  <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Seleccionar" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CATEGORIES.map((category) => (
-                        <SelectItem key={category} value={category}>
-                          {category}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="brand">Marca</Label>
+                  <Input
+                    id="brand"
+                    value={formData.brand}
+                    onChange={(e) => handleInputChange('brand', e.target.value)}
+                    placeholder="Marca del producto"
+                  />
                 </div>
               </div>
 
               <div>
-                <Label htmlFor="image_url">URL de Imagen</Label>
-                <Input
-                  id="image_url"
-                  value={formData.image_url}
-                  onChange={(e) => handleInputChange('image_url', e.target.value)}
-                  placeholder="https://ejemplo.com/imagen.jpg"
-                />
+                <Label htmlFor="category_id">Categoría</Label>
+                <Select value={formData.category_id} onValueChange={(value) => handleInputChange('category_id', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar categoría" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Sin categoría</SelectItem>
+                    {/* TODO: Cargar categorías desde la DB */}
+                    <SelectItem value="conjuntos">Conjuntos</SelectItem>
+                    <SelectItem value="corpinos">Corpiños</SelectItem>
+                    <SelectItem value="bombachas">Bombachas</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
-                <Label htmlFor="status">Estado</Label>
-                <Select value={formData.status} onValueChange={(value) => handleInputChange('status', value)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">Activo</SelectItem>
-                    <SelectItem value="inactive">Inactivo</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="images">URLs de Imágenes</Label>
+                <div className="space-y-2">
+                  {formData.images.map((image, index) => (
+                    <div key={index} className="flex gap-2">
+                      <Input
+                        value={image}
+                        onChange={(e) => {
+                          const newImages = [...formData.images]
+                          newImages[index] = e.target.value
+                          setFormData(prev => ({ ...prev, images: newImages }))
+                        }}
+                        placeholder="https://ejemplo.com/imagen.jpg"
+                      />
+                      {formData.images.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const newImages = formData.images.filter((_, i) => i !== index)
+                            setFormData(prev => ({ ...prev, images: newImages }))
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setFormData(prev => ({ ...prev, images: [...prev.images, ''] }))
+                    }}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Agregar imagen
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="is_active"
+                  checked={formData.is_active}
+                  onChange={(e) => setFormData(prev => ({ ...prev, is_active: e.target.checked }))}
+                />
+                <Label htmlFor="is_active">Producto activo</Label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="is_featured"
+                  checked={formData.is_featured}
+                  onChange={(e) => setFormData(prev => ({ ...prev, is_featured: e.target.checked }))}
+                />
+                <Label htmlFor="is_featured">Producto destacado</Label>
               </div>
             </CardContent>
           </Card>

@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ProductImage } from '@/components/ui/product-image'
+
 import { formatPrice } from "@/lib/utils"
 import { 
   ArrowLeft,
@@ -20,58 +21,51 @@ import OrderShippingManager from '@/components/admin/order-shipping-manager'
 
 interface OrderDetail {
   id: string
-  order_number: string
-  status: string
+  status: string | null
   total: number
   subtotal: number
   shipping_cost: number
-  discount_amount: number
-  tax_amount: number
-  created_at: string
-  updated_at: string
-  shipping_address: {
-    street: string
-    city: string
-    state: string
-    postal_code: string
-    country: string
-  }
-  tracking_code: string | null
+  discount_amount: number | null
+  created_at: string | null
+  updated_at: string | null
+  shipping_address: any // JSON field
+  billing_address: any | null // JSON field
   tracking_number: string | null
-  tracking_url: string | null
-  payment_method: string
-  payment_status: string
+  payment_method: string | null
   payment_id: string | null
   notes: string | null
+  email: string
+  coupon_code: string | null
+  user_id: string | null
   profiles: {
     email: string
-    full_name: string | null
+    first_name: string | null
+    last_name: string | null
     phone: string | null
   } | null
   order_items: Array<{
     id: string
     quantity: number
     price: number
-    product_variants: {
-      size: string
-      color: string
-      sku: string
-      products: {
-        name: string
-        image_url: string | null
-      }
-    }
+    product_id: string
+    product_name: string
+    sku: string
+    variant_color: string
+    variant_size: string
+    created_at: string | null
   }>
   order_events: Array<{
     id: string
     event_type: string
-    event_data: Record<string, unknown> | null
-    created_at: string
+    metadata: any | null
+    created_at: string | null
+    description: string | null
   }>
 }
 
 export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { user, loading: authLoading } = useAuth()
+  const router = useRouter()
   const [order, setOrder] = useState<OrderDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [orderId, setOrderId] = useState<string | null>(null)
@@ -97,28 +91,15 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
           *,
           profiles:user_id (
             email,
-            full_name,
+            first_name,
+            last_name,
             phone
           ),
           order_items (
-            id,
-            quantity,
-            price,
-            product_variants (
-              size,
-              color,
-              sku,
-              products (
-                name,
-                image_url
-              )
-            )
+            *
           ),
           order_events (
-            id,
-            event_type,
-            event_data,
-            created_at
+            *
           )
         `)
         .eq('id', orderId)
@@ -189,9 +170,9 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold">Orden #{order.order_number}</h1>
+            <h1 className="text-3xl font-bold">Orden #{order.id.slice(-8)}</h1>
             <p className="text-muted-foreground">
-              Creada el {new Date(order.created_at).toLocaleDateString('es-AR')}
+              Creada el {new Date(order.created_at || '').toLocaleDateString('es-AR')}
             </p>
           </div>
         </div>
@@ -214,7 +195,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
           {/* Resumen de la orden */}
           <Card>
             <CardHeader>
-              <CardTitle>Orden #{order.order_number}</CardTitle>
+              <CardTitle>Orden #{order.id.slice(-8)}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
@@ -235,14 +216,16 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
           </Card>
 
           {/* Información de envío */}
-          <OrderShippingManager 
+          <OrderShippingManager
             order={{
               id: order.id,
-              status: order.status,
+              status: order.status ?? 'pending',
               tracking_number: order.tracking_number ?? undefined,
-              tracking_url: order.tracking_url ?? undefined,
             }}
-            onUpdate={fetchOrder}
+            onUpdate={() => {
+              // Recargar datos después de actualizar envío
+              router.refresh()
+            }}
           />
 
           {/* Productos */}
@@ -258,24 +241,14 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                 {order.order_items.map((item) => (
                   <div key={item.id} className="flex items-center gap-4 p-4 border rounded-lg">
                     <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
-                      {item.product_variants.products.image_url ? (
-                        <ProductImage
-                          src={item.product_variants.products.image_url}
-                          alt={item.product_variants.products.name}
-                          width={64}
-                          height={64}
-                          className="object-cover rounded-lg"
-                        />
-                      ) : (
-                        <Package className="h-8 w-8 text-muted-foreground" />
-                      )}
+                      <Package className="h-8 w-8 text-muted-foreground" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-medium">{item.product_variants.products.name}</h3>
+                      <h3 className="font-medium">{item.product_name}</h3>
                       <p className="text-sm text-muted-foreground">
-                        Talle: {item.product_variants.size} | Color: {item.product_variants.color}
+                        Talle: {item.variant_size} | Color: {item.variant_color}
                       </p>
-                      <p className="text-sm text-muted-foreground">SKU: {item.product_variants.sku}</p>
+                      <p className="text-sm text-muted-foreground">SKU: {item.sku}</p>
                     </div>
                     <div className="text-right">
                       <p className="font-medium">Cantidad: {item.quantity}</p>
@@ -301,8 +274,8 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
               id: event.id,
               type: event.event_type,
               description: `Evento: ${event.event_type}`,
-              metadata: event.event_data,
-              created_at: event.created_at
+              metadata: event.metadata,
+              created_at: event.created_at ?? new Date().toISOString()
             }))}
           />
         </div>

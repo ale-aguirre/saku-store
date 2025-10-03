@@ -35,11 +35,10 @@ export function ProductCard({ product, className }: ProductCardProps) {
   const [quickAddOpen, setQuickAddOpen] = useState(false)
   
   // Determinar si el producto requiere talles
-  const requiresSizes = categoryRequiresSizes(product.category?.slug || '')
-  const hasDiscount = product.compare_at_price && product.compare_at_price > product.base_price
-  const discountPercentage = hasDiscount 
-    ? Math.round(((product.compare_at_price! - product.base_price) / product.compare_at_price!) * 100)
-    : 0
+  const requiresSizes = categoryRequiresSizes(product.category || '')
+  // No discount logic since compare_at_price is not in the current schema
+  const hasDiscount = false
+  const discountPercentage = 0
 
   const isInStock = product.total_stock > 0
   const isLowStock = product.variants.some(v => v.is_low_stock)
@@ -164,19 +163,10 @@ export function ProductCard({ product, className }: ProductCardProps) {
             </span>
           )}
           
-          {hasDiscount && (
-            <span className="text-xs sm:text-sm text-muted-foreground line-through">
-              {formatPrice(product.compare_at_price!)}
-            </span>
-          )}
+
         </div>
 
-        {/* Hygiene notice */}
-        {product.hygiene_notice && (
-          <p className="text-xs text-muted-foreground mb-2 sm:mb-3">
-            Sin cambios ni devoluciones por higiene
-          </p>
-        )}
+        {/* Hygiene notice - removed as field doesn't exist in current schema */}
       </CardContent>
 
       <CardFooter className="p-3 sm:p-4 pt-0">
@@ -281,7 +271,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
                           size: requiresSizes ? selectedSize : undefined,
                           color: selectedColor,
                           quantity: 1,
-                          maxStock: variant.stock_quantity
+                          maxStock: variant.stock_quantity || 0
                         });
                         
                         // Cerrar diálogo y abrir carrito

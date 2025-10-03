@@ -49,24 +49,27 @@ import { es } from 'date-fns/locale'
 
 interface Order {
   id: string
-  order_number: string
-  status: string
+  status: string | null
   total: number
-  total_amount: number
-  created_at: string
-  shipping_address: {
-    street: string
-    city: string
-    state: string
-    postal_code: string
-    country: string
-  }
-  tracking_code: string | null
-  tracking_url: string | null
-  shipping_method: string | null
+  subtotal: number
+  shipping_cost: number
+  discount_amount: number | null
+  created_at: string | null
+  updated_at: string | null
+  shipping_address: any // JSON field
+  billing_address: any | null // JSON field
+  tracking_number: string | null
+  payment_method: string | null
+  payment_id: string | null
+  notes: string | null
+  email: string
+  coupon_code: string | null
+  user_id: string | null
   profiles: {
     email: string
-    full_name: string | null
+    first_name: string | null
+    last_name: string | null
+    phone: string | null
   } | null
 }
 
@@ -84,7 +87,8 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const [statusFilter, setStatusFilter] = useState<string>('all')
+  type OrderStatus = 'pending' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
+  const [statusFilter, setStatusFilter] = useState<OrderStatus | 'all'>('all')
   const [dateRange, setDateRange] = useState<{
     from: Date | undefined
     to: Date | undefined
@@ -109,13 +113,16 @@ export default function OrdersPage() {
           *,
           profiles:user_id (
             email,
-            full_name
+            first_name,
+            last_name,
+            phone
           )
         `, { count: 'exact' })
       
       // Aplicar filtros
       if (statusFilter !== 'all') {
-        query = query.eq('status', statusFilter)
+        // Cast is safe because we check for 'all' above
+        query = query.eq('status', statusFilter as OrderStatus)
       }
       
       // Filtro de fecha
@@ -151,7 +158,7 @@ export default function OrdersPage() {
         const revenue = data.reduce((sum, order: any) => {
           // Solo contar órdenes pagadas o entregadas
           if (['paid', 'processing', 'shipped', 'delivered'].includes(order.status)) {
-            return sum + order.total_amount
+            return sum + order.total
           }
           return sum
         }, 0)
@@ -218,15 +225,20 @@ export default function OrdersPage() {
 
 
 
-  const getStatusConfig = (status: string) => {
-    return ORDER_STATUSES.find(s => s.value === status) || ORDER_STATUSES[0]
+  const getStatusConfig = (status: string | null) => {
+    const normalized = status ?? 'pending'
+    return ORDER_STATUSES.find(s => s.value === normalized) || ORDER_STATUSES[0]
   }
 
   const filteredOrders = orders.filter(order => {
+    const fullName = order.profiles ? `${order.profiles.first_name || ''} ${order.profiles.last_name || ''}`.trim() : ''
+    const orderNumber = order.id.slice(-8)
+    
     const matchesSearch = 
-      order.order_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.profiles?.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.profiles?.full_name?.toLowerCase().includes(searchTerm.toLowerCase())
+      fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.email.toLowerCase().includes(searchTerm.toLowerCase())
     
     const matchesStatus = statusFilter === 'all' || order.status === statusFilter
 
@@ -301,8 +313,11 @@ export default function OrdersPage() {
           <CardHeader className="pb-2">
             <CardDescription>Ticket promedio</CardDescription>
             <CardTitle className="text-2xl">
-              {orders.filter(o => ['paid', 'processing', 'shipped', 'delivered'].includes(o.status)).length > 0 
-                ? formatPrice(totalRevenue / orders.filter(o => ['paid', 'processing', 'shipped', 'delivered'].includes(o.status)).length)
+              {orders.filter(o => o.status && ['paid', 'processing', 'shipped', 'delivered'].includes(o.status)).length > 0 
+                ? formatPrice(
+                    totalRevenue /
+                    orders.filter(o => o.status && ['paid', 'processing', 'shipped', 'delivered'].includes(o.status)).length
+                  )
                 : '$0'}
             </CardTitle>
           </CardHeader>
@@ -334,7 +349,7 @@ export default function OrdersPage() {
             </div>
             
             <div className="w-full sm:w-48">
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as OrderStatus | 'all')}>
                 <SelectTrigger>
                   <Filter className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Estado" />
@@ -416,11 +431,11 @@ export default function OrdersPage() {
                 <TableRow>
                   <TableHead 
                     className="cursor-pointer hover:bg-muted/50"
-                    onClick={() => handleSort('order_number')}
+                    onClick={() => handleSort('id')}
                   >
                     <div className="flex items-center">
                       Número
-                      {sortField === 'order_number' && (
+                      {sortField === 'id' && (
                         <ArrowUpDown className={`ml-2 h-4 w-4 ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
                       )}
                     </div>
@@ -439,11 +454,11 @@ export default function OrdersPage() {
                   </TableHead>
                   <TableHead 
                     className="cursor-pointer hover:bg-muted/50"
-                    onClick={() => handleSort('total_amount')}
+                    onClick={() => handleSort('total')}
                   >
                     <div className="flex items-center">
                       Total
-                      {sortField === 'total_amount' && (
+                      {sortField === 'total' && (
                         <ArrowUpDown className={`ml-2 h-4 w-4 ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
                       )}
                     </div>
@@ -488,16 +503,19 @@ export default function OrdersPage() {
                       <TableRow key={order.id}>
                         <TableCell className="font-medium">
                           <Link href={`/admin/ordenes/${order.id}`} className="hover:underline">
-                            #{order.order_number}
+                            #{order.id.slice(-8)}
                           </Link>
                         </TableCell>
                         <TableCell>
                           <div>
                             <div className="font-medium">
-                              {order.profiles?.full_name || 'Sin nombre'}
+                              {order.profiles ? 
+                                `${order.profiles.first_name || ''} ${order.profiles.last_name || ''}`.trim() || 'Sin nombre'
+                                : 'Sin nombre'
+                              }
                             </div>
                             <div className="text-sm text-muted-foreground">
-                              {order.profiles?.email}
+                              {order.profiles?.email || order.email}
                             </div>
                           </div>
                         </TableCell>
@@ -512,28 +530,26 @@ export default function OrdersPage() {
                         </TableCell>
                         <TableCell>
                           <div className="whitespace-nowrap">
-                            {format(new Date(order.created_at), 'dd/MM/yyyy')}
+                            {order.created_at ? format(new Date(order.created_at), 'dd/MM/yyyy') : '-'}
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            {format(new Date(order.created_at), 'HH:mm')}
+                            {order.created_at ? format(new Date(order.created_at), 'HH:mm') : '-'}
                           </div>
                         </TableCell>
                         <TableCell>
-                          {order.tracking_code ? (
+                          {order.tracking_number ? (
                             <div>
                               <Badge variant="outline">
-                                {order.tracking_code}
+                                {order.tracking_number}
                               </Badge>
-                              {order.tracking_url && (
-                                <a 
-                                  href={order.tracking_url} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  className="text-xs text-blue-600 hover:underline block mt-1"
-                                >
+                              <a 
+                                href={`https://www.correoargentino.com.ar/formularios/e-commerce`} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-xs text-blue-600 hover:underline block mt-1"
+                              >
                                   Ver seguimiento
                                 </a>
-                              )}
                             </div>
                           ) : (
                             <span className="text-muted-foreground">Sin código</span>
@@ -548,8 +564,8 @@ export default function OrdersPage() {
                             </Link>
                             
                             <Select
-                              value={order.status}
-                              onValueChange={(value) => updateOrderStatus(order.id, value)}
+                              value={order.status || undefined}
+                              onValueChange={(value) => updateOrderStatus(order.id, value as OrderStatus)}
                             >
                               <SelectTrigger className="w-32">
                                 <SelectValue />

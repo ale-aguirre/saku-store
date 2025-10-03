@@ -85,7 +85,7 @@ export function VariantSelector({
         <div className="flex gap-2">
           {availableSizes.map((size) => {
             const sizeVariants = product.variants.filter(v => v.size === size && v.is_active)
-            const hasStock = sizeVariants.some(v => v.stock_quantity > 0)
+            const hasStock = sizeVariants.some(v => (v.stock_quantity || 0) > 0)
             
             return (
               <Button
@@ -111,7 +111,7 @@ export function VariantSelector({
         <div className="flex gap-3">
           {availableColors.map((color) => {
             const colorVariants = product.variants.filter(v => v.color === color && v.is_active)
-            const hasStock = colorVariants.some(v => v.stock_quantity > 0)
+            const hasStock = colorVariants.some(v => (v.stock_quantity || 0) > 0)
             const colorHex = getColorHex(color)
             
             return (

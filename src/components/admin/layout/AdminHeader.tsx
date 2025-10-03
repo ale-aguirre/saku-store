@@ -73,7 +73,7 @@ export function AdminHeader({
     loadProfile()
   }, [user?.id, supabase])
   return (
-    <header className="h-20 bg-white border-b border-gray-200 px-6 flex items-center justify-between">
+    <header className="h-20 bg-background border-b border-border px-6 flex items-center justify-between">
       {/* Left side: Breadcrumbs and Title */}
       <div className="flex items-center space-x-4">
         {/* Breadcrumbs */}
@@ -120,7 +120,9 @@ export function AdminHeader({
         {actions}
 
         {/* Theme Toggle */}
-        <ThemeToggle />
+        <div className="relative flex items-center justify-center p-1 rounded-md hover:bg-accent">
+          <ThemeToggle />
+        </div>
 
         {/* Notifications */}
         <DropdownMenu>

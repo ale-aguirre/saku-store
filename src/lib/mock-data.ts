@@ -1,5 +1,7 @@
 // Mock data for development when Supabase is not available
-import { Product } from "@/hooks/use-products";
+import type { Database } from '@/types/database'
+
+type Product = Database['public']['Tables']['products']['Row']
 
 export const mockProducts: Product[] = [
   // No mock products - use real data from Supabase

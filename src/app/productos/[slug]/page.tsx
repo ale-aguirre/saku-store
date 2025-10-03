@@ -13,6 +13,7 @@ import { useProductBySlug } from '@/hooks/use-products'
 import { useWishlist } from '@/hooks/use-wishlist'
 import { ChevronLeft, Heart, Share2, ShoppingCart, AlertCircle, Truck, Shield, RotateCcw, Loader2 } from 'lucide-react'
 
+
 const getColorHex = (colorName: string): string => {
   const colorMap: Record<string, string> = {
     'negro': '#000000',
@@ -72,10 +73,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   )
   
   const finalPrice = selectedVariant ? product.base_price + (selectedVariant.price_adjustment || 0) : product.base_price
-  const comparePrice = product.compare_at_price
-  const hasComparePrice = comparePrice && comparePrice > finalPrice
-  const isOnSale = hasComparePrice
-  const isNew = new Date(product.created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // 7 days
+  const isOnSale = false // No compare price in current schema
+  const isNew = product.created_at ? new Date(product.created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) : false // 7 days
 
   const handleAddToCart = () => {
     if (!selectedVariant) return
@@ -88,12 +87,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
       size: selectedSize,
       color: selectedColor,
       quantity: quantity,
-      maxStock: selectedVariant.stock_quantity
+      maxStock: selectedVariant.stock_quantity || 0
     })
     openCart()
   }
 
-  const isInStock = selectedVariant && selectedVariant.stock_quantity > 0
+  const isInStock = selectedVariant && (selectedVariant.stock_quantity || 0) > 0
   const canAddToCart = selectedSize && selectedColor && isInStock
 
   return (
@@ -106,6 +105,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
         <span>/</span>
         <span className="text-foreground">{product.name}</span>
       </nav>
+
+
 
       {/* Back Button */}
       <Button variant="ghost" asChild className="mb-6">
@@ -153,20 +154,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
           {/* Price */}
           <div className="space-y-2">
             <div className="flex items-center gap-3">
-              <span className="text-3xl font-bold" data-testid="product-price">
+              <span className="text-3xl font-bold text-foreground" data-testid="product-price">
                 {formatPrice(finalPrice)}
               </span>
-              {hasComparePrice && (
-                <span className="text-lg text-muted-foreground line-through" data-testid="product-compare-price">
-                  {formatPrice(comparePrice)}
-                </span>
-              )}
             </div>
-            {hasComparePrice && (
-              <p className="text-sm text-green-600">
-                Ahorrás {formatPrice(comparePrice - finalPrice)}
-              </p>
-            )}
           </div>
 
           {/* Variant Selector */}
@@ -177,7 +168,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
               <div className="flex gap-2">
                 {availableSizes.map((size) => {
                   const sizeVariants = product.variants?.filter(v => v.size === size && v.is_active) || []
-                  const hasStock = sizeVariants.some(v => v.stock_quantity > 0)
+                  const hasStock = sizeVariants.some(v => (v.stock_quantity || 0) > 0)
                   
                   return (
                     <Button
@@ -203,7 +194,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
               <div className="flex gap-3">
                 {availableColors.map((color) => {
                   const colorVariants = product.variants?.filter(v => v.color === color && v.is_active) || []
-                  const hasStock = colorVariants.some(v => v.stock_quantity > 0)
+                  const hasStock = colorVariants.some(v => (v.stock_quantity || 0) > 0)
                   const colorHex = getColorHex(color || '')
                   
                   return (

@@ -28,7 +28,7 @@ type VariantQuery = ProductVariant & {
 const supabase = createClient()
 
 /**
- * Obtiene productos con sus variantes y stock
+ * Obtiene productos con sus variantes y stock (optimizado con JOIN)
  */
 export async function getProducts(
   filters: ProductFilters = {},
@@ -58,11 +58,12 @@ export async function getProducts(
       return { products: [], totalItems: 0, totalPages: 0 }
     }
 
-    let query = supabase
+    // Construir query optimizada con JOIN para obtener todo en una sola consulta
+    let baseQuery = supabase
         .from('products')
         .select(`
           *,
-          product_variants (
+          product_variants!inner (
             id,
             sku,
             size,
@@ -78,90 +79,89 @@ export async function getProducts(
             name,
             slug
           )
-        `)
+        `, { count: 'exact' })
         .eq('is_active', true)
+        .eq('product_variants.is_active', true)
 
     // Aplicar filtros
     if (filters.category_id) {
-      query = query.eq('category_id', filters.category_id)
+      baseQuery = baseQuery.eq('category_id', filters.category_id)
     }
 
     if (filters.is_featured) {
-      query = query.eq('is_featured', true)
+      baseQuery = baseQuery.eq('is_featured', true)
     }
 
     if (filters.search) {
-      query = query.or(`name.ilike.%${filters.search}%, description.ilike.%${filters.search}%`)
+      baseQuery = baseQuery.or(`name.ilike.%${filters.search}%, description.ilike.%${filters.search}%`)
     }
 
     // Aplicar ordenamiento
     switch (sortBy) {
       case 'price_asc':
-        query = query.order('base_price', { ascending: true })
+        baseQuery = baseQuery.order('base_price', { ascending: true })
         break
       case 'price_desc':
-        query = query.order('base_price', { ascending: false })
+        baseQuery = baseQuery.order('base_price', { ascending: false })
         break
       case 'newest':
-        query = query.order('created_at', { ascending: false })
+        baseQuery = baseQuery.order('created_at', { ascending: false })
         break
       case 'name':
-        query = query.order('name', { ascending: true })
+        baseQuery = baseQuery.order('name', { ascending: true })
         break
       case 'featured':
       default:
-        query = query.order('is_featured', { ascending: false }).order('created_at', { ascending: false })
+        baseQuery = baseQuery.order('is_featured', { ascending: false }).order('created_at', { ascending: false })
         break
     }
 
-    // Obtener conteo total primero (sin paginación)
-    let countQuery = supabase
-      .from('products')
-      .select('id', { count: 'exact', head: true })
-      .eq('is_active', true)
+    // Obtener productos con paginación (ya incluye variantes y categorías por JOIN)
+    const { data: rawProducts, error: productsError, count: totalItems } = await baseQuery
+      .range((page - 1) * limit, page * limit - 1)
 
-    // Aplicar los mismos filtros para el conteo
-    if (filters.category_id) {
-      countQuery = countQuery.eq('category_id', filters.category_id)
+    if (productsError) {
+      console.error('Error fetching products:', productsError)
+      return { products: [], totalItems: 0, totalPages: 0 }
     }
 
-    if (filters.is_featured) {
-      countQuery = countQuery.eq('is_featured', true)
-    }
-
-    if (filters.search) {
-      countQuery = countQuery.or(`name.ilike.%${filters.search}%, description.ilike.%${filters.search}%`)
-    }
-
-    const { count: totalItems, error: countError } = await countQuery
-
-    if (countError) {
-      console.error('Error counting products:', countError)
+    if (!rawProducts || rawProducts.length === 0) {
       return { products: [], totalItems: 0, totalPages: 0 }
     }
 
     const totalPages = Math.ceil((totalItems || 0) / limit)
 
-    // Aplicar paginación
-    const from = (page - 1) * limit
-    const to = from + limit - 1
-    query = query.range(from, to)
+    // Agrupar productos por ID (ya que el JOIN puede duplicar productos con múltiples variantes)
+    const productsMap = new Map<string, any>()
+    
+    rawProducts.forEach((item: any) => {
+      if (!productsMap.has(item.id)) {
+        productsMap.set(item.id, {
+          ...item,
+          product_variants: [],
+          categories: item.categories
+        })
+      }
+      
+      // Agregar variantes al producto
+      if (item.product_variants && item.product_variants.length > 0) {
+        const existingProduct = productsMap.get(item.id)!
+        item.product_variants.forEach((variant: any) => {
+          // Evitar duplicados de variantes
+          if (!existingProduct.product_variants.find((v: any) => v.id === variant.id)) {
+            existingProduct.product_variants.push(variant)
+          }
+        })
+      }
+    })
 
-    const { data: products, error } = await query
-
-    if (error) {
-      console.error('Error fetching products:', error)
-      return { products: [], totalItems: 0, totalPages: 0 }
-    }
-
-    if (!products) {
-      return { products: [], totalItems: 0, totalPages: 0 }
-    }
-
-    // Procesar productos con variantes y stock
-    const processedProducts: ProductWithVariantsAndStock[] = (products as ProductWithVariantsQuery[])
-      .map((product) => {
-        const variants: VariantWithStock[] = (product.product_variants || []).map((variant) => ({
+    // Procesar productos con variantes y stock (optimizado)
+    const processedProducts: ProductWithVariantsAndStock[] = Array.from(productsMap.values())
+      .map((product: any) => {
+        const variants = product.product_variants || []
+        const category = product.categories
+        
+        const variantsWithStock: VariantWithStock[] = variants.map((variant: any) => ({
           ...variant,
           is_in_stock: variant.stock_quantity > 0,
           is_low_stock: variant.stock_quantity <= variant.low_stock_threshold && variant.stock_quantity > 0
@@ -169,8 +169,8 @@ export async function getProducts(
 
         // Filtrar por stock si se requiere
         const availableVariants = filters.in_stock_only 
-          ? variants.filter(v => v.is_in_stock)
-          : variants
+          ? variantsWithStock.filter(v => v.is_in_stock)
+          : variantsWithStock
 
         // Filtrar por talle y color
         const filteredVariants = availableVariants.filter(variant => {
@@ -187,13 +187,14 @@ export async function getProducts(
         return {
           ...product,
           variants: filteredVariants,
-          available_sizes: [...new Set(variants.map(v => v.size).filter((size): size is string => Boolean(size)))],
-          available_colors: [...new Set(variants.map(v => v.color).filter((color): color is string => Boolean(color)))],
+          available_sizes: [...new Set(variantsWithStock.map(v => v.size).filter((size): size is string => Boolean(size)))],
+          available_colors: [...new Set(variantsWithStock.map(v => v.color).filter((color): color is string => Boolean(color)))],
           price_range: {
             min: minPrice,
             max: maxPrice
           },
-          total_stock: variants.reduce((sum, v) => sum + v.stock_quantity, 0)
+          total_stock: variantsWithStock.reduce((sum, v) => sum + (v.stock_quantity || 0), 0),
+          categories: category
         }
       })
       .filter((product) => {
@@ -272,7 +273,7 @@ export async function getProductBySlug(slug: string): Promise<ProductWithVariant
     }))
 
     // Calcular rangos de precio
-    const prices = variants.map(v => product.base_price + v.price_adjustment)
+    const prices = variants.map(v => (product.base_price || 0) + (v.price_adjustment || 0))
     const minPrice = prices.length > 0 ? Math.min(...prices) : product.base_price
     const maxPrice = prices.length > 0 ? Math.max(...prices) : product.base_price
 
@@ -285,7 +286,7 @@ export async function getProductBySlug(slug: string): Promise<ProductWithVariant
         min: minPrice,
         max: maxPrice
       },
-      total_stock: variants.reduce((sum, v) => sum + v.stock_quantity, 0)
+      total_stock: variants.reduce((sum, v) => sum + (v.stock_quantity || 0), 0)
     }
   } catch (error) {
     console.error('Error fetching product by slug:', error)

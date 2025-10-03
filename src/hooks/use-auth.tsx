@@ -10,9 +10,9 @@ interface Profile {
   first_name: string | null
   last_name: string | null
   phone: string | null
-  role: 'customer' | 'admin'
-  created_at: string
-  updated_at: string
+  role: 'customer' | 'admin' | null
+  created_at: string | null
+  updated_at: string | null
 }
 
 interface AuthContextType {

@@ -45,25 +45,21 @@ export function ProductImage({
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const handleError = () => {
-    setHasError(true);
-    setIsLoading(false);
-  };
 
-  const handleLoad = () => {
-    setIsLoading(false);
-  };
 
   // Si no hay src, src es null/undefined, o es una URL de placeholder, mostrar placeholder directamente
   const shouldShowPlaceholder = !src || (typeof src === 'string' && src.includes('placeholder-product.svg')) || hasError;
+  
+  // Separar clases del contenedor vs clases de la imagen
+  const containerClasses = fill ? "relative w-full h-full" : "relative";
+  const imageClasses = className || "object-cover";
   
   if (shouldShowPlaceholder) {
     return (
       <div 
         className={cn(
           "relative bg-gray-100 flex items-center justify-center",
-          fill ? "w-full h-full" : `w-[${width}px] h-[${height}px]`,
-          className
+          fill ? "w-full h-full" : `w-[${width}px] h-[${height}px]`
         )}
         style={!fill ? { width, height } : undefined}
       >
@@ -81,11 +77,11 @@ export function ProductImage({
   }
 
   return (
-    <div className={cn("relative", className)}>
+    <div className={containerClasses}>
       {isLoading && (
         <div 
           className={cn(
-            "absolute inset-0 bg-gray-100 animate-pulse flex items-center justify-center",
+            "absolute inset-0 bg-gray-100 animate-pulse flex items-center justify-center z-10",
             fill ? "w-full h-full" : `w-[${width}px] h-[${height}px]`
           )}
           style={!fill ? { width, height } : undefined}
@@ -102,12 +98,14 @@ export function ProductImage({
         fill={fill}
         priority={priority}
         className={cn(
-          "object-cover transition-opacity duration-300",
+          imageClasses,
+          "transition-opacity duration-300",
           isLoading ? "opacity-0" : "opacity-100"
         )}
-        onError={handleError}
-        onLoad={handleLoad}
-        sizes={sizes}
+        onError={() => setHasError(true)}
+        onLoad={() => setIsLoading(false)}
+        sizes={sizes || (fill ? "100vw" : undefined)}
+        unoptimized={false}
       />
     </div>
   );

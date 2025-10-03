@@ -359,6 +359,39 @@ src/components/admin/
 - **CSRF protection**
 - **Input validation** con Zod
 
+### Manejo de Imágenes
+
+#### Configuración Next.js
+- **next.config.ts**: Configurado con `remotePatterns` para Supabase Storage
+- **Dominios permitidos**: 
+  - `*.supabase.co` (Supabase Storage)
+  - `via.placeholder.com` (placeholders)
+- **Optimización**: Automática vía `next/image`
+
+#### Flujo de Carga
+1. **Productos**: Array de URLs en campo `images` (JSON)
+2. **Fallback**: Placeholder SVG generado dinámicamente
+3. **Validación**: Verificación de URLs válidas antes de renderizar
+4. **Performance**: Lazy loading automático con `next/image`
+
+#### Estructura de Datos
+```typescript
+interface Product {
+  images: string[]; // Array de URLs de Supabase Storage
+  // ... otros campos
+}
+```
+
+#### Componentes
+- **ProductImageGallery**: Maneja múltiples imágenes con navegación
+- **ImagePlaceholder**: SVG generado para productos sin imágenes
+- **AdminImageUpload**: Componente para subir/gestionar imágenes (futuro)
+
+#### Tests E2E
+- **Verificación**: Carga correcta de imágenes en páginas públicas
+- **Fallbacks**: Manejo de imágenes faltantes o errores de carga
+- **Performance**: No errores de hostname en consola
+
 ---
 
 **Última actualización**: Enero 2025  
