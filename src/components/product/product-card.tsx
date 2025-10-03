@@ -41,16 +41,19 @@ export function ProductCard({ product, className }: ProductCardProps) {
   const discountPercentage = 0
 
   const isInStock = product.total_stock > 0
-  // Lógica mejorada para badges de inventario
+  // Lógica de badges de inventario:
   // Mostrar "Últimas unidades" solo si hay menos de 5 unidades en total
-  // No mostrar si hay más de 30 unidades disponibles
-  const isLowStock = product.total_stock > 0 && product.total_stock < 5 && product.total_stock <= 30
+  // Ocultar badge si hay más de 30 unidades (implícito al usar < 5)
+  const isLowStock = product.total_stock > 0 && product.total_stock < 5
 
   // Usar la primera imagen disponible o null para que ProductImage maneje el fallback
   const primaryImage = product.images?.[0] || null
 
   return (
-    <Card className={`group relative overflow-hidden transition-all duration-300 hover:shadow-lg ${className}`}>
+    <Card 
+      data-testid="product-card"
+      className={`group relative overflow-hidden transition-all duration-300 hover:shadow-lg ${className}`}
+    >
       {/* Badges */}
       <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
         {!isInStock && (

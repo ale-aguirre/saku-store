@@ -190,9 +190,9 @@ export default function AdminProductsPage() {
 
   const hasLowStock = (variants: ProductVariant[]) => {
     const totalStock = variants.reduce((sum, variant) => sum + (variant.stock_quantity || 0), 0)
-    // Lógica mejorada: mostrar "Stock bajo" solo si hay menos de 5 unidades en total
-    // No mostrar si hay más de 30 unidades disponibles
-    return totalStock > 0 && totalStock < 5 && totalStock <= 30
+    // Lógica de badges de inventario: mostrar "Stock bajo" solo si hay menos de 5 unidades en total
+    // Ocultar badge si hay más de 30 unidades (implícito al usar < 5)
+    return totalStock > 0 && totalStock < 5
   }
 
   const totalPages = Math.ceil(totalProducts / ITEMS_PER_PAGE)
@@ -391,7 +391,7 @@ export default function AdminProductsPage() {
                                 {availableSizes.map((size) => {
                                    const variant = colorVariants.find(v => v.size === size);
                                    const hasStock = variant && variant.stock_quantity !== null && variant.stock_quantity > 0;
-                                   const isLowStock = variant && variant.stock_quantity !== null && variant.stock_quantity > 0 && variant.stock_quantity <= 5;
+                                   const isLowStock = variant && variant.stock_quantity !== null && variant.stock_quantity > 0 && variant.stock_quantity < 5;
                                    
                                    return (
                                      <Badge 

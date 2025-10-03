@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from '@/components/ui/sheet'
 import { ShoppingCart, Plus, Minus, X, Tag, AlertCircle, Truck, MapPin } from 'lucide-react'
 import { useCart } from '@/hooks/use-cart'
 import { 
@@ -157,11 +157,23 @@ export function CartDrawer({ children }: CartDrawerProps) {
         </div>
       </SheetTrigger>
       
-      <SheetContent className="w-full sm:max-w-md lg:max-w-lg flex flex-col">
+      <SheetContent data-testid="cart-drawer" className="w-full sm:max-w-md lg:max-w-lg flex flex-col">
         <SheetHeader className="px-3 sm:px-4 md:px-6">
-          <SheetTitle className="flex items-center gap-2 text-sm sm:text-base">
-            <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" />
-            Carrito ({itemCount} {itemCount === 1 ? 'producto' : 'productos'})
+          <SheetTitle className="flex items-center justify-between text-sm sm:text-base">
+            <div className="flex items-center gap-2">
+              <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" />
+              Carrito ({itemCount} {itemCount === 1 ? 'producto' : 'productos'})
+            </div>
+            <SheetClose asChild>
+              <Button 
+                data-testid="cart-close-button"
+                variant="ghost" 
+                size="sm" 
+                className="h-6 w-6 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </SheetClose>
           </SheetTitle>
         </SheetHeader>
 
@@ -314,7 +326,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
               </AccordionItem>
               
               <AccordionItem value="shipping">
-                <AccordionTrigger className="py-2 text-sm">
+                <AccordionTrigger data-testid="shipping-accordion-trigger" className="py-2 text-sm">
                   <div className="flex items-center gap-2">
                     <Truck className="h-3 w-3 sm:h-4 sm:w-4" />
                     <span>Calcular envío</span>
@@ -331,6 +343,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
                       <div className="flex-1 space-y-1">
                         <div className="flex gap-1 sm:gap-2">
                           <Input
+                            data-testid="postal-code-input"
                             placeholder="Código postal"
                             value={postalCode}
                             onChange={(e) => {
@@ -375,6 +388,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
                           {isCordobaPostalCode ? (
                             <>
                               <div 
+                                data-testid="shipping-cordoba"
                                 className={`p-2 border rounded flex justify-between items-center cursor-pointer ${
                                   shippingMethod === 'cordoba' ? 'border-primary bg-primary/5' : ''
                                 }`}
@@ -389,6 +403,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
                                 </div>
                               </div>
                               <div 
+                                data-testid="shipping-national"
                                 className={`p-2 border rounded flex justify-between items-center cursor-pointer ${
                                   shippingMethod === 'national' ? 'border-primary bg-primary/5' : ''
                                 }`}
@@ -405,6 +420,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
                             </>
                           ) : (
                             <div 
+                              data-testid="shipping-national"
                               className={`p-2 border rounded flex justify-between items-center cursor-pointer ${
                                 shippingMethod === 'national' ? 'border-primary bg-primary/5' : ''
                               }`}
@@ -478,6 +494,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
             {/* Checkout Button */}
             <div className="px-3 sm:px-4 md:px-6 pb-3 sm:pb-4">
               <Button 
+                data-testid="checkout-button"
                 size="lg" 
                 className="w-full bg-[#d8ceb5] text-black hover:bg-[#d8ceb5]/90 text-sm sm:text-base h-10 sm:h-11"
                 disabled={!shippingMethod}

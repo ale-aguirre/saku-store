@@ -330,6 +330,7 @@ export default function CheckoutPage() {
                 form="checkout-form"
                 className="w-full bg-[#d8ceb5] text-black hover:bg-[#d8ceb5]/90 h-10 sm:h-11 text-sm sm:text-base"
                 disabled={isLoading}
+                data-testid="checkout-submit-button"
               >
                 {isLoading ? (
                   <>

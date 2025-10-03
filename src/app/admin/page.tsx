@@ -153,8 +153,8 @@ export default function AdminDashboard() {
       
       // Calculate unique products with low stock - filter on client side
       const lowStockVariants = (lowStockData as any[])?.filter(variant => {
-        // Lógica mejorada: considerar stock bajo solo si hay menos de 5 unidades
-        return variant.stock_quantity > 0 && variant.stock_quantity < 5 && variant.stock_quantity <= 30
+        // Lógica de badges de inventario: considerar stock bajo solo si hay menos de 5 unidades
+        return variant.stock_quantity > 0 && variant.stock_quantity < 5
       }) || []
       const uniqueLowStockProducts = new Set(lowStockVariants.map(variant => variant.product_id)).size
 
