@@ -20,6 +20,40 @@
 
 ## **REGISTRO DE CAMBIOS RECIENTES**
 
+### **2025-10-03 22:54 - Configuración de URLs de Producción en Supabase** ✅
+
+**Problema resuelto:**
+- ❌ **URLs no configuradas**: Faltaba configuración de URLs de autenticación para producción
+- ❌ **Dominio sakulenceria.com**: No estaba incluido en la configuración de Supabase
+- ❌ **Callbacks faltantes**: URLs de callback no configuradas para ambos dominios
+
+**Solución implementada:**
+- ✅ **SITE_URL configurado**: https://saku-store.vercel.app establecido como URL principal
+- ✅ **URI_ALLOW_LIST completo**: Incluye todos los dominios y callbacks necesarios
+- ✅ **Dominio sakulenceria.com**: Agregado con www y callbacks correspondientes
+- ✅ **Scripts de verificación**: Herramientas para validar configuración
+
+**Comandos ejecutados:**
+```bash
+npx supabase secrets set SITE_URL=https://saku-store.vercel.app --project-ref yhddnpcwhmeupwsjkchb
+npx supabase secrets set URI_ALLOW_LIST="https://saku-store.vercel.app,https://sakulenceria.com,https://www.sakulenceria.com,https://saku-store.vercel.app/auth/callback,https://sakulenceria.com/auth/callback,https://www.sakulenceria.com/auth/callback" --project-ref yhddnpcwhmeupwsjkchb
+```
+
+**URLs configuradas:**
+- ✅ **Producción actual**: https://saku-store.vercel.app
+- ✅ **Dominio futuro**: https://sakulenceria.com + www.sakulenceria.com
+- ✅ **Callbacks**: /auth/callback para ambos dominios
+- ✅ **Verificación**: Conexión a Supabase exitosa
+
+**Archivos creados:**
+- `scripts/configure-supabase-auth.js` - Script de configuración con Node.js
+- `scripts/configure-supabase-urls.sh` - Script bash alternativo para Management API
+- `scripts/verify-supabase-config.js` - Verificación de configuración aplicada
+
+**Próximos pasos:**
+- 🔄 **Google OAuth Console**: Configurar nuevas URLs de callback
+- 🔄 **Test producción**: Probar autenticación en ambiente real
+
 ### **2025-10-03 18:49 - Mejoras de UX y Loading: Sistema de Carga Unificado** ✅
 
 **Mejora implementada:**
@@ -2861,3 +2895,37 @@ El panel de administración ahora tiene tanto el botón de cambio de tema (claro
 - ✅ TypeScript: Sin errores  
 - ✅ Preview: Funcionando correctamente
 - ✅ Accesibilidad: Botones claramente visibles y accesibles
+# Roadmap Sakú Store
+
+## 2025-10-03 - Configuración Dinámica de Supabase ✅
+
+### Problema Identificado
+- URLs hardcodeadas en `supabase/config.toml` causaban errores 404 en producción
+- Configuración estática no se adaptaba automáticamente a diferentes entornos
+
+### Solución Implementada
+- **Script dinámico**: `scripts/setup-supabase-config.js`
+  - Detecta automáticamente el entorno (development/preview/production)
+  - Configura URLs apropiadas según variables de entorno
+  - Actualiza `site_url`, `additional_redirect_urls` y `redirect_uri`
+
+- **Integración**: Agregado script `supabase:config` a `package.json`
+- **Documentación**: Creado `docs/DYNAMIC_SUPABASE_CONFIG.md`
+
+### Cómo se hizo
+1. Análisis de configuraciones hardcodeadas en `supabase/config.toml`
+2. Creación de script que lee variables de entorno (`NEXT_PUBLIC_SITE_URL`, `VERCEL_URL`, `NODE_ENV`)
+3. Lógica de detección automática de entorno
+4. Actualización dinámica del archivo de configuración
+5. Pruebas en entornos de desarrollo y producción simulada
+
+### Próximos pasos pendientes
+- [ ] Configurar URLs en Supabase Dashboard manualmente
+- [ ] Integrar script en pipeline de deploy de Vercel
+- [ ] Probar autenticación completa en producción
+
+### Archivos modificados
+- `scripts/setup-supabase-config.js` (nuevo)
+- `package.json` (script agregado)
+- `supabase/config.toml` (actualizado dinámicamente)
+- `docs/DYNAMIC_SUPABASE_CONFIG.md` (nuevo)

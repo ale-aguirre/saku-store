@@ -31,8 +31,7 @@
     "emails:build": "mjml email/templates/*.mjml -o email/templates/ --config.minify true --config.keepComments=false",
     "emails:preview": "serve -p 4400 email/templates",
     "emails:check": "playwright test email/.checks --reporter=list",
-    "emails:subjects:lint": "node -e \"const s=require('./email/subjects.json'); if(!s||Array.isArray(s)){process.exit(1)}; for(const k in s){if(!s[k]?.subject||!s[k]?.preheader) process.exit(1)}\"",
-    "supabase:config": "node scripts/setup-supabase-config.js"
+    "emails:subjects:lint": "node -e \"const s=require('./email/subjects.json'); if(!s||Array.isArray(s)){process.exit(1)}; for(const k in s){if(!s[k]?.subject||!s[k]?.preheader) process.exit(1)}\""
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
