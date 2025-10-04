@@ -13,6 +13,13 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next()
     }
 
+    // Skip middleware for API routes that don't need auth
+    if (request.nextUrl.pathname.startsWith('/api/health') ||
+        request.nextUrl.pathname.startsWith('/api/debug') ||
+        request.nextUrl.pathname.startsWith('/api/webhooks')) {
+      return NextResponse.next()
+    }
+
     const response = NextResponse.next({
       request: {
         headers: request.headers,
@@ -21,7 +28,12 @@ export async function middleware(request: NextRequest) {
 
     // Verificar que las variables de entorno estén disponibles
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      console.error('Missing Supabase environment variables in middleware')
+      console.error('Missing Supabase environment variables in middleware - allowing request to continue')
+      // Si faltan las variables, permitir que la request continúe sin autenticación
+      // Solo bloquear rutas específicas de admin
+      if (request.nextUrl.pathname.startsWith('/admin')) {
+        return NextResponse.redirect(new URL('/auth/login?error=config', request.url))
+      }
       return response
     }
 
