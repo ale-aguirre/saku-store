@@ -7,7 +7,7 @@
 
 const https = require('https');
 
-const PRODUCTION_URL = 'https://saku-store-hqi1gpinm-alexis-aguirres-projects.vercel.app';
+const PRODUCTION_URL = 'https://saku-store-4q1r82lx5-alexis-aguirres-projects.vercel.app';
 
 async function makeRequest(path, options = {}) {
   return new Promise((resolve, reject) => {
