@@ -49,13 +49,7 @@
       ]
     }
   ],
-  "redirects": [
-    {
-      "source": "/admin",
-      "destination": "/admin/dashboard",
-      "permanent": false
-    }
-  ],
+  "redirects": [],
   "rewrites": [
     {
       "source": "/sitemap.xml",
