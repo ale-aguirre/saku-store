@@ -3,7 +3,38 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { AlertTriangle } from 'lucide-react'
 
-export default function AuthCodeErrorPage() {
+interface ErrorDetailsProps {
+  error?: string
+}
+
+function ErrorDetails({ error }: ErrorDetailsProps) {
+  const errorMessages: Record<string, string> = {
+    'access_denied': 'Acceso denegado. Has cancelado el proceso de autenticación.',
+    'session_exchange_failed': 'Error al procesar la sesión. El código de autorización puede haber expirado.',
+    'unexpected_error': 'Error inesperado durante la autenticación.',
+  }
+
+  const message = error ? errorMessages[error] : 'El enlace de autenticación puede haber expirado o ser inválido.'
+  
+  return (
+    <div className="space-y-2">
+      <p className="text-sm text-muted-foreground text-center">
+        {message}
+      </p>
+      {error && process.env.NODE_ENV === 'development' && (
+        <p className="text-xs text-muted-foreground text-center font-mono bg-muted p-2 rounded">
+          Error code: {error}
+        </p>
+      )}
+    </div>
+  )
+}
+
+interface AuthCodeErrorPageProps {
+  searchParams: { error?: string }
+}
+
+export default function AuthCodeErrorPage({ searchParams }: AuthCodeErrorPageProps) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md">
@@ -19,8 +50,9 @@ export default function AuthCodeErrorPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          <ErrorDetails error={searchParams.error} />
+          
           <p className="text-sm text-muted-foreground text-center">
-            El enlace de autenticación puede haber expirado o ser inválido. 
             Por favor, intenta iniciar sesión nuevamente.
           </p>
           
