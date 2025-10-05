@@ -31,10 +31,11 @@ function ErrorDetails({ error }: ErrorDetailsProps) {
 }
 
 interface AuthCodeErrorPageProps {
-  searchParams: { error?: string }
+  searchParams: Promise<{ error?: string }>
 }
 
-export default function AuthCodeErrorPage({ searchParams }: AuthCodeErrorPageProps) {
+export default async function AuthCodeErrorPage({ searchParams }: AuthCodeErrorPageProps) {
+  const params = await searchParams
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md">
@@ -50,7 +51,7 @@ export default function AuthCodeErrorPage({ searchParams }: AuthCodeErrorPagePro
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <ErrorDetails error={searchParams.error} />
+          <ErrorDetails error={params.error} />
           
           <p className="text-sm text-muted-foreground text-center">
             Por favor, intenta iniciar sesión nuevamente.
