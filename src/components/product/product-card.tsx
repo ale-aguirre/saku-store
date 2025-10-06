@@ -25,9 +25,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 interface ProductCardProps {
   product: ProductWithVariantsAndStock
   className?: string
+  compact?: boolean
 }
 
-export function ProductCard({ product, className }: ProductCardProps) {
+export function ProductCard({ product, className, compact = false }: ProductCardProps) {
   const { addItem, openCart } = useCart()
   const { isInWishlist, toggleWishlist } = useWishlist()
   const [selectedSize, setSelectedSize] = useState<string | null>('')
@@ -48,6 +49,67 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
   // Usar la primera imagen disponible o null para que ProductImage maneje el fallback
   const primaryImage = product.images?.[0] || null
+
+  // Renderizado compacto para búsqueda
+  if (compact) {
+    return (
+      <Link href={`/productos/${product.slug}`} className="block">
+        <Card className={`group relative overflow-hidden transition-all duration-300 hover:shadow-md ${className}`}>
+          <div className="flex gap-3 p-3">
+            {/* Imagen compacta */}
+            <div className="relative w-16 h-16 flex-shrink-0 overflow-hidden rounded-md">
+              <ProductImage
+                src={primaryImage}
+                alt={product.name}
+                fill
+                className="object-cover"
+                sizes="64px"
+              />
+              {!isInStock && (
+                <div className="absolute inset-0 bg-background/50 flex items-center justify-center">
+                  <span className="text-xs font-medium text-muted-foreground">
+                    Sin stock
+                  </span>
+                </div>
+              )}
+            </div>
+            
+            {/* Información del producto */}
+            <div className="flex-1 min-w-0">
+              <h3 className="font-medium text-sm line-clamp-2 mb-1 group-hover:text-primary transition-colors">
+                {product.name}
+              </h3>
+              
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-semibold text-primary">
+                  {formatPrice(product.base_price)}
+                </div>
+                
+                {/* Badges compactos */}
+                <div className="flex gap-1">
+                  {!isInStock && (
+                    <Badge variant="destructive" className="text-xs px-1 py-0">
+                      Agotado
+                    </Badge>
+                  )}
+                  {isInStock && isLowStock && (
+                    <Badge variant="secondary" className="text-xs px-1 py-0">
+                      Últimas
+                    </Badge>
+                  )}
+                  {product.is_featured && (
+                    <Badge className="bg-primary text-primary-foreground text-xs px-1 py-0">
+                      Destacado
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </Link>
+    )
+  }
 
   return (
     <Card 

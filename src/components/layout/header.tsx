@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { CartDrawer } from '@/components/cart/cart-drawer'
+import { SearchDialog } from '@/components/search/search-dialog'
 import { useCart } from '@/hooks/use-cart'
 import { UserButton } from '@/components/auth/user-button'
 import { Menu, ShoppingBag, Search } from 'lucide-react'
@@ -20,6 +21,7 @@ const navigation = [
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
   const { getTotalItems } = useCart()
   const totalItems = getTotalItems()
 
@@ -56,7 +58,12 @@ export function Header() {
 
         {/* Actions */}
         <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="icon" className="hidden sm:flex">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="hidden sm:flex"
+            onClick={() => setSearchOpen(true)}
+          >
             <Search className="h-4 w-4" />
             <span className="sr-only">Buscar</span>
           </Button>
@@ -89,6 +96,18 @@ export function Header() {
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[400px]">
               <nav className="flex flex-col space-y-4 mt-6">
+                {/* Búsqueda móvil */}
+                <Button 
+                  variant="outline" 
+                  className="justify-start gap-2"
+                  onClick={() => {
+                    setSearchOpen(true)
+                    setIsOpen(false)
+                  }}
+                >
+                  <Search className="h-4 w-4" />
+                  Buscar productos
+                </Button>
                 {navigation.map((item) => (
                   <Link
                     key={item.name}
@@ -107,6 +126,12 @@ export function Header() {
           </Sheet>
         </div>
       </div>
+      
+      {/* Search Dialog */}
+      <SearchDialog 
+        open={searchOpen} 
+        onOpenChange={setSearchOpen} 
+      />
     </header>
   )
 }
