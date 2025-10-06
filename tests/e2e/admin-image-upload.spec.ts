@@ -40,7 +40,7 @@ test.describe('Admin Panel - Imagen Upload Test', () => {
     console.log(`Número inicial de imágenes: ${initialImagesCount}`);
     
     // Preparar la ruta de la imagen de prueba
-    const imagePath = path.join(process.cwd(), 'public', 'test-image.svg');
+    const imagePath = path.join(process.cwd(), 'tests', 'fixtures', 'test-image.svg');
     
     // Subir la imagen
     const fileInput = await page.locator('input[type="file"]');

@@ -124,9 +124,9 @@ const vercelEnvExample = [
 ].join('\n');
 
 fs.writeFileSync(
-  path.join(__dirname, '..', 'vercel-env-example.txt'),
+  path.join(__dirname, '..', 'docs', 'vercel-env-example.txt'),
   vercelEnvExample
 );
 
-console.log('\n✅ Archivo vercel-env-example.txt generado con valores de ejemplo seguros');
+console.log('\n✅ Archivo docs/vercel-env-example.txt generado con valores de ejemplo seguros');
 console.log('⚠️  IMPORTANTE: Este archivo contiene valores de ejemplo, NO tus credenciales reales');
