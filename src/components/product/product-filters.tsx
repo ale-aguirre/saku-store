@@ -42,7 +42,8 @@ export function ProductFilters({
     category: true,
     size: true,
     color: true,
-    price: true
+    price: true,
+    offers: true
   })
 
   // Estado local para el slider de precio
@@ -50,6 +51,11 @@ export function ProductFilters({
     filters.min_price || priceRange.min,
     filters.max_price || priceRange.max
   ])
+
+  // Estado local para el slider de descuento
+  const [localDiscountRange, setLocalDiscountRange] = useState(
+    filters.discount_percentage_min || 0
+  )
 
   // Actualizar precio local cuando cambian los filtros externos
   useEffect(() => {
@@ -96,6 +102,26 @@ export function ProductFilters({
     onFiltersChange({
       ...filters,
       in_stock_only: checked || undefined
+    })
+  }
+
+  const handleOnSaleToggle = (checked: boolean) => {
+    onFiltersChange({
+      ...filters,
+      on_sale: checked || undefined
+    })
+  }
+
+  const handleDiscountChange = (value: number[]) => {
+    setLocalDiscountRange(value[0])
+  }
+
+  const handleDiscountCommit = (value: number[]) => {
+    const discountValue = value[0]
+    setLocalDiscountRange(discountValue)
+    onFiltersChange({
+      ...filters,
+      discount_percentage_min: discountValue > 0 ? discountValue : undefined
     })
   }
 
@@ -192,6 +218,24 @@ export function ProductFilters({
               <X 
                 className="h-3 w-3 cursor-pointer" 
                 onClick={() => handlePriceCommit([priceRange.min, priceRange.max])}
+              />
+            </Badge>
+          )}
+          {filters.on_sale && (
+            <Badge variant="secondary" className="flex items-center gap-1">
+              En oferta
+              <X 
+                className="h-3 w-3 cursor-pointer" 
+                onClick={() => handleOnSaleToggle(false)}
+              />
+            </Badge>
+          )}
+          {filters.discount_percentage_min && filters.discount_percentage_min > 0 && (
+            <Badge variant="secondary" className="flex items-center gap-1">
+              Descuento mín. {filters.discount_percentage_min}%
+              <X 
+                className="h-3 w-3 cursor-pointer" 
+                onClick={() => handleDiscountCommit([0])}
               />
             </Badge>
           )}
@@ -318,6 +362,49 @@ export function ProductFilters({
                   <div className="flex justify-between text-sm text-gray-600 mt-2">
                     <span>{formatPrice(localPriceRange[0])}</span>
                     <span>{formatPrice(localPriceRange[1])}</span>
+                  </div>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+
+            {/* Ofertas */}
+            <Collapsible open={openSections.offers} onOpenChange={() => toggleSection('offers')}>
+              <CollapsibleTrigger className="flex items-center justify-between w-full text-left">
+                <h3 className="font-medium">Ofertas</h3>
+                {openSections.offers ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-4 mt-3">
+                {/* Solo productos en oferta */}
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="on-sale"
+                    checked={filters.on_sale || false}
+                    onCheckedChange={handleOnSaleToggle}
+                  />
+                  <Label htmlFor="on-sale" className="text-sm font-normal">
+                    Solo productos en oferta
+                  </Label>
+                </div>
+
+                {/* Descuento mínimo */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Descuento mínimo: {localDiscountRange}%
+                  </Label>
+                  <div className="px-2">
+                    <Slider
+                      value={[localDiscountRange]}
+                      onValueChange={handleDiscountChange}
+                      onValueCommit={handleDiscountCommit}
+                      max={70}
+                      min={0}
+                      step={5}
+                      className="w-full"
+                    />
+                    <div className="flex justify-between text-sm text-gray-600 mt-1">
+                      <span>0%</span>
+                      <span>70%</span>
+                    </div>
                   </div>
                 </div>
               </CollapsibleContent>

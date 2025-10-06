@@ -89,7 +89,7 @@ export default function CouponsPage() {
 
       if (error) throw error
 
-      setCoupons(data || [])
+      setCoupons((data || []) as unknown as Coupon[])
     } catch (error) {
       console.error('Error fetching coupons:', error)
     } finally {

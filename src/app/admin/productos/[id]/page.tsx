@@ -10,40 +10,7 @@ import { EditProductFormSimple } from '@/components/admin/edit-product-form-simp
 import { updateProduct } from '@/app/admin/productos/actions'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
-
-interface Product {
-  id: string
-  name: string
-  description: string | null
-  base_price: number
-  sku: string
-  category_id: string | null
-  brand: string | null
-  category: string | null
-  is_active: boolean | null
-  is_featured: boolean | null
-  images: string[] | null
-  slug: string | null
-  created_at: string | null
-  updated_at: string | null
-}
-
-interface ProductVariant {
-  id?: string
-  size: string
-  color: string
-  stock_quantity: number | null
-  sku: string
-  product_id?: string | null
-  images?: string[] | null
-  price?: number | null
-  price_adjustment?: number | null
-  material?: string | null
-  is_active?: boolean | null
-  low_stock_threshold?: number | null
-  created_at?: string | null
-  updated_at?: string | null
-}
+import { Product, ProductVariant } from '@/types/catalog'
 
 
 
@@ -71,11 +38,21 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
   // Variants
   const [variants, setVariants] = useState<ProductVariant[]>([])
   const [newVariant, setNewVariant] = useState<ProductVariant>({
+    id: '',
+    product_id: '',
     size: '',
     color: '',
-    stock_quantity: 0,
     sku: '',
-    images: []
+    price_adjustment: 0,
+    stock_quantity: 0,
+    is_active: true,
+    created_at: '',
+    updated_at: '',
+    material: null,
+    low_stock_threshold: 5,
+    price: 0,
+    images: null,
+    compare_at_price: null
   })
 
   // Resolve params promise
@@ -100,7 +77,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
       if (productError) throw productError
 
-      setProduct(productData)
+      setProduct(productData as Product)
       const product = productData as any
       
       // Cargar imágenes del producto desde el campo images
@@ -186,7 +163,23 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
       if (error) throw error
 
       setVariants(prev => [...prev, data])
-      setNewVariant({ size: '', color: '', stock_quantity: 0, sku: '', images: [] })
+      setNewVariant({
+        id: '',
+        product_id: '',
+        size: '',
+        color: '',
+        sku: '',
+        price_adjustment: 0,
+        stock_quantity: 0,
+        is_active: true,
+        created_at: '',
+        updated_at: '',
+        material: null,
+        low_stock_threshold: 5,
+        price: 0,
+        images: null,
+        compare_at_price: null
+      })
     } catch (error) {
       console.error('Error adding variant:', error)
       alert('Error al agregar la variante')
@@ -248,6 +241,26 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     } catch (error) {
       console.error('Error updating variant images:', error)
       alert('Error al actualizar las imágenes de la variante')
+    }
+  }
+
+  const updateVariantComparePrice = async (variantId: string, compareAtPrice: number | null) => {
+    try {
+      const supabase = createClient()
+      
+      const { error } = await (supabase as any)
+        .from('product_variants')
+        .update({ compare_at_price: compareAtPrice })
+        .eq('id', variantId)
+
+      if (error) throw error
+
+      setVariants(prev => prev.map(v => 
+        v.id === variantId ? { ...v, compare_at_price: compareAtPrice } : v
+      ))
+    } catch (error) {
+      console.error('Error updating variant compare price:', error)
+      alert('Error al actualizar el precio de comparación')
     }
   }
 
@@ -359,16 +372,18 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     name: formData.name,
     description: formData.description,
     base_price: parseFloat(formData.price) || 0,
-    sku: formData.sku,
     category_id: formData.category,
-    brand: null,
-    category: null,
     is_active: formData.is_active,
     is_featured: false,
     images: formData.images,
-    slug: null,
-    created_at: null,
-    updated_at: null
+    slug: product.slug,
+    created_at: product.created_at,
+    updated_at: product.updated_at,
+    material: product.material || null,
+    care_instructions: product.care_instructions || null,
+    size_guide: product.size_guide || null,
+    meta_title: product.meta_title || null,
+    meta_description: product.meta_description || null
   } : null
 
   const categoriesForForm = CATEGORIES.map(cat => ({ id: cat, name: cat }))
@@ -391,6 +406,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
       updateVariantStock(variant.id, value)
     } else if (field === 'images') {
       updateVariantImages(variant.id, value)
+    } else if (field === 'compare_at_price') {
+      updateVariantComparePrice(variant.id, value)
     }
     // Para size y color, necesitaríamos una función de actualización completa
   }

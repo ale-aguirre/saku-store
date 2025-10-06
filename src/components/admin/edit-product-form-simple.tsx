@@ -23,40 +23,7 @@ import {
   Settings
 } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-
-interface Product {
-  id: string
-  name: string
-  description: string | null
-  base_price: number
-  sku: string
-  category_id: string | null
-  brand: string | null
-  category: string | null
-  is_active: boolean | null
-  is_featured: boolean | null
-  images: string[] | null
-  slug: string | null
-  created_at: string | null
-  updated_at: string | null
-}
-
-interface ProductVariant {
-  id?: string
-  size: string
-  color: string
-  stock_quantity: number | null
-  sku: string
-  product_id?: string | null
-  images?: string[] | null
-  price?: number | null
-  price_adjustment?: number | null
-  material?: string | null
-  is_active?: boolean | null
-  low_stock_threshold?: number | null
-  created_at?: string | null
-  updated_at?: string | null
-}
+import { Product, ProductVariant } from '@/types/catalog'
 
 interface EditProductFormProps {
   product: Product
@@ -116,16 +83,7 @@ export function EditProductFormSimple({
                     required
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="sku">SKU</Label>
-                  <Input
-                    id="sku"
-                    value={product.sku}
-                    onChange={(e) => onProductChange('sku', e.target.value)}
-                    placeholder="Ej: CONJ-001"
-                    required
-                  />
-                </div>
+                {/* SKU no está en el schema de products - se maneja a nivel de variantes */}
               </div>
 
               <div className="space-y-2">
@@ -170,15 +128,7 @@ export function EditProductFormSimple({
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="brand">Marca</Label>
-                  <Input
-                    id="brand"
-                    value={product.brand || ''}
-                    onChange={(e) => onProductChange('brand', e.target.value)}
-                    placeholder="Ej: Sakú"
-                  />
-                </div>
+                {/* Brand no está en el schema de products */}
               </div>
 
               <div className="flex items-center space-x-4">
@@ -311,10 +261,40 @@ export function EditProductFormSimple({
                     </div>
                   </div>
 
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div className="space-y-2">
+                      <Label>Precio de comparación (oferta)</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={variant.compare_at_price ? (variant.compare_at_price / 100).toFixed(2) : ''}
+                        onChange={(e) => {
+                          const value = e.target.value
+                          const priceInCents = value ? Math.round(parseFloat(value) * 100) : null
+                          onVariantChange(index, 'compare_at_price', priceInCents)
+                        }}
+                        placeholder="Precio original (opcional)"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Precio antes del descuento. Debe ser mayor al precio final.
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>SKU de la variante</Label>
+                      <Input
+                        value={variant.sku}
+                        onChange={(e) => onVariantChange(index, 'sku', e.target.value)}
+                        placeholder="Ej: CONJ-001-85-NEGRO"
+                      />
+                    </div>
+                  </div>
+
                   <div className="space-y-2">
                     <Label>Imágenes de la variante</Label>
                     <ImageUpload
-                      value={variant.images || []}
+                      value={Array.isArray(variant.images) ? variant.images as string[] : []}
                       onChange={(images) => onVariantChange(index, 'images', images)}
                       maxImages={3}
                     />

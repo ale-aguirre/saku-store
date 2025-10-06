@@ -173,44 +173,20 @@ export async function getProducts(
           : variantsWithStock
 
         // Filtrar por talle y color
-        // Filtrar por talle y color
         const filteredVariants = availableVariants.filter(variant => {
           if (filters.size && variant.size !== filters.size) return false
           if (filters.color && variant.color !== filters.color) return false
           return true
         })
 
-        // Agregar información de ofertas a las variantes
-        const variantsWithOffers = filteredVariants.map(variant => {
-          const currentPrice = product.base_price + variant.price_adjustment
-          const compareAtPrice = variant.compare_at_price
-          const hasOffer = compareAtPrice && compareAtPrice > currentPrice
-          const discountPercentage = hasOffer ? Math.round(((compareAtPrice - currentPrice) / compareAtPrice) * 100) : 0
-
-          return {
-            ...variant,
-            has_offer: hasOffer,
-            discount_percentage: discountPercentage
-          }
-        })
-
-        // Filtrar por ofertas si se requiere
-        let finalVariants = variantsWithOffers
-        if (filters.on_sale) {
-          finalVariants = finalVariants.filter(variant => variant.has_offer)
-        }
-        if (filters.discount_percentage_min) {
-          finalVariants = finalVariants.filter(variant => variant.discount_percentage >= (filters.discount_percentage_min ?? 0))
-        }
-
         // Calcular rangos de precio
-        const prices = finalVariants.map(v => product.base_price + v.price_adjustment)
+        const prices = filteredVariants.map(v => product.base_price + v.price_adjustment)
         const minPrice = prices.length > 0 ? Math.min(...prices) : product.base_price
         const maxPrice = prices.length > 0 ? Math.max(...prices) : product.base_price
 
         return {
           ...product,
-          variants: finalVariants,
+          variants: filteredVariants,
           available_sizes: [...new Set(variantsWithStock.map(v => v.size).filter((size): size is string => Boolean(size)))],
           available_colors: [...new Set(variantsWithStock.map(v => v.color).filter((color): color is string => Boolean(color)))],
           price_range: {
@@ -303,7 +279,6 @@ export async function getProductBySlug(slug: string): Promise<ProductWithVariant
 
     return {
       ...product,
-      images: Array.isArray(product.images) ? product.images as string[] : null,
       variants,
       available_sizes: [...new Set(variants.map(v => v.size).filter((size): size is string => Boolean(size)))],
       available_colors: [...new Set(variants.map(v => v.color).filter((color): color is string => Boolean(color)))],

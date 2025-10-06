@@ -146,7 +146,7 @@ export default function OrdersPage() {
       
       if (error) throw error
       
-      setOrders(data || [])
+      setOrders((data || []) as unknown as Order[])
       
       // Actualizar el contador total
       if (count !== null) {

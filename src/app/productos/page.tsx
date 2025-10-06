@@ -24,6 +24,8 @@ interface ProductsPageProps {
     colores?: string
     stock?: string
     destacados?: string
+    oferta?: string
+    descuento_min?: string
     pagina?: string
   }>
 }
@@ -40,6 +42,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     colors: params.colores?.split(',').filter(Boolean),
     inStock: params.stock === 'true' ? true : params.stock === 'false' ? false : undefined,
     is_featured: params.destacados === 'true',
+    onSale: params.oferta === 'true',
+    discountPercentageMin: params.descuento_min ? parseFloat(params.descuento_min) : undefined,
   }
 
   const sortBy = (params.orden as any) || 'featured'

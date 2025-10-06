@@ -1,9 +1,15 @@
 import { Database } from './database'
 
 // Tipos base de la base de datos
-export type Product = Database['public']['Tables']['products']['Row']
+type DatabaseProduct = Database['public']['Tables']['products']['Row']
 export type ProductVariant = Database['public']['Tables']['product_variants']['Row']
 export type Category = Database['public']['Tables']['categories']['Row']
+
+// Tipo Product corregido con images como array de strings y category incluido
+export interface Product extends Omit<DatabaseProduct, 'images'> {
+  images: string[] | null
+  category?: Category | null
+}
 
 // Tipos extendidos para el catálogo
 export interface ProductWithVariants extends Product {
@@ -26,6 +32,8 @@ export interface ProductWithVariantsAndStock extends Product {
     max: number
   }
   total_stock: number
+  has_offer?: boolean
+  discount_percentage?: number
 }
 
 // Tipos para filtros y búsqueda
@@ -38,6 +46,8 @@ export interface ProductFilters {
   in_stock_only?: boolean
   is_featured?: boolean
   search?: string
+  on_sale?: boolean // Filtrar productos en oferta (con compare_at_price)
+  discount_percentage_min?: number // Filtrar por porcentaje mínimo de descuento
 }
 
 export type SortOption = 'featured' | 'price_asc' | 'price_desc' | 'newest' | 'name'

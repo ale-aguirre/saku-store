@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
+import { OfferBadge } from '@/components/ui/offer-badge'
 import { ShoppingCart, Heart, Eye } from 'lucide-react'
 import { ProductImage } from '@/components/ui/product-image'
 import type { ProductWithVariantsAndStock } from '@/types/catalog'
@@ -36,10 +37,9 @@ export function ProductCard({ product, className, compact = false }: ProductCard
   const [quickAddOpen, setQuickAddOpen] = useState(false)
   
   // Determinar si el producto requiere talles
-  const requiresSizes = categoryRequiresSizes(product.category || '')
-  // No discount logic since compare_at_price is not in the current schema
-  const hasDiscount = false
-  const discountPercentage = 0
+  const requiresSizes = categoryRequiresSizes(product.category?.name || '')
+  // Usar datos reales de ofertas del backend
+  const discountPercentage = product.discount_percentage || 0
 
   const isInStock = product.total_stock > 0
   // Lógica de badges de inventario:
@@ -97,6 +97,7 @@ export function ProductCard({ product, className, compact = false }: ProductCard
                       Últimas
                     </Badge>
                   )}
+                  <OfferBadge discountPercentage={discountPercentage} className="text-xs px-1 py-0" />
                   {product.is_featured && (
                     <Badge className="bg-primary text-primary-foreground text-xs px-1 py-0">
                       Destacado
@@ -128,11 +129,7 @@ export function ProductCard({ product, className, compact = false }: ProductCard
             Últimas unidades
           </Badge>
         )}
-        {hasDiscount && (
-          <Badge variant="destructive" className="text-xs">
-            -{discountPercentage}%
-          </Badge>
-        )}
+        <OfferBadge discountPercentage={discountPercentage} />
         {product.is_featured && (
           <Badge className="bg-primary text-primary-foreground text-xs">
             Destacado

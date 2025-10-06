@@ -39,39 +39,10 @@ import {
 import Link from 'next/link'
 import { useAuth } from '@/hooks/use-auth'
 import Image from 'next/image'
+import { Product, ProductVariant } from '@/types/catalog'
 
-interface ProductVariant {
-  id: string
-  size: string
-  color: string
-  stock_quantity: number | null
-  low_stock_threshold: number | null
-  sku: string
-  price: number | null
-  price_adjustment: number | null
-  images: string[] | null
-  material: string | null
-  is_active: boolean | null
-  product_id: string | null
-  created_at: string | null
-  updated_at: string | null
-}
-
-interface Product {
-  id: string
-  name: string
-  description: string | null
-  base_price: number
-  sku: string
-  category_id: string | null
-  brand: string | null
-  category: string | null
-  is_active: boolean | null
-  is_featured: boolean | null
-  images: string[] | null
-  slug: string | null
-  created_at: string | null
-  updated_at: string | null
+// Tipo extendido para incluir las variantes en la query
+interface ProductWithVariants extends Product {
   product_variants: ProductVariant[]
 }
 
@@ -79,7 +50,7 @@ const ITEMS_PER_PAGE = 20
 
 export default function AdminProductsPage() {
   const { user, loading } = useAuth()
-  const [products, setProducts] = useState<Product[]>([])
+  const [products, setProducts] = useState<ProductWithVariants[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
@@ -105,6 +76,7 @@ export default function AdminProductsPage() {
             sku,
             price,
             price_adjustment,
+            compare_at_price,
             images,
             material,
             is_active,
@@ -157,12 +129,12 @@ export default function AdminProductsPage() {
 
       // Filtrar productos sin stock en el cliente
       if (statusFilter === 'no_stock') {
-        filteredData = filteredData.filter((product: Product) => 
+        filteredData = filteredData.filter((product: any) => 
           getTotalStock(product.product_variants) === 0
         )
       }
 
-      setProducts(filteredData)
+      setProducts(filteredData as ProductWithVariants[])
       setTotalProducts(count || 0)
     } catch (error) {
       console.error('Error fetching products:', error)

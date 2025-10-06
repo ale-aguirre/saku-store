@@ -51,7 +51,7 @@ interface OrderSummaryProps {
     updated_at: string
     subtotal: number
     discount_amount: number
-    shipping_amount: number
+    shipping_cost: number
     tax_amount: number
     total_amount: number
     user_id: string
@@ -208,7 +208,7 @@ export function OrderSummary({ order, onUpdate }: OrderSummaryProps) {
             )}
             <div className="flex justify-between">
               <span className="text-gray-600">Envío</span>
-              <span>{formatPrice(order.shipping_amount)}</span>
+              <span>{formatPrice(order.shipping_cost)}</span>
             </div>
             {order.tax_amount > 0 && (
               <div className="flex justify-between">

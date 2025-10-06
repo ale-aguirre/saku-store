@@ -1,5 +1,25 @@
 # Learning Log - Sakú Lencería
 
+### 2025-10-06 - Corrección Masiva de Tipos TypeScript
+
+**Issue**: 14 errores de TypeScript distribuidos en 7 archivos del panel admin debido a tipos locales duplicados y propiedades faltantes.
+
+**Cause**: 
+- Definición de tipos locales que duplicaban tipos canónicos
+- Inicialización incompleta de objetos complejos (`productForForm`, `newVariant`)
+- Incompatibilidades entre tipos de Supabase y tipos de aplicación
+
+**Fix**: 
+- Eliminación de tipos locales y uso de tipos canónicos desde `@/types/catalog`
+- Inicialización completa de objetos con todas las propiedades requeridas
+- Aplicación de casts temporales `as unknown as Type` para incompatibilidades
+
+**Prevention**: 
+- Siempre usar tipos canónicos desde `@/types/catalog` en lugar de definir tipos locales
+- Verificar que objetos complejos incluyan todas las propiedades requeridas al inicializar
+- Ejecutar `npm run type-check` frecuentemente durante el desarrollo
+- Considerar crear tipos de utilidad para inicialización de objetos complejos
+
 ## 2023-11-15 - Error de nombre de bucket incorrecto en Supabase Storage
 
 **Issue**: Fallo al guardar imágenes en Supabase Storage debido a que el código intentaba usar un bucket llamado "product-images" cuando el bucket correcto configurado en Supabase es "products".

@@ -22,6 +22,7 @@ import {
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/use-auth'
+import { Product, ProductVariant } from '@/types/catalog'
 
 interface DashboardStats {
   totalProducts: number
@@ -49,37 +50,9 @@ interface Order {
   } | null
 }
 
-interface Product {
-  id: string
-  name: string
-  base_price: number
-  sku: string
-  description: string | null
-  images: string[] | null
-  is_active: boolean | null
-  is_featured: boolean | null
-  brand: string | null
-  category: string | null
-  category_id: string | null
-  slug: string | null
-  created_at: string | null
-  updated_at: string | null
-  product_variants: {
-    id: string
-    size: string
-    color: string
-    stock_quantity: number | null
-    sku: string
-    price: number | null
-    price_adjustment: number | null
-    images: string[] | null
-    material: string | null
-    is_active: boolean | null
-    low_stock_threshold: number | null
-    product_id: string | null
-    created_at: string | null
-    updated_at: string | null
-  }[]
+// Tipo extendido para incluir las variantes en la query del dashboard
+interface ProductWithVariants extends Product {
+  product_variants: ProductVariant[]
 }
 
 const statusConfig = {
@@ -107,7 +80,7 @@ export default function AdminDashboard() {
     averageOrderValue: 0
   })
   const [recentOrders, setRecentOrders] = useState<Order[]>([])
-  const [products, setProducts] = useState<Product[]>([])
+  const [products, setProducts] = useState<ProductWithVariants[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -185,7 +158,7 @@ export default function AdminDashboard() {
         .order('created_at', { ascending: false })
         .limit(10)
 
-      setRecentOrders(ordersData || [])
+      setRecentOrders((ordersData || []) as unknown as Order[])
 
       // Fetch products
       const { data: productsData } = await supabase
@@ -212,7 +185,7 @@ export default function AdminDashboard() {
         .order('created_at', { ascending: false })
         .limit(10)
 
-      setProducts(productsData || [])
+      setProducts((productsData || []) as ProductWithVariants[])
 
     } catch (error) {
       console.error('Error fetching dashboard data:', error)

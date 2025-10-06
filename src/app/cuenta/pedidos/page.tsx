@@ -90,7 +90,7 @@ export default function OrdersPage() {
       .from('orders')
       .select(`
         *,
-        order_items (
+        order_items!inner (
           id,
           quantity,
           price,
@@ -105,7 +105,7 @@ export default function OrdersPage() {
 
       if (error) throw error
 
-      setOrders(data || [])
+      setOrders((data as any) || [])
     } catch (error) {
       console.error('Error fetching orders:', error)
     } finally {

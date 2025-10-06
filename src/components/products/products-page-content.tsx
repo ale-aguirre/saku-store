@@ -22,6 +22,8 @@ interface ProductsPageContentProps {
     colors?: string[]
     inStock?: boolean
     is_featured?: boolean
+    onSale?: boolean
+    discountPercentageMin?: number
   }
   initialSortBy: string
   initialPage: number
@@ -62,7 +64,10 @@ export function ProductsPageContent({
     maxPrice: filters.maxPrice,
     sortBy: sortBy as SortOption,
     page: currentPage,
-    limit: 12
+    limit: 12,
+    inStockOnly: filters.inStock,
+    onSale: filters.onSale,
+    discountPercentageMin: filters.discountPercentageMin
   })
 
   // Extraer datos de la respuesta
@@ -82,6 +87,8 @@ export function ProductsPageContent({
     if (newFilters.colors?.length) params.set('colores', newFilters.colors.join(','))
     if (newFilters.inStock !== undefined) params.set('stock', newFilters.inStock.toString())
     if (newFilters.is_featured) params.set('destacados', 'true')
+    if (newFilters.onSale) params.set('oferta', 'true')
+    if (newFilters.discountPercentageMin) params.set('descuento_min', newFilters.discountPercentageMin.toString())
     if (newSortBy !== 'featured') params.set('orden', newSortBy)
     if (newPage > 1) params.set('pagina', newPage.toString())
 
@@ -120,7 +127,9 @@ export function ProductsPageContent({
       sizes: undefined,
       colors: undefined,
       inStock: undefined,
-      is_featured: false,
+      is_featured: undefined,
+      onSale: undefined,
+      discountPercentageMin: undefined
     }
     setFilters(clearedFilters)
     setSortBy('featured')
@@ -137,7 +146,9 @@ export function ProductsPageContent({
     filters.sizes?.length ||
     filters.colors?.length ||
     filters.inStock !== undefined ||
-    filters.is_featured
+    filters.is_featured ||
+    filters.onSale ||
+    filters.discountPercentageMin
   )
 
   // Función estable para refetch
@@ -234,6 +245,9 @@ export function ProductsPageContent({
                 color: filters.colors?.[0],
                 min_price: filters.minPrice,
                 max_price: filters.maxPrice,
+                in_stock_only: filters.inStock,
+                on_sale: filters.onSale,
+                discount_percentage_min: filters.discountPercentageMin
               }}
               onFiltersChange={(newFilters) => {
                 handleFiltersChange({
@@ -243,6 +257,9 @@ export function ProductsPageContent({
                   colors: newFilters.color ? [newFilters.color] : undefined,
                   minPrice: newFilters.min_price,
                   maxPrice: newFilters.max_price,
+                  inStock: newFilters.in_stock_only,
+                  onSale: newFilters.on_sale,
+                  discountPercentageMin: newFilters.discount_percentage_min
                 })
               }}
               onClearFilters={clearFilters}

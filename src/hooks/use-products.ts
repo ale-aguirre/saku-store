@@ -28,6 +28,9 @@ export interface UseProductsParams {
   colors?: string[]
   minPrice?: number
   maxPrice?: number
+  inStockOnly?: boolean
+  onSale?: boolean
+  discountPercentageMin?: number
 }
 
 export function useProducts({
@@ -39,29 +42,32 @@ export function useProducts({
   sizes,
   colors,
   minPrice,
-  maxPrice
+  maxPrice,
+  inStockOnly,
+  onSale,
+  discountPercentageMin
 }: UseProductsParams = {}) {
   const _supabase = createClient()
 
   return useQuery({
-    queryKey: ['products', { categoryId, sortBy, page, limit, search, sizes, colors, minPrice, maxPrice }],
+    queryKey: ['products', { categoryId, sortBy, page, limit, search, sizes, colors, minPrice, maxPrice, inStockOnly, onSale, discountPercentageMin }],
     queryFn: () => {
       const filters = {
         category_id: categoryId,
         search,
-        sizes,
-        colors,
+        size: sizes?.[0], // Tomar solo el primer tamaño
+        color: colors?.[0], // Tomar solo el primer color
         min_price: minPrice,
-        max_price: maxPrice
+        max_price: maxPrice,
+        in_stock_only: inStockOnly,
+        on_sale: onSale,
+        discount_percentage_min: discountPercentageMin
       }
-      return getProducts(filters)
+      return getProducts(filters, sortBy, page, limit)
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
-    refetchOnWindowFocus: false,
-    refetchOnMount: false, // No refetch si hay datos en caché
-    retry: 2,
-    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
+    enabled: true,
+    staleTime: 1000 * 60 * 5, // 5 minutos
+    gcTime: 1000 * 60 * 10, // 10 minutos
   })
 }
 

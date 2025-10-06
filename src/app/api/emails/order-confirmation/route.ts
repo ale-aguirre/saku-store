@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     // Enviar email de confirmación
     const emailResult = await sendOrderConfirmationEmail({
-      order,
+      order: order as any,
       customerEmail,
       items: (order as any).order_items || [],
     });

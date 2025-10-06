@@ -110,7 +110,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
         return
       }
 
-      setOrder(data as OrderDetail)
+      setOrder(data as unknown as OrderDetail)
     } catch (error) {
       console.error('Error fetching order:', error)
     } finally {
