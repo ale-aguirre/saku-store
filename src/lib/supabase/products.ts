@@ -492,3 +492,115 @@ export async function getPriceRange(): Promise<{ min: number; max: number }> {
     return { min: 0, max: 20000 }
   }
 }
+
+/**
+ * Función optimizada para búsqueda de productos
+ */
+export async function searchProducts(
+  searchTerm: string,
+  limit: number = 10
+): Promise<{ products: ProductWithVariantsAndStock[]; totalItems: number }> {
+  try {
+    if (!searchTerm || searchTerm.trim().length === 0) {
+      return { products: [], totalItems: 0 }
+    }
+
+    // Búsqueda simplificada para depuración
+    const { data: products, error, count } = await supabase
+      .from('products')
+      .select(`
+        *,
+        product_variants!inner (
+          id,
+          sku,
+          size,
+          color,
+          material,
+          price_adjustment,
+          stock_quantity,
+          low_stock_threshold,
+          is_active
+        ),
+        categories (
+          id,
+          name,
+          slug
+        )
+      `, { count: 'exact' })
+      .eq('is_active', true)
+      .eq('product_variants.is_active', true)
+      .or(`name.ilike.%${searchTerm}%, description.ilike.%${searchTerm}%`)
+      .order('is_featured', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(limit)
+
+    if (error) {
+      console.error('Error searching products:', error)
+      return { products: [], totalItems: 0 }
+    }
+
+    if (!products || products.length === 0) {
+      return { products: [], totalItems: 0 }
+    }
+
+    // Transformar datos al formato esperado usando el mismo patrón que getProducts
+    const productsMap = new Map()
+    
+    products.forEach((product: any) => {
+      if (!productsMap.has(product.id)) {
+        productsMap.set(product.id, {
+          ...product,
+          product_variants: []
+        })
+      }
+      
+      if (product.product_variants) {
+        const existingProduct = productsMap.get(product.id)
+        product.product_variants.forEach((variant: any) => {
+          if (!existingProduct.product_variants.find((v: any) => v.id === variant.id)) {
+            existingProduct.product_variants.push(variant)
+          }
+        })
+      }
+    })
+
+    // Procesar productos con variantes y stock
+    const processedProducts: ProductWithVariantsAndStock[] = Array.from(productsMap.values())
+      .map((product: any) => {
+        const variants = product.product_variants || []
+        const category = product.categories
+        
+        const variantsWithStock: VariantWithStock[] = variants.map((variant: any) => ({
+          ...variant,
+          is_in_stock: variant.stock_quantity > 0,
+          is_low_stock: variant.stock_quantity <= variant.low_stock_threshold && variant.stock_quantity > 0
+        }))
+
+        // Calcular rangos de precio
+        const prices = variantsWithStock.map(v => product.base_price + v.price_adjustment)
+        const minPrice = prices.length > 0 ? Math.min(...prices) : product.base_price
+        const maxPrice = prices.length > 0 ? Math.max(...prices) : product.base_price
+
+        return {
+          ...product,
+          variants: variantsWithStock,
+          available_sizes: [...new Set(variantsWithStock.map(v => v.size).filter((size): size is string => Boolean(size)))],
+          available_colors: [...new Set(variantsWithStock.map(v => v.color).filter((color): color is string => Boolean(color)))],
+          price_range: {
+            min: minPrice,
+            max: maxPrice
+          },
+          total_stock: variantsWithStock.reduce((sum, v) => sum + (v.stock_quantity || 0), 0),
+          categories: category
+        }
+      })
+
+    return {
+      products: processedProducts,
+      totalItems: count || 0
+    }
+  } catch (error) {
+    console.error('Error in searchProducts:', error)
+    return { products: [], totalItems: 0 }
+  }
+}
