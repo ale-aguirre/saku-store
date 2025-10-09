@@ -1,0 +1,57 @@
+<svg width="400" height="500" viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bombachasGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fff0f5;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#f7d4e6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f0b3d1;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="panties" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f7e6f0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f0c4d8;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="500" fill="url(#bombachasGradient)"/>
+  
+  <!-- Decorative elements -->
+  <circle cx="90" cy="110" r="30" fill="#ffe6f0" opacity="0.6"/>
+  <circle cx="310" cy="390" r="45" fill="#f7e6f0" opacity="0.4"/>
+  
+  <!-- Panties illustration -->
+  <g transform="translate(200, 250)">
+    <!-- Main panties shape -->
+    <path d="M-70,-20 Q-80,0 -70,40 Q-60,80 -40,120 Q-20,140 0,135 Q20,140 40,120 Q60,80 70,40 Q80,0 70,-20 Q50,-30 20,-25 Q0,-30 -20,-25 Q-50,-30 -70,-20 Z" 
+          fill="url(#panties)" stroke="#f0b3d1" stroke-width="2"/>
+    
+    <!-- Waistband -->
+    <path d="M-70,-20 Q-50,-35 -20,-30 Q0,-35 20,-30 Q50,-35 70,-20 Q50,-25 20,-20 Q0,-25 -20,-20 Q-50,-25 -70,-20 Z" 
+          fill="#f0c4d8" stroke="#f0b3d1" stroke-width="1"/>
+    
+    <!-- Side details -->
+    <path d="M-65,10 Q-75,30 -65,50" stroke="#f0b3d1" stroke-width="2" fill="none"/>
+    <path d="M65,10 Q75,30 65,50" stroke="#f0b3d1" stroke-width="2" fill="none"/>
+    
+    <!-- Lace trim -->
+    <path d="M-60,20 Q-40,15 -20,20 Q0,25 20,20 Q40,15 60,20" stroke="#f0b3d1" stroke-width="1.5" fill="none"/>
+    <path d="M-50,40 Q-30,35 -10,40 Q10,45 30,40 Q50,35 70,40" stroke="#f0b3d1" stroke-width="1" fill="none"/>
+    
+    <!-- Center bow -->
+    <ellipse cx="0" cy="-15" rx="8" ry="4" fill="#ffe6f0"/>
+    <path d="M-6,-15 Q0,-20 6,-15 Q0,-10 -6,-15" fill="#f0b3d1"/>
+    
+    <!-- Decorative dots -->
+    <circle cx="-30" cy="60" r="2" fill="#ffe6f0"/>
+    <circle cx="30" cy="60" r="2" fill="#ffe6f0"/>
+    <circle cx="0" cy="80" r="2" fill="#ffe6f0"/>
+  </g>
+  
+  <!-- Decorative lace pattern -->
+  <g opacity="0.3">
+    <path d="M40,440 Q60,430 80,440 Q100,450 120,440 Q140,430 160,440" stroke="#f0b3d1" stroke-width="2" fill="none"/>
+    <path d="M240,60 Q260,50 280,60 Q300,70 320,60 Q340,50 360,60" stroke="#f0b3d1" stroke-width="2" fill="none"/>
+  </g>
+  
+  <!-- Subtle texture -->
+  <rect width="400" height="500" fill="url(#bombachasGradient)" opacity="0.1"/>
+</svg>

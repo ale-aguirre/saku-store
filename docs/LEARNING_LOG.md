@@ -1,5 +1,116 @@
 # Learning Log - Sakú Lencería
 
+### 2025-01-02 - INCIDENTE CRÍTICO: Borrado completo de base de datos por feature innecesaria
+
+**Issue**: Se solicitó hacer la imagen del hero editable desde el admin. Durante la implementación se causó un borrado completo de la base de datos de producción, perdiendo todos los datos de productos, usuarios, órdenes, etc.
+
+**Cause**: 
+- Feature innecesaria: el hero ya funcionaba perfectamente con imagen estática
+- Sobreingeniería: intentar hacer editable algo que no lo requería
+- Falta de backup antes de cambios estructurales
+- Aplicación de migraciones destructivas sin verificación previa
+- No considerar el impacto vs beneficio de la feature
+
+**Fix**: 
+- Restauración completa de la base de datos desde backup
+- Recreación de todas las tablas, datos de productos, usuarios de prueba
+- Reconfiguración de RLS policies
+- Descarte completo de la feature de hero editable
+- Vuelta a imagen estática en el hero
+
+**Prevention**: 
+- NUNCA implementar features que no aporten valor real al negocio
+- SIEMPRE hacer backup completo antes de cambios estructurales
+- Cuestionar la necesidad real de cada feature solicitada
+- Usar entornos de desarrollo/staging para cambios riesgosos
+- Documentar el costo/beneficio antes de implementar features "nice to have"
+- Mantener el principio KISS (Keep It Simple, Stupid)
+
+### 2025-10-08 - Error "bucket not found" al subir imágenes del hero
+
+**Issue**: Error "bucket not found" al intentar cambiar la imagen del hero desde la página de administración de contenido del home.
+
+**Cause**: 
+- El código en `contenido-home/page.tsx` intentaba usar un bucket llamado 'images' que no existía en Supabase Storage
+- Solo existían los buckets 'products' y 'avatars' configurados en migraciones anteriores
+- La función `handleImageUpload` hacía upload manual en lugar de usar la función centralizada de `storage.ts`
+
+**Fix**: 
+- Creación de nueva migración SQL `20250201000001_add_home_images_storage.sql` para bucket 'images'
+- Aplicación de migración con políticas de acceso público para lectura y autenticado para escritura
+- Actualización de tipos en `storage.ts` para incluir 'images' en `uploadImage`, `deleteImage` y `uploadMultipleImages`
+- Refactorización de `handleImageUpload` para usar la función centralizada `uploadImage()`
+
+**Prevention**: 
+- Verificar que los buckets de Supabase Storage existan antes de usarlos en el código
+- Usar siempre las funciones centralizadas de `storage.ts` en lugar de implementar upload manual
+- Documentar en `LEARNING_LOG.md` los buckets disponibles y sus propósitos específicos
+- Crear migraciones para nuevos buckets antes de implementar funcionalidades que los requieran
+
+### 2025-10-08 - Corrección de errores ESLint y dependencias de useEffect
+
+**Issue**: Errores de ESLint por imports no utilizados y warning de dependencias faltantes en useEffect que causaba referencias circulares.
+
+**Cause**: 
+- Imports de tipos TypeScript (`Tables`, `HomeSection`, `CopyBlock`) definidos pero no utilizados
+- useEffect usando valores del estado (`heroData`) dentro del efecto pero sin incluirlos en dependencias
+- Uso de `<img>` en lugar de `<Image>` de Next.js en componentes admin
+- Migración incompleta de sistema de toast de `use-toast` a `sonner`
+
+**Fix**: 
+- Eliminación de imports no utilizados en `page.tsx` y `enhanced-hero.tsx`
+- Refactorización del useEffect usando constantes por defecto para evitar dependencias circulares
+- Reemplazo de `<img>` con `<Image>` incluyendo propiedades `width` y `height`
+- Migración completa de `toast({})` a `toast.success()` y `toast.error()` de sonner
+
+**Prevention**: 
+- Ejecutar ESLint regularmente durante el desarrollo para detectar imports no utilizados
+- Usar constantes por defecto fuera del componente para valores que se usan en useEffect
+- Preferir siempre `<Image>` de Next.js sobre `<img>` para optimización automática
+- Verificar la consistencia del sistema de notificaciones en toda la aplicación antes de hacer cambios
+
+### 2025-10-08 - Optimización de layout basada en feedback del usuario
+
+**Issue**: El hero inicial ocupaba solo 50% del ancho en desktop y el grid de categorías usaba layout de 3 columnas que no destacaba suficientemente cada categoría.
+
+**Cause**: 
+- Layout del hero con `grid-cols-2` daba igual peso al contenido y la imagen
+- Grid de categorías con `grid-cols-3` creaba cards pequeñas que no permitían títulos prominentes
+- Aspect ratio cuadrado en categorías no aprovechaba el espacio horizontal disponible
+
+**Fix**: 
+- Cambio del hero a `grid-cols-5` con imagen ocupando 3/5 del espacio (60%)
+- Rediseño del grid a layout vertical con `space-y-8` para categorías una debajo de otra
+- Aspect ratio cinematográfico `16:6-24:6` para cards más anchas y impactantes
+- Títulos centrados con tamaños `3xl-5xl` para mayor prominencia visual
+- Overlay gradiente mejorado para mejor legibilidad del texto
+
+**Prevention**: 
+- Considerar el impacto visual relativo entre contenido e imágenes en layouts
+- Priorizar la legibilidad y prominencia de elementos clave como títulos
+- Usar aspect ratios que aprovechen mejor el espacio disponible
+- Solicitar feedback temprano sobre proporciones y jerarquía visual
+
+### 2025-10-08 - Extensiones incorrectas en archivos SVG
+
+**Issue**: Error de sintaxis en el navegador al cargar la página después de crear imágenes SVG con extensión `.webp` en lugar de `.svg`.
+
+**Cause**: 
+- Creación de archivos SVG con contenido vectorial pero extensión `.webp`
+- El navegador intentaba interpretar contenido SVG como imagen WebP
+- Inconsistencia entre el tipo de contenido (SVG) y la extensión del archivo
+
+**Fix**: 
+- Renombrado de todos los archivos de `*.webp` a `*.svg` en `public/categories/`
+- Actualización del mapeo de imágenes en `CategoryGrid` para usar extensiones `.svg`
+- Verificación de que el contenido coincida con la extensión del archivo
+
+**Prevention**: 
+- Siempre verificar que la extensión del archivo coincida con su contenido real
+- Usar herramientas de validación para archivos SVG antes de guardarlos
+- Establecer convenciones claras para nombres y extensiones de archivos de imágenes
+- Revisar el navegador inmediatamente después de crear nuevos assets
+
 ### 2025-10-06 - Corrección Masiva de Tipos TypeScript
 
 **Issue**: 14 errores de TypeScript distribuidos en 7 archivos del panel admin debido a tipos locales duplicados y propiedades faltantes.

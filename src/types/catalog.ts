@@ -20,6 +20,8 @@ export interface ProductWithVariants extends Product {
 export interface VariantWithStock extends ProductVariant {
   is_in_stock: boolean
   is_low_stock: boolean
+  has_offer?: boolean
+  discount_percentage?: number
 }
 
 export interface ProductWithVariantsAndStock extends Product {

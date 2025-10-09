@@ -11,7 +11,8 @@ VALUES (
   true,
   5242880, -- 5MB limit
   ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif']
-);
+)
+ON CONFLICT (id) DO NOTHING;
 
 -- Create storage policy for avatars bucket
 -- Allow users to upload their own avatar

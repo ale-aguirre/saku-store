@@ -195,6 +195,57 @@ export type Database = {
         }
         Relationships: []
       }
+      home_sections: {
+        Row: {
+          id: string
+          section_type: string
+          title: string | null
+          subtitle: string | null
+          image_url: string | null
+          cta_primary_text: string | null
+          cta_primary_url: string | null
+          cta_secondary_text: string | null
+          cta_secondary_url: string | null
+          is_active: boolean
+          sort_order: number
+          metadata: Json
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          section_type: string
+          title?: string | null
+          subtitle?: string | null
+          image_url?: string | null
+          cta_primary_text?: string | null
+          cta_primary_url?: string | null
+          cta_secondary_text?: string | null
+          cta_secondary_url?: string | null
+          is_active?: boolean
+          sort_order?: number
+          metadata?: Json
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          section_type?: string
+          title?: string | null
+          subtitle?: string | null
+          image_url?: string | null
+          cta_primary_text?: string | null
+          cta_primary_url?: string | null
+          cta_secondary_text?: string | null
+          cta_secondary_url?: string | null
+          is_active?: boolean
+          sort_order?: number
+          metadata?: Json
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       inventory_movements: {
         Row: {
           id: string

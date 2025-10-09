@@ -20,6 +20,117 @@
 
 ## **REGISTRO DE CAMBIOS RECIENTES**
 
+### **2025-01-09 00:37 - Optimizaciones de Rendimiento del Catálogo** ✅
+
+**Cambios implementados:**
+- ✅ **Debounce en filtros**: Implementado debounce de 500ms para búsqueda y 800ms para filtros de precio
+- ✅ **Lazy loading de imágenes**: ProductImage ahora carga imágenes solo cuando están en viewport (rootMargin: 50px)
+- ✅ **React.memo en ProductCard**: Optimización de re-renders innecesarios en listado de productos
+- ✅ **Cache optimizado**: Aumentado staleTime a 15min y gcTime a 1h para categorías y rangos de precio
+- ✅ **Tipos corregidos**: Agregadas propiedades has_offer y discount_percentage a VariantWithStock
+- ✅ **Errores TypeScript resueltos**: Corregido nombre de tabla categories y manejo de undefined
+
+**Acciones realizadas:**
+- Modificación de `ProductsPageContent` para usar `useDebounce` en search y filtros de precio
+- Actualización de `ProductImage` con Intersection Observer para lazy loading
+- Optimización de hooks `useProductCategories` y `usePriceRange` con mejor configuración de cache
+- Corrección de tipos en `catalog.ts` y manejo seguro de propiedades opcionales
+- Verificación completa con ESLint y TypeScript sin errores
+
+### **2025-10-08 19:51 - Eliminación de Lógica de Imágenes Admin y Nueva Categoría Sets** ✅
+
+**Cambios implementados:**
+- ✅ **Lógica de imágenes eliminada**: Removida toda la lógica de carga de imágenes del hero y categorías desde el admin
+- ✅ **Cambios estéticos mantenidos**: Preservados los cambios estéticos recientes del hero y categorías
+- ✅ **Nueva categoría "Sets"**: Añadida categoría Sets con slug 'sets' y descripción completa
+- ✅ **CategoryGrid actualizado**: Agregado mapeo de imagen y color para la nueva categoría Sets
+- ✅ **Base de datos verificada**: Estado actual confirmado con 4 categorías activas y 3 productos
+
+**Acciones realizadas:**
+- Simplificación de `src/app/admin/contenido-home/page.tsx` eliminando lógica de imágenes
+- Creación y ejecución de `scripts/add-sets-category.js` para añadir nueva categoría
+- Actualización de `src/components/home/category-grid.tsx` con mapeo para Sets
+- Verificación completa del estado de la base de datos con scripts de diagnóstico
+- Preview verificado funcionando correctamente
+
+### **2025-10-08 18:31 - Corrección Bucket Storage para Imágenes del Hero** ✅
+
+**Problema resuelto:**
+- ✅ **Error "bucket not found"**: Corregido error al cambiar imagen del hero
+- ✅ **Bucket 'images' creado**: Nueva migración SQL para bucket dedicado a contenido del home
+- ✅ **Storage.ts actualizado**: Agregado soporte para bucket 'images' en todas las funciones
+- ✅ **Upload optimizado**: Reemplazada función manual por `uploadImage()` de storage.ts
+
+**Acciones realizadas:**
+- Creación de migración `20250201000001_add_home_images_storage.sql`
+- Aplicación de migración con `npx supabase db push --include-all`
+- Actualización de tipos en `uploadImage`, `deleteImage` y `uploadMultipleImages`
+- Refactorización de `handleImageUpload` en `contenido-home/page.tsx`
+- Verificación completa: ESLint ✅, TypeScript ✅, Preview ✅
+
+### **2025-10-08 17:30 - Corrección de Errores ESLint y TypeScript** ✅
+
+**Correcciones implementadas:**
+- ✅ **ESLint limpio**: Eliminados imports no utilizados (`Tables`, `HomeSection`, `CopyBlock`)
+- ✅ **TypeScript correcto**: Corregidas dependencias del `useEffect` en `enhanced-hero.tsx`
+- ✅ **Image optimizada**: Reemplazado `<img>` con `<Image>` de Next.js en admin
+- ✅ **Toast corregido**: Migrado de `use-toast` a `sonner` en toda la aplicación
+- ✅ **Dependencias limpias**: Eliminadas referencias circulares usando valores por defecto constantes
+
+**Acciones realizadas:**
+- Corrección de imports no utilizados en `page.tsx` y `enhanced-hero.tsx`
+- Migración de `toast({})` a `toast.success()` y `toast.error()` en admin
+- Refactorización del `useEffect` para evitar dependencias circulares
+- Reemplazo de `<img>` con `<Image>` incluyendo `width` y `height`
+- Verificación completa con ESLint ✅ y TypeScript ✅
+
+### **2025-10-08 16:00 - Optimización Hero y Grid de Categorías: Layout Mejorado** ✅
+
+**Mejora implementada:**
+- ✅ **Hero optimizado**: Imagen ahora ocupa 60% del espacio (3/5 columnas) para mayor impacto visual
+- ✅ **Grid vertical**: Categorías rediseñadas en layout vertical (una debajo de otra) con cards más anchas
+- ✅ **Títulos centrados**: Títulos de categorías ahora están centrados y en tamaño grande (3xl-5xl)
+- ✅ **Diseño cinematográfico**: Cards con aspect ratio 16:6-24:6 y overlay gradiente mejorado
+- ✅ **Interacciones mejoradas**: Hover effects más suaves y elementos decorativos adicionales
+
+### **2025-10-08 15:34 - Hero Mejorado y Grid de Categorías: Rediseño de Home** ✅
+
+**Mejora implementada:**
+- ✅ **Hero mejorado**: Nuevo diseño inspirado en SerendipiabyLuna con gradientes, elementos decorativos y layout responsive
+- ✅ **Grid de categorías**: Componente dinámico que muestra categorías de la BD con imágenes SVG personalizadas
+- ✅ **Imágenes SVG**: Creación de placeholders vectoriales para conjuntos, corpinos, bombachas y default
+- ✅ **Integración completa**: Reemplazo del hero anterior y adición del grid en la página principal
+- ✅ **Responsive design**: Layout adaptativo con breakpoints optimizados para mobile/tablet/desktop
+
+**Acciones realizadas:**
+- Creación de `src/components/home/enhanced-hero.tsx`:
+  - Diseño moderno con gradientes y elementos decorativos
+  - Badge "Nueva Colección 2024" con animación
+  - Botones CTA con enlaces a colección y guía de talles
+  - Imagen principal con overlay y badge flotante
+  - Stats destacadas (envío gratis, garantía, atención)
+- Creación de `src/components/home/category-grid.tsx`:
+  - Grid responsive de categorías con datos de Supabase
+  - Mapeo de colores e imágenes por categoría
+  - Cards con hover effects y enlaces a productos
+  - Fallback para categorías sin imagen específica
+- Creación de imágenes SVG en `public/categories/`:
+  - `conjuntos.svg`: Ilustración de conjunto de lencería
+  - `corpinos.svg`: Ilustración de corpiño/bra
+  - `bombachas.svg`: Ilustración de bombacha/panty
+  - `default.svg`: Icono genérico de lencería
+- Actualización de `src/app/page.tsx`:
+  - Integración del `EnhancedHero` y `CategoryGrid`
+  - Fetch de categorías desde Supabase
+  - Limpieza de imports no utilizados
+
+**Verificaciones realizadas:**
+- ✅ **ESLint**: Sin errores ni warnings
+- ✅ **TypeScript**: Compilación exitosa sin errores
+- ✅ **Preview**: Funcionamiento correcto en http://localhost:3000
+- ✅ **Responsive**: Layout adaptativo verificado
+- ✅ **Performance**: Imágenes SVG optimizadas
+
 ### **2025-10-03 18:49 - Mejoras de UX y Loading: Sistema de Carga Unificado** ✅
 
 **Mejora implementada:**

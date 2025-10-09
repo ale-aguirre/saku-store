@@ -28,7 +28,7 @@ type VariantQuery = ProductVariant & {
 const supabase = createClient()
 
 /**
- * Obtiene productos con sus variantes y stock (optimizado con JOIN)
+ * Obtiene productos con sus variantes y stock (optimizado con filtros SQL)
  */
 export async function getProducts(
   filters: ProductFilters = {},
@@ -58,7 +58,7 @@ export async function getProducts(
       return { products: [], totalItems: 0, totalPages: 0 }
     }
 
-    // Construir query optimizada con JOIN para obtener todo en una sola consulta
+    // Construir query optimizada con filtros SQL
     let baseQuery = supabase
         .from('products')
         .select(`
@@ -72,6 +72,7 @@ export async function getProducts(
             price_adjustment,
             stock_quantity,
             low_stock_threshold,
+            compare_at_price,
             is_active
           ),
           categories (
@@ -83,7 +84,7 @@ export async function getProducts(
         .eq('is_active', true)
         .eq('product_variants.is_active', true)
 
-    // Aplicar filtros
+    // Aplicar filtros SQL para reducir datos transferidos
     if (filters.category_id) {
       baseQuery = baseQuery.eq('category_id', filters.category_id)
     }
@@ -94,6 +95,19 @@ export async function getProducts(
 
     if (filters.search) {
       baseQuery = baseQuery.or(`name.ilike.%${filters.search}%, description.ilike.%${filters.search}%`)
+    }
+
+    // Filtros de variantes en SQL
+    if (filters.size) {
+      baseQuery = baseQuery.eq('product_variants.size', filters.size)
+    }
+
+    if (filters.color) {
+      baseQuery = baseQuery.eq('product_variants.color', filters.color)
+    }
+
+    if (filters.in_stock_only) {
+      baseQuery = baseQuery.gt('product_variants.stock_quantity', 0)
     }
 
     // Aplicar ordenamiento
@@ -116,7 +130,7 @@ export async function getProducts(
         break
     }
 
-    // Obtener productos con paginación (ya incluye variantes y categorías por JOIN)
+    // Obtener productos con paginación
     const { data: rawProducts, error: productsError, count: totalItems } = await baseQuery
       .range((page - 1) * limit, page * limit - 1)
 
@@ -131,10 +145,10 @@ export async function getProducts(
 
     const totalPages = Math.ceil((totalItems || 0) / limit)
 
-    // Agrupar productos por ID (ya que el JOIN puede duplicar productos con múltiples variantes)
+    // Agrupar productos por ID de manera más eficiente
     const productsMap = new Map<string, any>()
     
-    rawProducts.forEach((item: any) => {
+    for (const item of rawProducts) {
       if (!productsMap.has(item.id)) {
         productsMap.set(item.id, {
           ...item,
@@ -143,94 +157,92 @@ export async function getProducts(
         })
       }
       
-      // Agregar variantes al producto
+      const existingProduct = productsMap.get(item.id)!
       if (item.product_variants && item.product_variants.length > 0) {
-        const existingProduct = productsMap.get(item.id)!
-        item.product_variants.forEach((variant: any) => {
+        for (const variant of item.product_variants) {
           // Evitar duplicados de variantes
           if (!existingProduct.product_variants.find((v: any) => v.id === variant.id)) {
             existingProduct.product_variants.push(variant)
           }
-        })
+        }
       }
-    })
+    }
 
     // Procesar productos con variantes y stock (optimizado)
-    const processedProducts: ProductWithVariantsAndStock[] = Array.from(productsMap.values())
-      .map((product: any) => {
-        const variants = product.product_variants || []
-        const category = product.categories
-        
-        const variantsWithStock: VariantWithStock[] = variants.map((variant: any) => ({
-          ...variant,
-          is_in_stock: variant.stock_quantity > 0,
-          is_low_stock: variant.stock_quantity <= variant.low_stock_threshold && variant.stock_quantity > 0
-        }))
-
-        // Filtrar por stock si se requiere
-        const availableVariants = filters.in_stock_only 
-          ? variantsWithStock.filter(v => v.is_in_stock)
-          : variantsWithStock
-
-        // Filtrar por talle y color
-        // Filtrar por talle y color
-        const filteredVariants = availableVariants.filter(variant => {
-          if (filters.size && variant.size !== filters.size) return false
-          if (filters.color && variant.color !== filters.color) return false
-          return true
-        })
-
-        // Agregar información de ofertas a las variantes
-        const variantsWithOffers = filteredVariants.map(variant => {
-          const currentPrice = product.base_price + variant.price_adjustment
-          const compareAtPrice = variant.compare_at_price
-          const hasOffer = compareAtPrice && compareAtPrice > currentPrice
-          const discountPercentage = hasOffer ? Math.round(((compareAtPrice - currentPrice) / compareAtPrice) * 100) : 0
-
-          return {
-            ...variant,
-            has_offer: hasOffer,
-            discount_percentage: discountPercentage
-          }
-        })
-
-        // Filtrar por ofertas si se requiere
-        let finalVariants = variantsWithOffers
-        if (filters.on_sale) {
-          finalVariants = finalVariants.filter(variant => variant.has_offer)
-        }
-        if (filters.discount_percentage_min) {
-          finalVariants = finalVariants.filter(variant => variant.discount_percentage >= (filters.discount_percentage_min ?? 0))
-        }
-
-        // Calcular rangos de precio
-        const prices = finalVariants.map(v => product.base_price + v.price_adjustment)
-        const minPrice = prices.length > 0 ? Math.min(...prices) : product.base_price
-        const maxPrice = prices.length > 0 ? Math.max(...prices) : product.base_price
+    const processedProducts: ProductWithVariantsAndStock[] = []
+    
+    for (const product of productsMap.values()) {
+      const variants = product.product_variants || []
+      const category = product.categories
+      
+      // Procesar variantes con cálculos optimizados
+      const variantsWithStock: VariantWithStock[] = variants.map((variant: any) => {
+        const currentPrice = product.base_price + variant.price_adjustment
+        const compareAtPrice = variant.compare_at_price
+        const hasOffer = compareAtPrice && compareAtPrice > currentPrice
+        const discountPercentage = hasOffer ? Math.round(((compareAtPrice - currentPrice) / compareAtPrice) * 100) : 0
 
         return {
-          ...product,
-          variants: finalVariants,
-          available_sizes: [...new Set(variantsWithStock.map(v => v.size).filter((size): size is string => Boolean(size)))],
-          available_colors: [...new Set(variantsWithStock.map(v => v.color).filter((color): color is string => Boolean(color)))],
-          price_range: {
-            min: minPrice,
-            max: maxPrice
-          },
-          total_stock: variantsWithStock.reduce((sum, v) => sum + (v.stock_quantity || 0), 0),
-          categories: category
+          ...variant,
+          is_in_stock: variant.stock_quantity > 0,
+          is_low_stock: variant.stock_quantity <= variant.low_stock_threshold && variant.stock_quantity > 0,
+          has_offer: hasOffer,
+          discount_percentage: discountPercentage
         }
       })
-      .filter((product) => {
-        // Filtrar por rango de precio después del procesamiento
-        if (filters.min_price && product.price_range.max < filters.min_price) return false
-        if (filters.max_price && product.price_range.min > filters.max_price) return false
-        
-        // Filtrar productos sin variantes válidas después de aplicar filtros
-        if (product.variants.length === 0) return false
-        
-        return true
+
+      // Aplicar filtros restantes (que no se pudieron hacer en SQL)
+      let filteredVariants = variantsWithStock
+
+      if (filters.on_sale) {
+        filteredVariants = filteredVariants.filter(variant => variant.has_offer)
+      }
+      
+      if (filters.discount_percentage_min) {
+        filteredVariants = filteredVariants.filter(variant => (variant.discount_percentage ?? 0) >= (filters.discount_percentage_min ?? 0))
+      }
+
+      // Calcular rangos de precio de manera eficiente
+      let minPrice = product.base_price
+      let maxPrice = product.base_price
+      
+      if (filteredVariants.length > 0) {
+        const prices = filteredVariants.map(v => product.base_price + v.price_adjustment)
+        minPrice = Math.min(...prices)
+        maxPrice = Math.max(...prices)
+      }
+
+      // Filtrar por rango de precio
+      if (filters.min_price && maxPrice < filters.min_price) continue
+      if (filters.max_price && minPrice > filters.max_price) continue
+      
+      // Filtrar productos sin variantes válidas
+      if (filteredVariants.length === 0) continue
+
+      // Crear arrays únicos de manera eficiente
+      const availableSizes = new Set<string>()
+      const availableColors = new Set<string>()
+      let totalStock = 0
+
+      for (const variant of variantsWithStock) {
+        if (variant.size) availableSizes.add(variant.size)
+        if (variant.color) availableColors.add(variant.color)
+        totalStock += variant.stock_quantity || 0
+      }
+
+      processedProducts.push({
+        ...product,
+        variants: filteredVariants,
+        available_sizes: Array.from(availableSizes),
+        available_colors: Array.from(availableColors),
+        price_range: {
+          min: minPrice,
+          max: maxPrice
+        },
+        total_stock: totalStock,
+        categories: category
       })
+    }
 
     return {
       products: processedProducts,
