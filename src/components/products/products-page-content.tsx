@@ -10,6 +10,7 @@ import { ProductPagination } from '@/components/product/product-pagination'
 import { ProductFilters } from '@/components/product/product-filters'
 import { ProductsPageSkeleton } from '@/components/products/products-page-skeleton'
 import { useProducts, useProductCategories, usePriceRange } from '@/hooks/use-products'
+import { useDebounce } from '@/hooks/use-debounce'
 import type { SortOption } from '@/types/catalog'
 
 interface ProductsPageContentProps {
@@ -43,25 +44,30 @@ export function ProductsPageContent({
   const [sortBy, setSortBy] = useState(initialSortBy)
   const [currentPage, setCurrentPage] = useState(initialPage)
 
+  // Debounce para búsquedas y filtros de precio para reducir consultas
+  const debouncedSearch = useDebounce(filters.search, 500)
+  const debouncedMinPrice = useDebounce(filters.minPrice, 800)
+  const debouncedMaxPrice = useDebounce(filters.maxPrice, 800)
+
   // Inicializar estado montado
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  // Obtener categorías para el filtro
+  // Obtener categorías para el filtro (con prefetch)
   const { data: categories = [] } = useProductCategories()
   
-  // Obtener rango de precios
+  // Obtener rango de precios (con prefetch)
   const { data: priceRange } = usePriceRange()
 
-  // Obtener productos con filtros aplicados
+  // Obtener productos con filtros aplicados (usando valores debounced)
   const { data: productsData, isLoading, error, refetch } = useProducts({
     categoryId: filters.category_id,
-    search: filters.search,
+    search: debouncedSearch,
     sizes: filters.sizes,
     colors: filters.colors,
-    minPrice: filters.minPrice,
-    maxPrice: filters.maxPrice,
+    minPrice: debouncedMinPrice,
+    maxPrice: debouncedMaxPrice,
     sortBy: sortBy as SortOption,
     page: currentPage,
     limit: 12,

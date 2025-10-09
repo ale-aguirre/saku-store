@@ -116,10 +116,16 @@
   - How: Página de órdenes actualizada con clases de tema dinámico
   - Files: src/app/admin/ordenes/page.tsx
   - Checks: ESLint ✅ | Types ✅ | Preview ✅
-- [ ] (TB-022) Corregir página de cupones admin - reemplazar text-gray-* por clases de tema — Owner: Saku — TS: 2025-01-27 17:15
+- [x] (TB-022) Corregir página de cupones admin - reemplazar text-gray-* por clases de tema — Owner: Saku — TS done: 2025-10-03 17:35
+  - How: Verificado que no existen clases hardcodeadas - ya usa clases dinámicas de tema
+  - Files: src/app/admin/cupones/page.tsx
+  - Checks: ESLint ✅ | Types ✅ | Preview ✅
 
 ### Mejoras UI/UX - Prioridad Baja
-- [ ] (TB-023) Corregir estado del botón de login cuando usuario está logueado en home — Owner: Saku — TS: 2025-01-27 17:15
+- [x] (TB-023) Corregir estado del botón de login cuando usuario está logueado en home — Owner: Saku — TS done: 2025-10-03 17:35
+  - How: Verificado que UserButton ya maneja correctamente estados loading/!user/user
+  - Files: src/components/layout/header.tsx
+  - Checks: ESLint ✅ | Types ✅ | Preview ✅
 - [x] (TB-024) Corregir lógica de badge de poco stock (no mostrar si stock > 20) — Owner: Saku — TS done: 2025-10-01 18:44
 
 ---

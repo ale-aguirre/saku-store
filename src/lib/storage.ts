@@ -10,13 +10,13 @@ export interface UploadResult {
 /**
  * Sube una imagen a Supabase Storage
  * @param file - Archivo a subir
- * @param bucket - Bucket de destino ('products' o 'avatars')
+ * @param bucket - Bucket de destino ('products', 'avatars' o 'images')
  * @param folder - Carpeta dentro del bucket (opcional)
  * @returns Promise con la URL pública de la imagen subida
  */
 export async function uploadImage(
   file: File,
-  bucket: 'products' | 'avatars' = 'products',
+  bucket: 'products' | 'avatars' | 'images' = 'products',
   folder?: string
 ): Promise<UploadResult> {
   try {
@@ -138,7 +138,7 @@ export async function uploadImage(
  */
 export async function deleteImage(
   path: string,
-  bucket: 'products' | 'avatars' = 'products'
+  bucket: 'products' | 'avatars' | 'images' = 'products'
 ): Promise<boolean> {
   if (!path) {
     console.warn('Se intentó eliminar una imagen con path vacío')
@@ -189,7 +189,7 @@ export async function deleteImage(
  */
 export async function uploadMultipleImages(
   files: File[],
-  bucket: 'products' | 'avatars' = 'products',
+  bucket: 'products' | 'avatars' | 'images' = 'products',
   folder?: string
 ): Promise<UploadResult[]> {
   const results: UploadResult[] = []

@@ -10,7 +10,7 @@ import { ProductImage } from '@/components/ui/product-image'
 import type { ProductWithVariantsAndStock } from '@/types/catalog'
 import { categoryRequiresSizes } from '@/types/catalog'
 import { useCart } from '@/hooks/use-cart'
-import { useState } from 'react'
+import { useState, memo, useCallback } from 'react'
 import { useWishlist } from '@/hooks/use-wishlist'
 import { cn, formatPrice } from '@/lib/utils'
 import { 
@@ -29,12 +29,23 @@ interface ProductCardProps {
   compact?: boolean
 }
 
-export function ProductCard({ product, className, compact = false }: ProductCardProps) {
+function ProductCardComponent({ product, className, compact = false }: ProductCardProps) {
   const { addItem, openCart } = useCart()
   const { isInWishlist, toggleWishlist } = useWishlist()
   const [selectedSize, setSelectedSize] = useState<string | null>('')
   const [selectedColor, setSelectedColor] = useState<string>('')
   const [quickAddOpen, setQuickAddOpen] = useState(false)
+
+  // Memoizar callbacks para evitar re-renders
+  const handleWishlistToggle = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    toggleWishlist(product.id)
+  }, [product.id, toggleWishlist])
+
+  const handleQuickAddOpen = useCallback((open: boolean) => {
+    setQuickAddOpen(open)
+  }, [])
   
   // Determinar si el producto requiere talles
   const requiresSizes = categoryRequiresSizes(product.category?.name || '')
@@ -64,6 +75,7 @@ export function ProductCard({ product, className, compact = false }: ProductCard
                 fill
                 className="object-cover"
                 sizes="64px"
+                lazy={true}
               />
               {!isInStock && (
                 <div className="absolute inset-0 bg-background/50 flex items-center justify-center">
@@ -143,11 +155,7 @@ export function ProductCard({ product, className, compact = false }: ProductCard
         size="icon"
         className="absolute top-2 right-2 z-10 h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm opacity-0 transition-opacity group-hover:opacity-100"
         aria-label={isInWishlist(product.id) ? "Remover de favoritos" : "Agregar a favoritos"}
-        onClick={(e) => {
-          e.preventDefault()
-          e.stopPropagation()
-          toggleWishlist(product.id)
-        }}
+        onClick={handleWishlistToggle}
       >
         <Heart 
           className={cn(
@@ -168,6 +176,7 @@ export function ProductCard({ product, className, compact = false }: ProductCard
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+            lazy={true}
           />
           {!isInStock && (
             <div className="absolute inset-0 bg-background/50 flex items-center justify-center">
@@ -247,7 +256,7 @@ export function ProductCard({ product, className, compact = false }: ProductCard
             </Link>
           </Button>
           
-          <Dialog open={quickAddOpen} onOpenChange={setQuickAddOpen}>
+          <Dialog open={quickAddOpen} onOpenChange={handleQuickAddOpen}>
             <DialogTrigger asChild>
               <Button
                 variant="outline"
@@ -361,3 +370,18 @@ export function ProductCard({ product, className, compact = false }: ProductCard
     </Card>
   )
 }
+
+// Memoizar el componente para evitar re-renders innecesarios
+export const ProductCard = memo(ProductCardComponent, (prevProps, nextProps) => {
+  // Comparación personalizada para optimizar re-renders
+  return (
+    prevProps.product.id === nextProps.product.id &&
+    prevProps.product.name === nextProps.product.name &&
+    prevProps.product.total_stock === nextProps.product.total_stock &&
+    prevProps.product.price_range.min === nextProps.product.price_range.min &&
+    prevProps.product.price_range.max === nextProps.product.price_range.max &&
+    prevProps.product.discount_percentage === nextProps.product.discount_percentage &&
+    prevProps.compact === nextProps.compact &&
+    prevProps.className === nextProps.className
+  )
+})

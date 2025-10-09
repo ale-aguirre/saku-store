@@ -60,7 +60,7 @@ async function importProductsFromCSV() {
   console.log('📦 IMPORTACIÓN DE PRODUCTOS (VERSIÓN CORREGIDA)')
   console.log('===============================================\n')
 
-  const csvPath = path.join(__dirname, '..', 'data', 'productos_exportados.csv')
+  const csvPath = path.join(__dirname, '..', 'docs', 'reference', 'productos_exportados.csv')
   
   if (!fs.existsSync(csvPath)) {
     console.error(`❌ Archivo CSV no encontrado: ${csvPath}`)

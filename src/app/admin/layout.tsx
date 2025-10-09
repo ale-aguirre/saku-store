@@ -22,7 +22,8 @@ import {
   X,
   ChevronRight,
   Home,
-  LogOut
+  LogOut,
+  Image
 } from 'lucide-react'
 
 interface AdminLayoutProps {
@@ -56,6 +57,11 @@ const navigation: NavItem[] = [
     title: 'Cupones',
     href: '/admin/cupones',
     icon: Ticket,
+  },
+  {
+    title: 'Contenido Home',
+    href: '/admin/contenido-home',
+    icon: Image,
   },
   {
     title: 'Emails',
@@ -119,6 +125,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         productos: 'Productos',
         ordenes: 'Órdenes',
         cupones: 'Cupones',
+        'contenido-home': 'Contenido Home',
         emails: 'Emails',
         reportes: 'Reportes',
         configuracion: 'Configuración'

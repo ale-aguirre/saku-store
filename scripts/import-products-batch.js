@@ -13,7 +13,7 @@ const csv = require('csv-parser');
 const { createClient } = require('@supabase/supabase-js');
 
 // Configuración
-const CSV_PATH = path.join(__dirname, '..', 'docs', 'productos_exportados.csv');
+const CSV_PATH = path.join(__dirname, '..', 'docs', 'reference', 'productos_exportados.csv');
 const BATCH_SIZE = 5; // Procesar 5 productos por lote
 const DELAY_BETWEEN_BATCHES = 2000; // 2 segundos entre lotes
 const DELAY_BETWEEN_PRODUCTS = 200; // 200ms entre productos

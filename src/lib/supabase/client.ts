@@ -1,11 +1,11 @@
-import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import { createBrowserClient } from '@supabase/ssr'
 import { Database } from '@/types/database'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 // Singleton instance to avoid multiple GoTrueClient instances
-let supabaseInstance: ReturnType<typeof createSupabaseClient<Database>> | null = null
+let supabaseInstance: ReturnType<typeof createBrowserClient<Database>> | null = null
 
 export const createClient = () => {
   // Return existing instance if available
@@ -22,22 +22,8 @@ export const createClient = () => {
     console.warn('Supabase environment variables not found, using placeholder values for build')
   }
 
-  // Create and store the singleton instance
-  supabaseInstance = createSupabaseClient<Database>(url, key, {
-    auth: {
-      autoRefreshToken: true,
-      persistSession: true,
-      detectSessionInUrl: true,
-      storage: typeof window !== 'undefined' ? window.localStorage : undefined,
-      storageKey: 'saku-auth-token',
-      flowType: 'pkce'
-    },
-    global: {
-      headers: {
-        'x-client-info': 'saku-store@1.0.0'
-      }
-    }
-  })
+  // Create and store the singleton instance using SSR-compatible client
+  supabaseInstance = createBrowserClient<Database>(url, key)
 
   return supabaseInstance
 }

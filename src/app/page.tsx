@@ -1,12 +1,12 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { ArrowRight, Truck, Shield, Heart } from 'lucide-react'
+import { Truck, Shield, Heart } from 'lucide-react'
 import { ProductCard } from '@/components/product/product-card'
-import { getFeaturedProducts } from '@/lib/supabase/products'
+import { getFeaturedProducts, getCategories } from '@/lib/supabase/products'
 import { Suspense } from 'react'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
+import { EnhancedHero } from '@/components/home/enhanced-hero'
+import { CategoryGrid } from '@/components/home/category-grid'
 
 const features = [
   {
@@ -58,53 +58,19 @@ function FeaturedProductsSkeleton() {
   )
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  // Obtener categorías para el grid
+  const categories = await getCategories()
+
   return (
     <div className="space-y-12 sm:space-y-16 lg:space-y-20">
-      {/* Hero Section */}
-      <section className="relative h-[60vh] min-h-[400px] sm:min-h-[500px] flex items-center justify-center bg-gradient-to-r from-primary/10 to-primary/5">
-        <div className="container px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <div className="space-y-6 text-center lg:text-left">
-              <Badge variant="secondary" className="w-fit mx-auto lg:mx-0">
-                Nueva Colección 2024
-              </Badge>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-normal font-marcellus">
-                Elegancia que
-                <span className="text-[#d8ceb5]"> realza</span>
-                <br />
-                tu belleza
-              </h1>
-              <p className="text-base sm:text-lg text-muted-foreground max-w-md mx-auto lg:mx-0 font-sans">
-                Descubre nuestra colección de lencería premium diseñada para la mujer moderna que busca comodidad y estilo.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Button size="lg" asChild>
-                  <Link href="/productos">
-                    Ver Colección
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button variant="outline" size="lg" asChild>
-                  <Link href="/guia-talles">
-                    Guía de Talles
-                  </Link>
-                </Button>
-              </div>
-            </div>
-            <div className="relative order-first lg:order-last">
-              <Image
-                src="/hero-1.webp"
-                alt="Lencería Sakú"
-                width={600}
-                height={400}
-                className="rounded-lg object-cover w-full h-auto"
-                priority
-              />
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Enhanced Hero Section */}
+      <EnhancedHero />
+
+      {/* Categories Grid */}
+      {categories.length > 0 && (
+        <CategoryGrid categories={categories} />
+      )}
 
       {/* Features */}
       <section className="container px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">

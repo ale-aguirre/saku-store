@@ -1,0 +1,37 @@
+<svg width="400" height="500" viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="defaultGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8f9fa;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#e9ecef;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#dee2e6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="500" fill="url(#defaultGradient)"/>
+  
+  <!-- Decorative elements -->
+  <circle cx="100" cy="100" r="40" fill="#f1f3f4" opacity="0.6"/>
+  <circle cx="300" cy="400" r="60" fill="#e9ecef" opacity="0.4"/>
+  
+  <!-- Generic lingerie icon -->
+  <g transform="translate(200, 250)" opacity="0.6">
+    <!-- Hanger -->
+    <path d="M-60,-100 Q-40,-120 0,-115 Q40,-120 60,-100" stroke="#adb5bd" stroke-width="4" fill="none"/>
+    <circle cx="0" cy="-115" r="8" fill="#adb5bd"/>
+    
+    <!-- Garment outline -->
+    <path d="M-50,-80 Q-70,-60 -60,-20 Q-50,20 -30,60 Q-10,80 0,75 Q10,80 30,60 Q50,20 60,-20 Q70,-60 50,-80 Q30,-90 0,-85 Q-30,-90 -50,-80 Z" 
+          stroke="#adb5bd" stroke-width="2" fill="none"/>
+    
+    <!-- Details -->
+    <path d="M-40,-60 Q-20,-65 0,-60 Q20,-65 40,-60" stroke="#adb5bd" stroke-width="1" fill="none"/>
+    <path d="M-30,-40 Q-10,-45 0,-40 Q10,-45 30,-40" stroke="#adb5bd" stroke-width="1" fill="none"/>
+  </g>
+  
+  <!-- Decorative pattern -->
+  <g opacity="0.2">
+    <path d="M50,450 Q70,440 90,450 Q110,460 130,450 Q150,440 170,450" stroke="#adb5bd" stroke-width="2" fill="none"/>
+    <path d="M230,50 Q250,40 270,50 Q290,60 310,50 Q330,40 350,50" stroke="#adb5bd" stroke-width="2" fill="none"/>
+  </g>
+</svg>

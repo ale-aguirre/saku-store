@@ -148,26 +148,20 @@ export function useProductCategories() {
     queryKey: ['product-categories'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('products')
-        .select('category')
-        .eq('is_active', true)
+        .from('categories')
+        .select('*')
+        .order('name')
 
       if (error) {
+        console.error('Error fetching categories:', error)
         throw error
       }
 
-      if (!data) {
-        return []
-      }
-
-      const categories = [...new Set(data.map((item: any) => item.category).filter(Boolean))] as string[]
-      return categories.map(category => ({ 
-        id: category, 
-        name: category, 
-        slug: category.toLowerCase().replace(/\s+/g, '-') 
-      }))
+      return data || []
     },
-    staleTime: 10 * 60 * 1000, // 10 minutes
+    enabled: true,
+    staleTime: 1000 * 60 * 15, // 15 minutos (más tiempo para datos estáticos)
+    gcTime: 1000 * 60 * 60, // 1 hora (mantener en cache más tiempo)
   })
 }
 
@@ -228,15 +222,9 @@ export function useProductColors() {
 export function usePriceRange() {
   return useQuery({
     queryKey: ['price-range'],
-    queryFn: async () => {
-      try {
-        return await getPriceRange()
-      } catch (error) {
-        console.error('Error fetching price range:', error)
-        return { min: 5000, max: 15000 } // fallback range
-      }
-    },
-    staleTime: 10 * 60 * 1000, // 10 minutes
-    gcTime: 30 * 60 * 1000, // 30 minutes
+    queryFn: () => getPriceRange(),
+    enabled: true,
+    staleTime: 1000 * 60 * 15, // 15 minutos (más tiempo para datos que cambian poco)
+    gcTime: 1000 * 60 * 60, // 1 hora (mantener en cache más tiempo)
   })
 }
