@@ -47,6 +47,28 @@
 - Documentar en `LEARNING_LOG.md` los buckets disponibles y sus propósitos específicos
 - Crear migraciones para nuevos buckets antes de implementar funcionalidades que los requieran
 
+### 2025-10-09 - Filtrado de categorías no funcionaba por discrepancia slug vs ID
+
+**Issue**: El filtrado de categorías desde el home no funcionaba. Los enlaces usaban slugs (ej: `categoria=conjuntos`) pero el código filtraba por `category_id` (UUID), causando que no se mostraran productos filtrados.
+
+**Cause**: 
+- Discrepancia entre la interfaz (que usa slugs legibles) y la lógica de filtrado (que espera UUIDs)
+- Productos sin `category_id` asignado (muchos tenían `null`)
+- Falta de conversión entre slug y ID en la página de productos
+- No se había verificado que todos los productos tuvieran categorías asignadas
+
+**Fix**: 
+- Modificación de `src/app/productos/page.tsx` para convertir slugs a IDs usando `getCategories()`
+- Script de actualización masiva que asignó categorías a todos los productos basado en keywords
+- Agregadas categorías "Promo" y "Oferta" para futuras promociones
+- Verificación end-to-end con curl y script de testing
+
+**Prevention**: 
+- Siempre verificar que los datos de referencia (categorías) estén completos antes de implementar filtros
+- Mantener consistencia entre URLs amigables (slugs) y lógica interna (IDs)
+- Crear scripts de verificación para detectar datos faltantes en relaciones importantes
+- Probar filtros end-to-end desde la interfaz de usuario, no solo la API
+
 ### 2025-10-08 - Corrección de errores ESLint y dependencias de useEffect
 
 **Issue**: Errores de ESLint por imports no utilizados y warning de dependencias faltantes en useEffect que causaba referencias circulares.

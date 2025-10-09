@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { Metadata } from 'next'
 import { ProductsPageContent } from '@/components/products/products-page-content'
 import { ProductsPageSkeleton } from '@/components/products/products-page-skeleton'
+import { getCategories } from '@/lib/supabase/products'
 
 export const metadata: Metadata = {
   title: 'Productos - Sakú Lencería',
@@ -32,9 +33,24 @@ interface ProductsPageProps {
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const params = await searchParams
+  
+  // Convertir slug de categoría a ID si es necesario
+  let categoryId = params.categoria
+  if (params.categoria && !params.categoria.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+    // Si no es un UUID, asumir que es un slug y convertir a ID
+    try {
+      const categories = await getCategories()
+      const category = categories.find(cat => cat.slug === params.categoria)
+      categoryId = category?.id || undefined
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+      categoryId = undefined
+    }
+  }
+  
   // Parsear parámetros de búsqueda
   const filters = {
-    category_id: params.categoria,
+    category_id: categoryId,
     search: params.buscar,
     minPrice: params.precio_min ? parseFloat(params.precio_min) : undefined,
     maxPrice: params.precio_max ? parseFloat(params.precio_max) : undefined,

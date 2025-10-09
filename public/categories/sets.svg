@@ -1,0 +1,58 @@
+<svg width="400" height="500" viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="setsGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f5f1ec;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#d8ceb5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#c9be9f;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="setLingerie" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ebe1d5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d7c7ab;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="500" fill="url(#setsGradient)"/>
+  
+  <!-- Decorative elements -->
+  <circle cx="90" cy="80" r="35" fill="#f2e8dc" opacity="0.7"/>
+  <circle cx="310" cy="420" r="55" fill="#ebe1d5" opacity="0.5"/>
+  
+  <!-- Set illustration with multiple pieces -->
+  <g transform="translate(200, 220)">
+    <!-- Bra -->
+    <path d="M-65,-90 Q-85,-70 -65,-50 Q-45,-30 0,-40 Q45,-30 65,-50 Q85,-70 65,-90 Q45,-100 0,-95 Q-45,-100 -65,-90 Z" 
+          fill="url(#setLingerie)" stroke="#c9be9f" stroke-width="2"/>
+    
+    <!-- Bra details -->
+    <circle cx="-35" cy="-65" r="9" fill="#f2e8dc"/>
+    <circle cx="35" cy="-65" r="9" fill="#f2e8dc"/>
+    <path d="M-18,-80 Q0,-85 18,-80" stroke="#c9be9f" stroke-width="1.5" fill="none"/>
+    
+    <!-- Panties -->
+    <path d="M-55,10 Q-65,30 -45,70 Q-25,90 0,85 Q25,90 45,70 Q65,30 55,10 Q35,0 0,5 Q-35,0 -55,10 Z" 
+          fill="url(#setLingerie)" stroke="#c9be9f" stroke-width="2"/>
+    
+    <!-- Panties details -->
+    <path d="M-40,25 Q0,20 40,25" stroke="#c9be9f" stroke-width="1" fill="none"/>
+    <circle cx="0" cy="40" r="3" fill="#f2e8dc"/>
+    
+    <!-- Additional piece - camisole/top -->
+    <path d="M-70,100 Q-80,120 -60,160 Q-40,180 0,175 Q40,180 60,160 Q80,120 70,100 Q50,90 0,95 Q-50,90 -70,100 Z" 
+          fill="url(#setLingerie)" stroke="#c9be9f" stroke-width="2" opacity="0.8"/>
+    
+    <!-- Camisole details -->
+    <path d="M-50,115 Q0,110 50,115" stroke="#c9be9f" stroke-width="1" fill="none"/>
+    <path d="M-30,140 Q0,135 30,140" stroke="#c9be9f" stroke-width="1" fill="none"/>
+  </g>
+  
+  <!-- Decorative lace pattern -->
+  <g opacity="0.4">
+    <path d="M40,460 Q60,450 80,460 Q100,470 120,460" stroke="#c9be9f" stroke-width="2" fill="none"/>
+    <path d="M280,40 Q300,30 320,40 Q340,50 360,40" stroke="#c9be9f" stroke-width="2" fill="none"/>
+    <path d="M60,200 Q80,190 100,200 Q120,210 140,200" stroke="#c9be9f" stroke-width="1.5" fill="none"/>
+  </g>
+  
+  <!-- Subtle texture -->
+  <rect width="400" height="500" fill="url(#setsGradient)" opacity="0.1"/>
+</svg>

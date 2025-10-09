@@ -37,6 +37,26 @@
 - Corrección de tipos en `catalog.ts` y manejo seguro de propiedades opcionales
 - Verificación completa con ESLint y TypeScript sin errores
 
+### **2025-10-09 11:15 - Corrección Completa del Filtrado de Categorías** ✅
+
+**Problema resuelto:**
+- ✅ **Filtrado de categorías reparado**: Solucionado el problema donde el filtrado por categorías no funcionaba debido a discrepancia entre slugs y IDs
+- ✅ **Conversión slug-to-ID**: Implementada conversión automática de slugs de categoría a IDs en `page.tsx`
+- ✅ **Asignación de productos**: Todos los productos (52) ahora tienen categorías asignadas correctamente
+- ✅ **Categorías nuevas**: Agregadas categorías "Promo" y "Oferta" para futuras promociones
+- ✅ **Verificación end-to-end**: Confirmado funcionamiento completo del filtrado desde home hasta productos
+
+**Cambios técnicos:**
+- Modificación de `src/app/productos/page.tsx` para convertir slugs a IDs usando `getCategories()`
+- Script de actualización masiva que asignó productos a categorías basado en keywords en nombres
+- Distribución final: Conjuntos (25), Bombachas (15), Sets (12), Corpiños (0), Promo (0), Oferta (0)
+- Verificación con curl y script de testing que confirma funcionamiento correcto
+
+**Calidad verificada:**
+- ✅ ESLint: Sin errores ni warnings
+- ✅ TypeScript: Verificación de tipos exitosa
+- ✅ Preview: Funcionamiento visual confirmado
+
 ### **2025-10-08 19:51 - Eliminación de Lógica de Imágenes Admin y Nueva Categoría Sets** ✅
 
 **Cambios implementados:**
