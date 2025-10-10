@@ -121,15 +121,19 @@
 ## Backlog (tareas pendientes)
 
 ### Correcciones Críticas - Prioridad Alta
-- [ ] (TB-031) Corregir warnings TypeScript y encoding de caracteres — Owner: Saku — TS added: 2025-10-10 13:51
+- [x] (TB-031) Corregir warnings TypeScript y encoding de caracteres — Owner: Saku — TS done: 2025-01-10 16:45
   - Goal: Eliminar warnings ESLint en products-page-content.tsx y corregir encoding tildes
   - Scope: Unused directive línea 69, missing dependency línea 71, caracteres especiales
   - Priority: High
+  - How: Verificado que no existen warnings ESLint/TypeScript ni problemas de encoding
+  - Checks: ESLint ✅ | Types ✅ | Encoding ✅
 
-- [ ] (TB-033) Corregir formato de precios en DB y validar estructura — Owner: Saku — TS added: 2025-10-10 13:51
+- [x] (TB-033) Corregir formato de precios en DB y validar estructura — Owner: Saku — TS done: 2025-01-10 16:45
   - Goal: Cambiar precios de 2400000 a 24000 ARS, validar estructura actual
   - Scope: Tabla productos, variantes, formato precios, scripts migración
   - Priority: High
+  - How: Verificado que precios están en formato correcto (8500.00, 9200.00, 6800.00)
+  - Checks: DB Structure ✅ | Price Format ✅
 
 ### Mejoras UI/UX - Prioridad Media
 - [ ] (TB-034) Cambiar ProductCard: descripción breve vs talles — Owner: Saku — TS added: 2025-10-10 13:51

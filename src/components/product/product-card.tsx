@@ -201,14 +201,12 @@ function ProductCardComponent({ product, className, compact = false }: ProductCa
           </h3>
         </Link>
 
-        {/* Available variants info */}
-        {requiresSizes && (
-          <div className="flex flex-wrap gap-1 mb-2 sm:mb-3">
-            {product.available_sizes.length > 0 && (
-              <div className="text-xs text-muted-foreground">
-                Talles: {product.available_sizes.join(', ')}
-              </div>
-            )}
+        {/* Product description */}
+        {product.description && (
+          <div className="mb-2 sm:mb-3">
+            <p className="text-xs text-muted-foreground line-clamp-2">
+              {product.description}
+            </p>
           </div>
         )}
 
