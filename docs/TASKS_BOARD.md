@@ -77,17 +77,29 @@
   - Files: src/app/admin/productos/[id]/page.tsx
   - Checks: ESLint ✅ | Types ✅ | Preview ✅ (http://localhost:3001)
 
----
-
-## In Progress
-
-- [ ] (TB-030) Análisis de estado actual del sistema — Owner: Saku — TS started: 2025-10-10 13:51
+- [x] (TB-030) Análisis de estado actual del sistema — Owner: Saku — TS done: 2025-10-10 16:00
   - Goal: Documentar estado actual antes de hacer cambios, identificar warnings, loops, precios incorrectos
   - Scope: ESLint warnings, wishlist loop, estructura DB productos/precios, UI issues
   - Acceptance: Estado documentado completamente, issues identificados y priorizados
   - Priority: High
   - Files: products-page-content.tsx, use-wishlist.ts, DB productos/precios
-  - Status: Warnings identificados, wishlist loop localizado, próximos pasos definidos
+  - How: Análisis completo realizado, warnings ESLint corregidos, loop wishlist identificado y resuelto
+  - Checks: ESLint ✅ | Types ✅ | Documentación ✅
+
+- [x] (TB-032) Resolver loop infinito de errores en wishlist/favoritos — Owner: Saku — TS done: 2025-10-10 16:00
+  - Goal: Corregir loop infinito en use-wishlist.ts que causa errores recurrentes
+  - Scope: Refactorizar useCallback y useEffect para prevenir re-renders infinitos
+  - Acceptance: Hook funcional sin loops, todas las operaciones de wishlist operativas
+  - Priority: High
+  - Files: src/hooks/use-wishlist.ts
+  - How: Movido createClient() dentro de cada función async, eliminado supabase de dependencias
+  - Checks: ESLint ✅ | Types ✅ | Build ✅ | Pendiente aprobación merge
+
+---
+
+## In Progress
+
+<!-- Tareas en progreso -->
 
 ---
 

@@ -37,12 +37,29 @@
 - Corrección de tipos en `catalog.ts` y manejo seguro de propiedades opcionales
 - Verificación completa con ESLint y TypeScript sin errores
 
+### **2025-10-10 16:00 - Corrección Loop Infinito Wishlist** ✅
+
+**Problema resuelto:**
+- ✅ **Loop infinito wishlist**: Corregido error en `use-wishlist.ts` donde `supabase` como dependencia de `useCallback` causaba re-renders infinitos
+- ✅ **Solución implementada**: Mover `createClient()` dentro de cada función async (`loadWishlist`, `addToWishlist`, `removeFromWishlist`)
+- ✅ **Dependencias limpiadas**: Eliminado `supabase` de dependencias de `useCallback` y `useEffect`
+- ✅ **Funcionalidad preservada**: Mantiene todas las operaciones de wishlist (add, remove, toggle, load, isInWishlist)
+
+**Checks completados:**
+- ✅ ESLint: No warnings or errors
+- ✅ TypeScript: No compilation errors  
+- ✅ Build: Successful compilation
+- 🔄 **Pendiente aprobación**: Merge a develop requiere autorización
+
+**Archivos modificados:**
+- `src/hooks/use-wishlist.ts`: Refactorización para prevenir loops infinitos
+
 ### **2025-10-10 13:51 - Análisis de Estado Actual y Planificación de Correcciones** 🔍
 
 **Estado identificado:**
 - 🔍 **Análisis en progreso**: Revisión completa del estado actual del sistema
-- ⚠️ **Warnings detectados**: ESLint warnings en `products-page-content.tsx` (unused directive, missing dependency)
-- 🔄 **Loop infinito wishlist**: Errores recurrentes en `use-wishlist.ts` líneas 56 y 63
+- ⚠️ **Warnings detectados**: ESLint warnings en `products-page-content.tsx` (unused directive, missing dependency) ✅ **RESUELTO**
+- 🔄 **Loop infinito wishlist**: Errores recurrentes en `use-wishlist.ts` líneas 56 y 63 ✅ **RESUELTO**
 - 💰 **Precios incorrectos**: Formato en DB (2400000 → debe ser 24000 ARS)
 - 🖼️ **Lógica imágenes**: Múltiples por producto, asociación opcional por color
 - 📝 **Textos hardcodeados**: Envío, descripciones de productos no editables desde admin
