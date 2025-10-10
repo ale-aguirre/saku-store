@@ -86,14 +86,23 @@
   - How: Análisis completo realizado, warnings ESLint corregidos, loop wishlist identificado y resuelto
   - Checks: ESLint ✅ | Types ✅ | Documentación ✅
 
-- [x] (TB-032) Resolver loop infinito de errores en wishlist/favoritos — Owner: Saku — TS done: 2025-10-10 16:00
+- [x] (TB-032) Resolver loop infinito de errores en wishlist/favoritos — Owner: Saku — TS done: 2025-10-10 18:21
   - Goal: Corregir loop infinito en use-wishlist.ts que causa errores recurrentes
   - Scope: Refactorizar useCallback y useEffect para prevenir re-renders infinitos
   - Acceptance: Hook funcional sin loops, todas las operaciones de wishlist operativas
   - Priority: High
   - Files: src/hooks/use-wishlist.ts
-  - How: Movido createClient() dentro de cada función async, eliminado supabase de dependencias
-  - Checks: ESLint ✅ | Types ✅ | Build ✅ | Pendiente aprobación merge
+  - How: Migración completa a product_variant_id, nueva tabla wishlist, corrección de componentes
+  - Checks: ESLint ✅ | Types ✅ | Build ✅ | Merged to develop ✅
+
+- [x] (TB-038) Merge exitoso de corrección wishlist a develop — Owner: Saku — TS done: 2025-10-10 18:21
+  - Goal: Integrar corrección completa de wishlist a rama develop
+  - Scope: Build exitoso, push, merge, cleanup de rama feature
+  - Acceptance: Código en develop, rama feature eliminada, documentación actualizada
+  - Priority: High
+  - Files: Múltiples archivos migrados y corregidos
+  - How: Build ✅, commit, push, merge fast-forward, cleanup rama
+  - Checks: Build ✅ | Merge ✅ | Push ✅ | Cleanup ✅
 
 ---
 
@@ -115,11 +124,6 @@
 - [ ] (TB-031) Corregir warnings TypeScript y encoding de caracteres — Owner: Saku — TS added: 2025-10-10 13:51
   - Goal: Eliminar warnings ESLint en products-page-content.tsx y corregir encoding tildes
   - Scope: Unused directive línea 69, missing dependency línea 71, caracteres especiales
-  - Priority: High
-
-- [ ] (TB-032) Resolver loop infinito de errores en wishlist — Owner: Saku — TS added: 2025-10-10 13:51
-  - Goal: Eliminar errores recurrentes "Error loading wishlist" en use-wishlist.ts
-  - Scope: Líneas 56 y 63, lógica de carga y manejo de errores
   - Priority: High
 
 - [ ] (TB-033) Corregir formato de precios en DB y validar estructura — Owner: Saku — TS added: 2025-10-10 13:51
