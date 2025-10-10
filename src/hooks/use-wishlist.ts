@@ -8,14 +8,20 @@ import { toast } from 'sonner'
 export interface WishlistItem {
   id: string
   user_id: string
-  product_id: string
+  product_variant_id: string
   created_at: string
-  product?: {
+  product_variant?: {
     id: string
-    name: string
-    sku: string
-    base_price: number
-    images?: string[]
+    size: string
+    color: string
+    price_adjustment: number | null
+    product?: {
+      id: string
+      name: string
+      slug: string
+      images: string[] | null
+      base_price: number
+    }
   }
 }
 
@@ -39,14 +45,20 @@ export function useWishlist() {
         .select(`
           id,
           user_id,
-          product_id,
+          product_variant_id,
           created_at,
-          product:products(
+          product_variant:product_variants(
             id,
-            name,
-            sku,
-            base_price,
-            images
+            size,
+            color,
+            price_adjustment,
+            product:products(
+              id,
+              name,
+              slug,
+              images,
+              base_price
+            )
           )
         `)
         .eq('user_id', user.id)
@@ -67,8 +79,8 @@ export function useWishlist() {
     }
   }, [user])
 
-  // Agregar producto a la wishlist
-  const addToWishlist = async (productId: string) => {
+  // Agregar variante a la wishlist
+  const addToWishlist = async (productVariantId: string) => {
     if (!user) {
       toast.error('Debes iniciar sesión para agregar favoritos')
       return false
@@ -80,7 +92,7 @@ export function useWishlist() {
         .from('wishlist')
         .insert({
           user_id: user.id,
-          product_id: productId
+          product_variant_id: productVariantId
         } as any)
 
       if (error) {
@@ -103,8 +115,8 @@ export function useWishlist() {
     }
   }
 
-  // Remover producto de la wishlist
-  const removeFromWishlist = async (productId: string) => {
+  // Remover variante de la wishlist
+  const removeFromWishlist = async (productVariantId: string) => {
     if (!user) {
       toast.error('Debes iniciar sesión')
       return false
@@ -112,11 +124,11 @@ export function useWishlist() {
 
     try {
       const supabase = createClient()
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('wishlist')
         .delete()
         .eq('user_id', user.id)
-        .eq('product_id', productId)
+        .eq('product_variant_id', productVariantId)
 
       if (error) {
         console.error('Error removing from wishlist:', error)
@@ -134,17 +146,17 @@ export function useWishlist() {
     }
   }
 
-  // Verificar si un producto está en la wishlist
-  const isInWishlist = (productId: string): boolean => {
-    return wishlistItems.some(item => item.product_id === productId)
+  // Verificar si una variante está en la wishlist
+  const isInWishlist = (productVariantId: string): boolean => {
+    return wishlistItems.some(item => item.product_variant_id === productVariantId)
   }
 
-  // Toggle producto en wishlist
-  const toggleWishlist = async (productId: string) => {
-    if (isInWishlist(productId)) {
-      return await removeFromWishlist(productId)
+  // Toggle variante en wishlist
+  const toggleWishlist = async (productVariantId: string) => {
+    if (isInWishlist(productVariantId)) {
+      return await removeFromWishlist(productVariantId)
     } else {
-      return await addToWishlist(productId)
+      return await addToWishlist(productVariantId)
     }
   }
 

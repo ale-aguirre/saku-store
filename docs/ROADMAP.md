@@ -986,6 +986,48 @@ Crear página `/admin/productos` similar al dashboard de productos de TiendaNube
 **Archivos modificados:**
 - `src/app/api/emails/order-confirmation/route.ts` - Correcciones de tipos y campos
 
+### **2025-10-10 17:29 - Corrección de Funcionalidad Wishlist** ✅
+
+**Problema resuelto:**
+- Wishlist funcionaba con `product_id` pero la tabla en DB esperaba `product_variant_id`
+- Error de loop infinito en hook `use-wishlist.ts` por inconsistencia de tipos
+- Componentes usando nivel de producto en lugar de variante para wishlist
+
+**Solución aplicada:**
+- Creada migración SQL `20250130000002_create_wishlist_table.sql` con esquema correcto
+- Corregido hook `use-wishlist.ts` para usar `product_variant_id` en todas las operaciones
+- Actualizada interfaz `WishlistItem` para incluir información anidada de variante y producto
+- Modificada página de producto para usar `selectedVariant.id` en lugar de `product.id`
+- Actualizado `ProductCard` para usar primera variante activa en wishlist
+- Corregida migración de categorías que tenía referencia incorrecta a columna `is_featured`
+
+**Verificaciones realizadas:**
+- ✅ ESLint: Pasado sin errores
+- ✅ TypeScript: Pasado sin errores  
+- ✅ Migraciones aplicadas exitosamente a la base de datos
+- ✅ Servidor de desarrollo funcionando en http://localhost:3000
+- ✅ Preview sin errores en browser
+
+**Archivos modificados:**
+- `supabase/migrations/20250130000002_create_wishlist_table.sql` - Nueva migración para tabla wishlist
+- `supabase/migrations/20251206000001_update_categories.sql` - Corregida referencia a is_featured
+- `src/hooks/use-wishlist.ts` - Migrado de product_id a product_variant_id
+- `src/app/productos/[slug]/page.tsx` - Uso de selectedVariant.id para wishlist
+- `src/components/product/product-card.tsx` - Uso de primera variante activa para wishlist
+
+### **2025-10-10 18:21 - Build Exitoso y Preparación para Merge** ✅
+
+**Verificación final completada:**
+- ✅ Build de producción: Exitoso sin errores ni warnings
+- ✅ Todas las rutas compiladas correctamente
+- ✅ Bundle sizes optimizados (102 kB shared, páginas dinámicas ~10-13 kB)
+- ✅ Funcionalidad de wishlist completamente operativa a nivel de variante
+
+**Estado del proyecto:**
+- Corrección de wishlist finalizada y verificada
+- Código listo para merge a develop
+- Todas las verificaciones de calidad pasadas
+
 ### **2025-09-30 20:50 - Página de Configuración del Administrador** ✅
 
 **Funcionalidad implementada:**

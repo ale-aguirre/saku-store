@@ -2,10 +2,10 @@
 -- Categories should be: Conjuntos, Corpiños, Bombachas, Sets, Promo, Oferta
 
 -- First, add the missing categories
-INSERT INTO categories (id, name, slug, description, is_active, is_featured)
+INSERT INTO categories (id, name, slug, description, is_active)
 VALUES 
-  (gen_random_uuid(), 'Promo', 'promo', 'Productos en promoción especial', true, true),
-  (gen_random_uuid(), 'Oferta', 'oferta', 'Productos en oferta', true, true)
+  (gen_random_uuid(), 'Promo', 'promo', 'Productos en promoción especial', true),
+  (gen_random_uuid(), 'Oferta', 'oferta', 'Productos en oferta', true)
 ON CONFLICT (slug) DO NOTHING;
 
 -- Remove the "Otros" category if it exists (we'll reassign those products)

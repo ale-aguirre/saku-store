@@ -267,16 +267,17 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                 variant="outline" 
                 size="sm" 
                 className="flex-1"
-                onClick={() => toggleWishlist(product.id)}
+                onClick={() => selectedVariant && toggleWishlist(selectedVariant.id)}
+                disabled={!selectedVariant}
               >
                 <Heart 
                   className={`h-4 w-4 mr-2 transition-colors ${
-                    isInWishlist(product.id) 
+                    selectedVariant && isInWishlist(selectedVariant.id) 
                       ? 'fill-red-500 text-red-500' 
                       : 'text-muted-foreground'
                   }`} 
                 />
-                {isInWishlist(product.id) ? 'En Favoritos' : 'Favoritos'}
+                {selectedVariant && isInWishlist(selectedVariant.id) ? 'En Favoritos' : 'Favoritos'}
               </Button>
               <Button variant="outline" size="sm" className="flex-1">
                 <Share2 className="h-4 w-4 mr-2" />

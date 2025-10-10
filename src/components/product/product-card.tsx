@@ -35,12 +35,17 @@ function ProductCardComponent({ product, className, compact = false }: ProductCa
   const [selectedColor, setSelectedColor] = useState<string>('')
   const [quickAddOpen, setQuickAddOpen] = useState(false)
 
+  // Obtener la primera variante activa para el wishlist
+  const firstActiveVariant = product.variants?.find(v => v.is_active)
+  
   // Memoizar callbacks para evitar re-renders
   const handleWishlistToggle = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    toggleWishlist(product.id)
-  }, [product.id, toggleWishlist])
+    if (firstActiveVariant) {
+      toggleWishlist(firstActiveVariant.id)
+    }
+  }, [firstActiveVariant, toggleWishlist])
 
   const handleQuickAddOpen = useCallback((open: boolean) => {
     setQuickAddOpen(open)
@@ -154,13 +159,14 @@ function ProductCardComponent({ product, className, compact = false }: ProductCa
         variant="ghost"
         size="icon"
         className="absolute top-2 right-2 z-10 h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm opacity-0 transition-opacity group-hover:opacity-100"
-        aria-label={isInWishlist(product.id) ? "Remover de favoritos" : "Agregar a favoritos"}
+        aria-label={firstActiveVariant && isInWishlist(firstActiveVariant.id) ? "Remover de favoritos" : "Agregar a favoritos"}
         onClick={handleWishlistToggle}
+        disabled={!firstActiveVariant}
       >
         <Heart 
           className={cn(
             "h-4 w-4 transition-colors",
-            isInWishlist(product.id) 
+            firstActiveVariant && isInWishlist(firstActiveVariant.id) 
               ? "fill-red-500 text-red-500" 
               : "text-muted-foreground hover:text-red-500"
           )} 
