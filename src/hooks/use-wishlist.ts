@@ -23,7 +23,6 @@ export function useWishlist() {
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const { user } = useAuth()
-  const supabase = createClient()
 
   // Cargar items de la wishlist
   const loadWishlist = useCallback(async () => {
@@ -34,6 +33,7 @@ export function useWishlist() {
 
     setIsLoading(true)
     try {
+      const supabase = createClient()
       const { data, error } = await (supabase as any)
         .from('wishlist')
         .select(`
@@ -65,7 +65,7 @@ export function useWishlist() {
     } finally {
       setIsLoading(false)
     }
-  }, [user, supabase])
+  }, [user])
 
   // Agregar producto a la wishlist
   const addToWishlist = async (productId: string) => {
@@ -75,6 +75,7 @@ export function useWishlist() {
     }
 
     try {
+      const supabase = createClient()
       const { error } = await supabase
         .from('wishlist')
         .insert({
@@ -110,6 +111,7 @@ export function useWishlist() {
     }
 
     try {
+      const supabase = createClient()
       const { error } = await (supabase as any)
         .from('wishlist')
         .delete()
