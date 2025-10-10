@@ -81,9 +81,13 @@
 
 ## In Progress
 
-<!-- Tareas actualmente en desarrollo -->
-
-<!-- Vacío - todas las tareas en progreso completadas -->
+- [ ] (TB-030) Análisis de estado actual del sistema — Owner: Saku — TS started: 2025-10-10 13:51
+  - Goal: Documentar estado actual antes de hacer cambios, identificar warnings, loops, precios incorrectos
+  - Scope: ESLint warnings, wishlist loop, estructura DB productos/precios, UI issues
+  - Acceptance: Estado documentado completamente, issues identificados y priorizados
+  - Priority: High
+  - Files: products-page-content.tsx, use-wishlist.ts, DB productos/precios
+  - Status: Warnings identificados, wishlist loop localizado, próximos pasos definidos
 
 ---
 
@@ -94,6 +98,56 @@
 ---
 
 ## Backlog (tareas pendientes)
+
+### Correcciones Críticas - Prioridad Alta
+- [ ] (TB-031) Corregir warnings TypeScript y encoding de caracteres — Owner: Saku — TS added: 2025-10-10 13:51
+  - Goal: Eliminar warnings ESLint en products-page-content.tsx y corregir encoding tildes
+  - Scope: Unused directive línea 69, missing dependency línea 71, caracteres especiales
+  - Priority: High
+
+- [ ] (TB-032) Resolver loop infinito de errores en wishlist — Owner: Saku — TS added: 2025-10-10 13:51
+  - Goal: Eliminar errores recurrentes "Error loading wishlist" en use-wishlist.ts
+  - Scope: Líneas 56 y 63, lógica de carga y manejo de errores
+  - Priority: High
+
+- [ ] (TB-033) Corregir formato de precios en DB y validar estructura — Owner: Saku — TS added: 2025-10-10 13:51
+  - Goal: Cambiar precios de 2400000 a 24000 ARS, validar estructura actual
+  - Scope: Tabla productos, variantes, formato precios, scripts migración
+  - Priority: High
+
+### Mejoras UI/UX - Prioridad Media
+- [ ] (TB-034) Cambiar ProductCard: descripción breve vs talles — Owner: Saku — TS added: 2025-10-10 13:51
+  - Goal: Mostrar descripción breve editable desde admin en lugar de talles
+  - Scope: ProductCard component, admin interface para descripciones
+  - Priority: Medium
+
+- [ ] (TB-035) Corregir superposición botones 'X' en modal carrito — Owner: Saku — TS added: 2025-10-10 13:51
+  - Goal: Resolver jerarquía visual y superposición de botones en modal
+  - Scope: Cart modal, z-index, positioning
+  - Priority: Medium
+
+### Configuración Admin - Prioridad Media
+- [ ] (TB-036) Crear configuración admin para textos de envío — Owner: Saku — TS added: 2025-10-10 13:51
+  - Goal: Textos editables para Cadete Córdoba, Envío Nacional, lógica envío gratis
+  - Scope: Admin panel, site_settings, shipping configuration
+  - Priority: Medium
+
+- [ ] (TB-037) Crear sección 'Tienda' en admin para configurar textos e imágenes — Owner: Saku — TS added: 2025-10-10 13:51
+  - Goal: Panel admin para gestionar contenido editable de la tienda
+  - Scope: Admin section, copy_blocks, image management
+  - Priority: Medium
+
+### Lógica de Productos - Prioridad Media
+- [ ] (TB-038) Corregir lógica de imágenes productos — Owner: Saku — TS added: 2025-10-10 13:51
+  - Goal: Múltiples imágenes por producto, asociación opcional por color (no por variante)
+  - Scope: Product images, variant images, color associations
+  - Priority: Medium
+
+### Automatizaciones - Prioridad Baja
+- [ ] (TB-039) Planificar integración n8n para automatizaciones — Owner: Saku — TS added: 2025-10-10 13:51
+  - Goal: Integrar n8n para redes sociales, carritos abandonados, CRM
+  - Scope: n8n setup, webhooks, automation workflows
+  - Priority: Low
 
 ### Tema claro/oscuro - Prioridad Media - COMPLETADO
 - [x] (TB-017) Corregir AdminSidebar - revisar clases hardcodeadas restantes — Owner: Saku — TS done: 2025-10-03 17:35
