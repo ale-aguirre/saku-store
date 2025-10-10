@@ -20,6 +20,24 @@
 
 ## **REGISTRO DE CAMBIOS RECIENTES**
 
+### **2025-10-10 19:41 - ProductCard: Descripción en lugar de Talles** ✅
+
+**Cambios implementados:**
+- ✅ **ProductCard modificado**: Reemplazada sección de talles por descripción del producto
+- ✅ **Truncado de texto**: Aplicado `line-clamp-2` para limitar descripción a 2 líneas
+- ✅ **Test unitario**: Agregado test para verificar funcionalidad de descripción
+- ✅ **Verificación visual**: Confirmado funcionamiento en página de productos
+
+**Archivos modificados:**
+- `src/components/product/product-card.tsx`: Cambio de talles a descripción
+- `tests/unit/product-card-description.test.tsx`: Test unitario nuevo
+
+**Calidad verificada:**
+- ✅ ESLint: Sin errores ni warnings
+- ✅ TypeScript: Verificación de tipos exitosa  
+- ✅ Preview: Funcionamiento visual confirmado en /productos
+- 🔄 **Pendiente**: Merge a develop requiere autorización
+
 ### **2025-01-09 00:37 - Optimizaciones de Rendimiento del Catálogo** ✅
 
 **Cambios implementados:**

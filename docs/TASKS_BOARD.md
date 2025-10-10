@@ -136,10 +136,13 @@
   - Checks: DB Structure ✅ | Price Format ✅
 
 ### Mejoras UI/UX - Prioridad Media
-- [ ] (TB-034) Cambiar ProductCard: descripción breve vs talles — Owner: Saku — TS added: 2025-10-10 13:51
+- [x] (TB-034) Cambiar ProductCard: descripción breve vs talles — Owner: Saku — TS done: 2025-10-10 19:41
   - Goal: Mostrar descripción breve editable desde admin en lugar de talles
   - Scope: ProductCard component, admin interface para descripciones
   - Priority: Medium
+  - How: Modificado componente ProductCard para mostrar descripción del producto con line-clamp-2. Preview verificado en /productos. Commit realizado en rama feature/product-card-description.
+  - Files: src/components/product/product-card.tsx
+  - Checks: ESLint ✅ | Types ✅ | Preview ✅
 
 - [ ] (TB-035) Corregir superposición botones 'X' en modal carrito — Owner: Saku — TS added: 2025-10-10 13:51
   - Goal: Resolver jerarquía visual y superposición de botones en modal
