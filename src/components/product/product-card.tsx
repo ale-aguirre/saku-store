@@ -8,7 +8,6 @@ import { OfferBadge } from '@/components/ui/offer-badge'
 import { ShoppingCart, Heart, Eye } from 'lucide-react'
 import { ProductImage } from '@/components/ui/product-image'
 import type { ProductWithVariantsAndStock } from '@/types/catalog'
-import { categoryRequiresSizes } from '@/types/catalog'
 import { useCart } from '@/hooks/use-cart'
 import { useState, memo, useCallback } from 'react'
 import { useWishlist } from '@/hooks/use-wishlist'
@@ -48,7 +47,8 @@ function ProductCardComponent({ product, className, compact = false }: ProductCa
   }, [])
   
   // Determinar si el producto requiere talles
-  const requiresSizes = categoryRequiresSizes(product.category?.name || '')
+  // Basado en datos reales: si el producto tiene talles disponibles
+  const requiresSizes = Array.isArray(product.available_sizes) && product.available_sizes.length > 0
   // Usar datos reales de ofertas del backend
   const discountPercentage = product.discount_percentage || 0
 
@@ -319,6 +319,31 @@ function ProductCardComponent({ product, className, compact = false }: ProductCa
                   </Select>
                 </div>
                 
+                {/* Disponibilidad de la combinación seleccionada */}
+                {(
+                  (requiresSizes ? !!selectedSize : true) && !!selectedColor
+                ) && (
+                  (() => {
+                    const v = product.variants.find(
+                      (variant) => (requiresSizes ? variant.size === selectedSize : variant.size === null) &&
+                        variant.color === selectedColor && variant.is_active
+                    )
+                    return (
+                      <div className="text-sm">
+                        {v ? (
+                          v.is_in_stock ? (
+                            <span className="text-green-600 dark:text-green-400">Disponible</span>
+                          ) : (
+                            <span className="text-destructive">Agotado</span>
+                          )
+                        ) : (
+                          <span className="text-muted-foreground">Combinación no disponible</span>
+                        )}
+                      </div>
+                    )
+                  })()
+                )}
+
                 <div className="flex justify-between pt-4">
                   <DialogClose asChild>
                     <Button variant="outline">Cancelar</Button>

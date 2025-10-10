@@ -217,15 +217,15 @@
 
 ### **Prioridad Alta (F1 MVP Sales)**
 
-1. [ ] (TB-002) Paginación de productos en PLP — Rationale: Manejar catálogos grandes eficientemente
+1. [x] (TB-002) Paginación de productos en PLP — Rationale: Manejar catálogos grandes eficientemente — TS done: 2025-10-09 20:03
    - Estimación: 2-3 días | Componente Pagination + URL state + testing E2E
-   
-2. [ ] (TB-003) Sistema de filtros de productos — Rationale: Mejorar experiencia de búsqueda
+
+2. [x] (TB-003) Sistema de filtros de productos — Rationale: Mejorar experiencia de búsqueda — TS done: 2025-10-09 20:03
    - Estimación: 3-4 días | Filtros por categoría/talle/color/precio + URL state
 
 ### **Prioridad Media**
 
-3. [ ] (TB-004) Panel de administración estilo TiendaNube — Rationale: Gestión completa del e-commerce
+3. [x] (TB-004) Panel de administración estilo TiendaNube — Rationale: Gestión completa del e-commerce — TS done: 2025-10-09 20:03
    - Estimación: 5-7 días | Dashboard + CRUD productos/órdenes/stock según admin-panel-design-specs.md
    
 4. [ ] (TB-005) Mejora sistema de simulación de compras — Rationale: Testing automatizado robusto
@@ -234,20 +234,20 @@
 ### **Prioridad Baja (Optimizaciones)**
 
 5. [ ] (UI-001) Mejorar selector de variantes en PDP — Rationale: UX más clara para talle/color
-6. [ ] (PERF-001) Optimizar carga de imágenes de productos — Rationale: Performance en PLP
-7. [ ] (ADMIN-001) Panel de gestión de cupones — Rationale: Facilitar creación/edición de descuentos
+6. [x] (PERF-001) Optimizar carga de imágenes de productos — Rationale: Performance en PLP — TS done: 2025-10-09 20:03
+7. [x] (ADMIN-001) Panel de gestión de cupones — Rationale: Facilitar creación/edición de descuentos — TS done: 2025-10-09 20:03
 8. [ ] (EMAIL-001) Templates de emails transaccionales — Rationale: Comunicación profesional con clientes
 9. [ ] (SEO-001) Implementar schema.org para productos — Rationale: Mejor indexación en buscadores
 
 ### **Nuevas tareas identificadas (2025-09-30)**
 
-10. [ ] (ADMIN-002) Implementar selector de tema claro/oscuro en dashboard admin — Rationale: Consistencia UX con sitio público
-11. [ ] (ADMIN-003) Hacer dinámicos los estilos de componentes del dashboard — Rationale: Evitar hardcodeo, usar tokens/variables
-12. [ ] (FIX-002) Corregir visualización de precios en /admin/productos — Rationale: Los precios no aparecen en la tabla
-13. [ ] (FIX-003) Corregir lógica de badge de poco stock — Rationale: No mostrar badge si stock > 20
-14. [ ] (FIX-004) Arreglar carga de productos en /productos — Rationale: Solo muestra "Cargando..." indefinidamente
-15. [ ] (UI-002) Implementar componente Loader global con animación — Rationale: UX consistente, no textos de carga
-16. [ ] (ADMIN-004) Implementar página de edición /admin/productos/[id] — Rationale: Error 404 al intentar editar producto
+10. [x] (ADMIN-002) Implementar selector de tema claro/oscuro en dashboard admin — Rationale: Consistencia UX con sitio público — TS done: 2025-10-09 20:03
+11. [x] (ADMIN-003) Hacer dinámicos los estilos de componentes del dashboard — Rationale: Evitar hardcodeo, usar tokens/variables — TS done: 2025-10-09 20:03
+12. [x] (FIX-002) Corregir visualización de precios en /admin/productos — Rationale: Los precios no aparecen en la tabla — TS done: 2025-10-09 20:03
+13. [x] (FIX-003) Corregir lógica de badge de poco stock — Rationale: No mostrar badge si stock > 20 — TS done: 2025-10-09 20:03
+14. [x] (FIX-004) Arreglar carga de productos en /productos — Rationale: Solo muestra "Cargando..." indefinidamente — TS done: 2025-10-09 20:03
+15. [x] (UI-002) Implementar componente Loader global con animación — Rationale: UX consistente, no textos de carga — TS done: 2025-10-09 20:03
+16. [x] (ADMIN-004) Implementar página de edición /admin/productos/[id] — Rationale: Error 404 al intentar editar producto — TS done: 2025-10-09 20:03
 17. [ ] (FIX-005) Corregir estado del botón login cuando usuario logueado — Rationale: Botón queda disabled en home estando logueado
 
 ---
