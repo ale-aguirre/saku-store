@@ -222,6 +222,7 @@ export function ProductStockManager({
                 <Input
                   id="quantity"
                   type="number"
+                  step="1"
                   min="1"
                   max={
                     operation === "remove" ? selectedVariant.stock_quantity : undefined
