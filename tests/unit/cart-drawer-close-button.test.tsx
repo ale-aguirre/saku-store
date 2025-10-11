@@ -1,20 +1,20 @@
-import { render, screen } from '@testing-library/react'
+import { render } from '@testing-library/react'
+import { screen } from '@testing-library/dom'
 import { CartDrawer } from '@/components/cart/cart-drawer'
 import { useCart } from '@/hooks/use-cart'
+import { vi } from 'vitest'
 
 // Mock del hook useCart
-jest.mock('@/hooks/use-cart')
-const mockUseCart = useCart as jest.MockedFunction<typeof useCart>
+vi.mock('@/hooks/use-cart')
+const mockUseCart = useCart as any
 
 // Mock de next/image
-jest.mock('next/image', () => ({
-  __esModule: true,
+vi.mock('next/image', () => ({
   default: ({ src, alt, ...props }: any) => <img src={src} alt={alt} {...props} />
 }))
 
 // Mock de next/link
-jest.mock('next/link', () => ({
-  __esModule: true,
+vi.mock('next/link', () => ({
   default: ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>
 }))
 
@@ -25,14 +25,14 @@ describe('CartDrawer Close Button', () => {
       isOpen: true,
       shipping: null,
       coupon: null,
-      addItem: jest.fn(),
-      removeItem: jest.fn(),
-      updateQuantity: jest.fn(),
-      setShipping: jest.fn(),
-      setCoupon: jest.fn(),
-      clearCart: jest.fn(),
-      openCart: jest.fn(),
-      closeCart: jest.fn(),
+      addItem: vi.fn(),
+      removeItem: vi.fn(),
+      updateQuantity: vi.fn(),
+      setShipping: vi.fn(),
+      setCoupon: vi.fn(),
+      clearCart: vi.fn(),
+      openCart: vi.fn(),
+      closeCart: vi.fn(),
       getTotalItems: () => 0,
       getTotalPrice: () => 0,
       getDiscountAmount: () => 0,
@@ -75,14 +75,14 @@ describe('CartDrawer Close Button', () => {
       isOpen: true,
       shipping: null,
       coupon: null,
-      addItem: jest.fn(),
-      removeItem: jest.fn(),
-      updateQuantity: jest.fn(),
-      setShipping: jest.fn(),
-      setCoupon: jest.fn(),
-      clearCart: jest.fn(),
-      openCart: jest.fn(),
-      closeCart: jest.fn(),
+      addItem: vi.fn(),
+      removeItem: vi.fn(),
+      updateQuantity: vi.fn(),
+      setShipping: vi.fn(),
+      setCoupon: vi.fn(),
+      clearCart: vi.fn(),
+      openCart: vi.fn(),
+      closeCart: vi.fn(),
       getTotalItems: () => 2,
       getTotalPrice: () => 2000,
       getDiscountAmount: () => 0,
@@ -119,14 +119,14 @@ describe('CartDrawer Close Button', () => {
       isOpen: true,
       shipping: null,
       coupon: null,
-      addItem: jest.fn(),
-      removeItem: jest.fn(),
-      updateQuantity: jest.fn(),
-      setShipping: jest.fn(),
-      setCoupon: jest.fn(),
-      clearCart: jest.fn(),
-      openCart: jest.fn(),
-      closeCart: jest.fn(),
+      addItem: vi.fn(),
+      removeItem: vi.fn(),
+      updateQuantity: vi.fn(),
+      setShipping: vi.fn(),
+      setCoupon: vi.fn(),
+      clearCart: vi.fn(),
+      openCart: vi.fn(),
+      closeCart: vi.fn(),
       getTotalItems: () => 1,
       getTotalPrice: () => 1000,
       getDiscountAmount: () => 0,

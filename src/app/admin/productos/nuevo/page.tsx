@@ -122,7 +122,7 @@ export default function NewProductPage() {
           name: formData.name,
           description: formData.description || null,
           sku: formData.sku,
-          base_price: Math.round(parseFloat(formData.base_price) * 100), // Convert to cents
+          base_price: Math.round(parseFloat(formData.base_price) * 100), // Convert to centavos
           brand: formData.brand || null,
           category_id: formData.category_id || null,
           is_active: formData.is_active,
@@ -237,14 +237,14 @@ export default function NewProductPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="base_price">Precio Base *</Label>
+                  <Label htmlFor="base_price">Precio Base (en pesos) *</Label>
                   <Input
                     id="base_price"
                     type="number"
-                    step="0.01"
+                    step="1"
                     value={formData.base_price}
                     onChange={(e) => handleInputChange('base_price', e.target.value)}
-                    placeholder="0.00"
+                    placeholder="15000"
                     required
                   />
                 </div>

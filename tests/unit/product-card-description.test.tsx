@@ -1,19 +1,21 @@
-import { render, screen } from '@testing-library/react'
+import { render } from '@testing-library/react'
+import { screen } from '@testing-library/dom'
 import { ProductCard } from '@/components/product/product-card'
 import { ProductWithVariantsAndStock } from '@/types/catalog'
+import { vi } from 'vitest'
 
 // Mock de useCart y useWishlist
-jest.mock('@/hooks/use-cart', () => ({
+vi.mock('@/hooks/use-cart', () => ({
   useCart: () => ({
-    addItem: jest.fn(),
-    openCart: jest.fn(),
+    addItem: vi.fn(),
+    openCart: vi.fn(),
   }),
 }))
 
-jest.mock('@/hooks/use-wishlist', () => ({
+vi.mock('@/hooks/use-wishlist', () => ({
   useWishlist: () => ({
-    isInWishlist: jest.fn(() => false),
-    toggleWishlist: jest.fn(),
+    isInWishlist: vi.fn(() => false),
+    toggleWishlist: vi.fn(),
   }),
 }))
 

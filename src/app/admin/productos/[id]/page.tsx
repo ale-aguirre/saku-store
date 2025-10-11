@@ -265,36 +265,24 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log('🚀 Iniciando handleSubmit...')
     e.preventDefault()
-    
-    console.log('📋 FormData actual:', formData)
     
     // Validar campos obligatorios
     if (!formData.name || !formData.price || !formData.category) {
-      console.log('❌ Faltan campos obligatorios')
       alert('Por favor completa todos los campos obligatorios')
       return
     }
-
-    console.log('✅ Iniciando guardado...')
     setIsSubmitting(true)
     
     try {
       // Procesar imágenes: asegurar que sean un array válido, limpiar URLs y eliminar duplicados
-      console.log('🖼️ Procesando imágenes antes de guardar:', formData.images);
-      
-      // Asegurar que formData.images sea un array
       const imagesArray = Array.isArray(formData.images) ? formData.images : [];
-      console.log('🖼️ Array de imágenes confirmado:', imagesArray);
       
       // Limpiar y procesar imágenes de manera más estricta
       const processedImages = imagesArray
         .filter(img => img && typeof img === 'string' && img.trim() !== '') // Solo strings válidos
         .map(img => img.replace(/[`'"]/g, '').trim()) // Limpiar caracteres problemáticos
         .filter((img, index, self) => self.indexOf(img) === index); // Eliminar duplicados
-      
-      console.log('🖼️ Imágenes procesadas finales:', processedImages);
       
       // Crear FormData para la server action
       const formDataToSend = new FormData()
@@ -308,28 +296,34 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
       formDataToSend.append('is_featured', 'false')
       formDataToSend.append('images', JSON.stringify(processedImages))
       
-      console.log('🖼️ Imágenes a guardar (limpias):', processedImages)
-      console.log('🔄 Enviando datos a server action...')
-      
       // Usar server action
       const result = await updateProduct(productId, formDataToSend)
       
       if (!result.success) {
         throw new Error(result.error || 'Error desconocido')
       }
-      
-      console.log('✅ Producto actualizado correctamente:', result.data);
-      console.log('✅ Imágenes guardadas:', result.data?.images);
+
+      // Actualizar el estado local con los datos guardados
+      if (result.data) {
+        const updatedProduct = result.data as any
+        setProduct(updatedProduct as Product)
+        setFormData({
+          name: updatedProduct.name,
+          description: updatedProduct.description || '',
+          sku: updatedProduct.sku || '',
+          price: updatedProduct.base_price.toString(),
+          category: updatedProduct.category_id || '',
+          is_active: updatedProduct.is_active ?? true,
+          images: Array.isArray(updatedProduct.images) ? updatedProduct.images : []
+        })
+      }
 
       toast.success('Producto guardado correctamente')
-      // Refrescar datos del producto en la misma página para reflejar cambios
-      await fetchProduct()
     } catch (error) {
       console.error('💥 Error updating product:', error)
       const errorMessage = error instanceof Error ? error.message : 'Error al actualizar el producto'
       toast.error(errorMessage)
     } finally {
-      console.log('🏁 Finalizando guardado...')
       setIsSubmitting(false)
     }
   }

@@ -510,10 +510,12 @@ export async function getPriceRange(): Promise<{ min: number; max: number }> {
       const basePrice = product.base_price
       if (product.product_variants && product.product_variants.length > 0) {
         product.product_variants.forEach((variant: any) => {
-          allPrices.push(basePrice + variant.price_adjustment)
+          // Convertir de formato DB (centavos) a pesos
+          allPrices.push((basePrice + variant.price_adjustment) / 100)
         })
       } else {
-        allPrices.push(basePrice)
+        // Convertir de formato DB (centavos) a pesos
+        allPrices.push(basePrice / 100)
       }
     })
 

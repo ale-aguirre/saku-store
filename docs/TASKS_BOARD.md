@@ -14,6 +14,27 @@
 
 ## Today (focus del día)
 
+- [x] (TB-042) Investigar y corregir carga infinita en sección órdenes /admin — Owner: Saku — TS done: 2025-01-11 15:47
+  - Goal: La página /admin/ordenes no cargaba, quedaba "pensando" sin mostrar contenido
+  - Scope: Configuración de variables de entorno, conexión con Supabase
+  - Acceptance: Página de órdenes carga correctamente y muestra datos
+  - Priority: High
+  - How: Configuradas variables NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY en .env.local, servidor reiniciado
+  - Files: .env.local (creado), servidor reiniciado en puerto 3001
+  - Checks: Variables ✅ | Servidor ✅ | Órdenes de prueba ✅
+
+- [ ] (TB-043) Corregir formato de precios - eliminar centavos innecesarios — Owner: Saku — TS start: 2025-01-11 15:47
+  - Goal: Permitir valores exactos como 15000 sin agregar ceros adicionales al final
+  - Scope: Componentes de precio, formularios de producto, específicamente producto Lory
+  - Acceptance: Precios se muestran y editan sin centavos innecesarios
+  - Priority: High
+
+- [ ] (TB-044) Arreglar edición de imágenes producto Lory — Owner: Saku — TS start: 2025-01-11 15:47
+  - Goal: Habilitar drag&drop, reducir preview grande, mejorar separación de tabs
+  - Scope: Página de edición de productos, componentes de imagen, tabs de producto
+  - Acceptance: Drag&drop funcional, preview tamaño adecuado, tabs bien diferenciadas
+  - Priority: High
+
 - [x] (TB-015) Implementar soporte completo para tema claro/oscuro en sección /admin — Owner: Saku — TS done: 2025-09-30 20:39
   - Goal: Eliminar todas las clases hardcodeadas y hacer que la sección admin respete el tema seleccionado
   - Scope: Layout admin, dashboard, sidebar, páginas de productos/órdenes/cupones
@@ -144,10 +165,13 @@
   - Files: src/components/product/product-card.tsx
   - Checks: ESLint ✅ | Types ✅ | Preview ✅
 
-- [ ] (TB-035) Corregir superposición botones 'X' en modal carrito — Owner: Saku — TS added: 2025-10-10 13:51
+- [x] (TB-035) Corregir superposición botones 'X' en modal carrito — Owner: Saku — TS done: 2025-01-10 19:30
   - Goal: Resolver jerarquía visual y superposición de botones en modal
   - Scope: Cart modal, z-index, positioning
   - Priority: Medium
+  - How: Eliminado botón 'X' personalizado del SheetTitle, dejando solo el botón automático del SheetContent de shadcn/ui
+  - Files: src/components/cart/cart-drawer.tsx
+  - Checks: ESLint ✅ | Types ⚠️ (errores en tests) | Build ✅ | Preview ✅
 
 ### Configuración Admin - Prioridad Media
 - [ ] (TB-036) Crear configuración admin para textos de envío — Owner: Saku — TS added: 2025-10-10 13:51

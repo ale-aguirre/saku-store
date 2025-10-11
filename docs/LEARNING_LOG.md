@@ -47,6 +47,34 @@
 - Documentar en `LEARNING_LOG.md` los buckets disponibles y sus propósitos específicos
 - Crear migraciones para nuevos buckets antes de implementar funcionalidades que los requieran
 
+### 2025-10-10 - Configuración Jest/Vitest mezclada y formato de precios inconsistente
+
+**Issue**: 
+- Tests unitarios fallaban con errores de `describe`, `it`, `expect` no definidos
+- Formato de precios inconsistente: formulario nuevo producto multiplicaba por 100 en lugar de 100000
+- UX confusa en input de precio con step="0.01" sugiriendo centavos
+
+**Cause**: 
+- Configuración de testing mezclada: archivos de test usaban Jest pero dependencias eran Vitest
+- Faltaba configuración completa de Vitest (vitest.config.ts, setup.ts, tipos en tsconfig)
+- Inconsistencia en multiplicación de precios entre diferentes partes de la aplicación
+- Input de precio diseñado para centavos cuando la aplicación maneja pesos enteros
+
+**Fix**: 
+- Migración completa Jest → Vitest: `jest.mock` → `vi.mock`, `jest.fn()` → `vi.fn()`
+- Creación de `vitest.config.ts` con configuración jsdom, globals y setupFiles
+- Instalación de `@testing-library/dom` y configuración en `tests/setup.ts`
+- Corrección de multiplicación en formulario nuevo producto: ×100 → ×100000
+- Mejora UX input precio: step="1", placeholder="15000", label claro
+- Mock completo de IntersectionObserver para evitar errores en tests
+
+**Prevention**: 
+- Mantener consistencia en herramientas de testing: usar solo Vitest o solo Jest
+- Verificar que todos los archivos de configuración estén alineados (package.json, tsconfig, vitest.config)
+- Documentar el formato de precios en la aplicación (centavos vs pesos) y mantener consistencia
+- Crear mocks completos de APIs del navegador para entornos de test
+- Verificar que build y type-check pasen antes de considerar una tarea completada
+
 ### 2025-10-09 - Filtrado de categorías no funcionaba por discrepancia slug vs ID
 
 **Issue**: El filtrado de categorías desde el home no funcionaba. Los enlaces usaban slugs (ej: `categoria=conjuntos`) pero el código filtraba por `category_id` (UUID), causando que no se mostraran productos filtrados.

@@ -99,14 +99,14 @@ export function EditProductFormSimple({
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="price">Precio base</Label>
+                  <Label htmlFor="price">Precio base (en pesos)</Label>
                   <Input
                     id="price"
                     type="number"
-                    step="0.01"
-                    value={product.base_price}
-                    onChange={(e) => onProductChange('base_price', parseFloat(e.target.value))}
-                    placeholder="0.00"
+                    step="1"
+                    value={product.base_price ? product.base_price / 100 : ''}
+                    onChange={(e) => onProductChange('base_price', parseFloat(e.target.value) * 100)}
+                    placeholder="15000"
                     required
                   />
                 </div>
@@ -266,13 +266,13 @@ export function EditProductFormSimple({
                       <Label>Precio de comparación (oferta)</Label>
                       <Input
                         type="number"
-                        step="0.01"
+                        step="1"
                         min="0"
-                        value={variant.compare_at_price ? (variant.compare_at_price / 100).toFixed(2) : ''}
+                        value={variant.compare_at_price ? variant.compare_at_price / 100 : ''}
                         onChange={(e) => {
                           const value = e.target.value
-                          const priceInCents = value ? Math.round(parseFloat(value) * 100) : null
-                          onVariantChange(index, 'compare_at_price', priceInCents)
+                          const priceInDB = value ? Math.round(parseFloat(value) * 100) : null
+                          onVariantChange(index, 'compare_at_price', priceInDB)
                         }}
                         placeholder="Precio original (opcional)"
                       />
