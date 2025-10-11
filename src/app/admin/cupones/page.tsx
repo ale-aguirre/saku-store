@@ -296,6 +296,8 @@ export default function CouponsPage() {
                 <Input
                   id="value"
                   type="number"
+                  step={formData.type === 'percentage' ? '1' : '1'}
+                  min="0"
                   value={formData.value}
                   onChange={(e) => setFormData(prev => ({ ...prev, value: e.target.value }))}
                   placeholder={formData.type === 'percentage' ? '10' : '500'}
@@ -308,6 +310,8 @@ export default function CouponsPage() {
                 <Input
                   id="minimum_amount"
                   type="number"
+                  step="1"
+                  min="0"
                   value={formData.minimum_amount}
                   onChange={(e) => setFormData(prev => ({ ...prev, minimum_amount: e.target.value }))}
                   placeholder="1000"
@@ -319,6 +323,8 @@ export default function CouponsPage() {
                 <Input
                   id="usage_limit"
                   type="number"
+                  step="1"
+                  min="1"
                   value={formData.usage_limit}
                   onChange={(e) => setFormData(prev => ({ ...prev, usage_limit: e.target.value }))}
                   placeholder="100"
