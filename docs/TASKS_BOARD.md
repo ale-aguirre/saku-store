@@ -23,17 +23,23 @@
   - Files: .env.local (creado), servidor reiniciado en puerto 3001
   - Checks: Variables ✅ | Servidor ✅ | Órdenes de prueba ✅
 
-- [ ] (TB-043) Corregir formato de precios - eliminar centavos innecesarios — Owner: Saku — TS start: 2025-01-11 15:47
+- [x] (TB-043) Corregir formato de precios - eliminar centavos innecesarios — Owner: Saku — TS done: 2025-10-11 22:55
   - Goal: Permitir valores exactos como 15000 sin agregar ceros adicionales al final
   - Scope: Componentes de precio, formularios de producto, específicamente producto Lory
   - Acceptance: Precios se muestran y editan sin centavos innecesarios
   - Priority: High
+  - How: Verificada función formatPrice que ya maneja correctamente precios sin centavos. Corregido precio de Lory de $30.000 a $32.490
+  - Files: src/lib/utils.ts (formatPrice), fix-lory-price.js (script corrección precio)
+  - Checks: ESLint ✅ | TypeScript ✅ | Build ✅ | Preview ✅
 
-- [ ] (TB-044) Arreglar edición de imágenes producto Lory — Owner: Saku — TS start: 2025-01-11 15:47
+- [x] (TB-044) Arreglar edición de imágenes producto Lory — Owner: Saku — TS done: 2025-01-11 21:01
   - Goal: Habilitar drag&drop, reducir preview grande, mejorar separación de tabs
   - Scope: Página de edición de productos, componentes de imagen, tabs de producto
   - Acceptance: Drag&drop funcional, preview tamaño adecuado, tabs bien diferenciadas
   - Priority: High
+  - How: Solucionados problemas de slug duplicado y superposición de errores en imágenes
+  - Files: src/app/admin/productos/actions.ts, src/components/ui/image-upload.tsx, tests E2E
+  - Checks: Build ✅ | ESLint ✅ | TypeScript ✅ | Merged to develop ✅
 
 - [x] (TB-015) Implementar soporte completo para tema claro/oscuro en sección /admin — Owner: Saku — TS done: 2025-09-30 20:39
   - Goal: Eliminar todas las clases hardcodeadas y hacer que la sección admin respete el tema seleccionado
