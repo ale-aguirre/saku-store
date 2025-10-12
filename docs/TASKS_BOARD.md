@@ -41,6 +41,15 @@
   - Files: src/app/admin/productos/actions.ts, src/components/ui/image-upload.tsx, tests E2E
   - Checks: Build ✅ | ESLint ✅ | TypeScript ✅ | Merged to develop ✅
 
+- [x] (TB-045) Corregir caracteres de codificación en productos Mónaco — Owner: Saku — TS done: 2025-10-12 13:46
+  - Goal: Eliminar caracteres raros "M�naco" y reemplazar por "Mónaco" correctamente
+  - Scope: Base de datos, nombres de productos y slugs con problemas de codificación UTF-8
+  - Acceptance: Todos los productos Mónaco muestran el nombre correctamente sin caracteres raros
+  - Priority: High
+  - How: Identificados 4 productos con problemas de codificación, corregidos nombres y slugs en DB
+  - Files: scripts/fix-monaco-encoding.js (script de corrección), productos en base de datos
+  - Checks: ESLint ✅ | TypeScript ✅ | Preview ✅ | Base de datos actualizada ✅
+
 - [x] (TB-015) Implementar soporte completo para tema claro/oscuro en sección /admin — Owner: Saku — TS done: 2025-09-30 20:39
   - Goal: Eliminar todas las clases hardcodeadas y hacer que la sección admin respete el tema seleccionado
   - Scope: Layout admin, dashboard, sidebar, páginas de productos/órdenes/cupones
