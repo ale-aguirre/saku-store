@@ -51,22 +51,32 @@ export function EditProductFormSimple({
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       <Tabs defaultValue="basic" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="basic" className="flex items-center gap-2">
+        <TabsList className="grid w-full grid-cols-3 mb-8 h-14 p-1.5 bg-muted/30 rounded-lg border border-border/50">
+          <TabsTrigger 
+            value="basic" 
+            className="flex items-center gap-2 h-11 px-4 rounded-md data-[state=active]:bg-background data-[state=active]:shadow-md data-[state=active]:border data-[state=active]:border-border/20 hover:bg-muted/50 transition-all duration-200 font-medium"
+          >
             <Package className="h-4 w-4" />
-            Información Básica
+            <span className="hidden sm:inline">Información Básica</span>
+            <span className="sm:hidden">General</span>
           </TabsTrigger>
-          <TabsTrigger value="media" className="flex items-center gap-2">
+          <TabsTrigger 
+            value="media" 
+            className="flex items-center gap-2 h-11 px-4 rounded-md data-[state=active]:bg-background data-[state=active]:shadow-md data-[state=active]:border data-[state=active]:border-border/20 hover:bg-muted/50 transition-all duration-200 font-medium mx-1"
+          >
             <ImageIcon className="h-4 w-4" />
             Imágenes
           </TabsTrigger>
-          <TabsTrigger value="variants" className="flex items-center gap-2">
+          <TabsTrigger 
+            value="variants" 
+            className="flex items-center gap-2 h-11 px-4 rounded-md data-[state=active]:bg-background data-[state=active]:shadow-md data-[state=active]:border data-[state=active]:border-border/20 hover:bg-muted/50 transition-all duration-200 font-medium"
+          >
             <Settings className="h-4 w-4" />
             Variantes
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="basic" className="space-y-6">
+        <TabsContent value="basic" className="space-y-6 mt-6">
           <Card>
             <CardHeader>
               <CardTitle>Información del Producto</CardTitle>
@@ -166,6 +176,7 @@ export function EditProductFormSimple({
               <ImageUpload
                 value={product.images || []}
                 onChange={(images) => onProductChange('images', images)}
+                multiple={true}
                 maxImages={5}
               />
             </CardContent>
@@ -296,6 +307,7 @@ export function EditProductFormSimple({
                     <ImageUpload
                       value={Array.isArray(variant.images) ? variant.images as string[] : []}
                       onChange={(images) => onVariantChange(index, 'images', images)}
+                      multiple={true}
                       maxImages={3}
                     />
                   </div>

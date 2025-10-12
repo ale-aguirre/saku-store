@@ -65,15 +65,71 @@ export async function createProduct(formData: FormData) {
   }
 }
 
+// Función auxiliar para generar slug único
+async function generateUniqueSlug(supabase: any, name: string, currentProductId: string): Promise<string> {
+  const baseSlug = name.toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+
+  let slug = baseSlug
+  let counter = 1
+
+  while (true) {
+    // Verificar si el slug ya existe (excluyendo el producto actual)
+    const { error } = await supabase
+      .from('products')
+      .select('id')
+      .eq('slug', slug)
+      .neq('id', currentProductId)
+      .single()
+
+    if (error && error.code === 'PGRST116') {
+      // No se encontró producto con este slug, es único
+      return slug
+    }
+
+    if (error) {
+      // Error inesperado
+      throw error
+    }
+
+    // Si existe, agregar contador
+    slug = `${baseSlug}-${counter}`
+    counter++
+  }
+}
+
 export async function updateProduct(id: string, formData: FormData) {
   try {
     const supabase = createSupabaseAdmin()
     
+    // Obtener el producto actual para preservar su slug si es posible
+    const { data: currentProduct, error: fetchError } = await supabase
+      .from('products')
+      .select('slug, name')
+      .eq('id', id)
+      .single()
+
+    if (fetchError) {
+      console.error('Error fetching current product:', fetchError)
+      return { success: false, error: 'Error al obtener el producto actual' }
+    }
+
+    const newName = formData.get('name') as string
+    let slug = currentProduct.slug
+
+    // Si el nombre cambió o no hay slug, generar uno nuevo único
+    if (!slug || currentProduct.name !== newName) {
+      slug = await generateUniqueSlug(supabase, newName, id)
+    }
+    
     const data = {
-      name: formData.get('name') as string,
+      name: newName,
       description: formData.get('description') as string || null,
       sku: formData.get('sku') as string,
-      slug: formData.get('slug') as string || null,
+      slug: slug,
       category_id: formData.get('category_id') as string || null,
       base_price: parseFloat(formData.get('base_price') as string),
       is_active: formData.get('is_active') === 'true',

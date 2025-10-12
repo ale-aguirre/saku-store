@@ -119,7 +119,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     }
   }, [user, productId, fetchProduct])
 
-  const handleInputChange = (field: string, value: string | boolean) => {
+  const handleInputChange = (field: string, value: string | boolean | string[]) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -287,7 +287,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
       // Crear FormData para la server action
       const formDataToSend = new FormData()
       formDataToSend.append('name', formData.name)
-      formDataToSend.append('slug', formData.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''))
+      // El backend se encarga de generar/preservar el slug automáticamente
+      // No necesitamos enviarlo desde el frontend
       formDataToSend.append('description', formData.description || '')
       formDataToSend.append('sku', formData.sku || '')
       formDataToSend.append('base_price', parseFloat(formData.price).toString())

@@ -482,3 +482,50 @@
 - **Separar responsabilidades**: Distinguir claramente entre estilos de contenedor (`relative`, `overflow-hidden`) y estilos de imagen (`object-cover`, `transition-transform`)
 - **Documentar configuraciones**: Mantener registro de hostnames configurados y dependencias de imágenes externas
 - **Proceso incremental**: Resolver problemas uno a la vez y verificar cada fix antes de continuar con el siguiente
+
+### 2025-01-11 - Error de clave duplicada al editar productos (slug constraint)
+
+**Issue**: Error persistente "duplicate key value violates unique constraint products_slug_key" al intentar guardar cambios en productos existentes desde el panel de administración.
+
+**Cause**: 
+- La función `updateProduct` generaba un nuevo slug basado en el nombre del producto sin verificar si ya existía en la base de datos
+- Cuando el slug generado coincidía con uno existente (de otro producto), se violaba la constraint de unicidad
+- La lógica del frontend intentaba preservar el slug existente, pero fallaba cuando el slug era nulo o el nombre cambiaba
+- No había verificación de unicidad antes de asignar un slug a un producto
+
+**Fix**: 
+- Implementación de función `generateUniqueSlug()` en `actions.ts` que verifica la unicidad en la base de datos
+- Sistema de contadores automático: si un slug existe, agrega `-1`, `-2`, etc. hasta encontrar uno único
+- Lógica mejorada en `updateProduct()` para preservar slugs existentes cuando es posible
+- Simplificación del frontend eliminando la generación manual de slug, delegando toda la lógica al backend
+- Exclusión del producto actual en las verificaciones de unicidad para permitir actualizaciones sin cambio de slug
+
+**Prevention**: 
+- **Verificar unicidad en el backend**: Nunca confiar en que el frontend genere valores únicos para constraints de base de datos
+- **Sistemas de fallback**: Implementar contadores automáticos o sufijos únicos cuando se detecten duplicados
+- **Separar responsabilidades**: El frontend envía datos, el backend garantiza la integridad y unicidad
+- **Testing con datos reales**: Probar con bases de datos que contengan múltiples registros para detectar conflictos de unicidad
+- **Preservar datos existentes**: Cuando sea posible, mantener valores existentes en lugar de regenerarlos
+
+### 2025-01-11 - Superposición de errores en componente de carga de imágenes
+
+**Issue**: Los botones de eliminar y drag handle desaparecían cuando una imagen fallaba al cargar, y el estado de error persistía incorrectamente al reordenar o eliminar imágenes.
+
+**Cause**: 
+- El manejador de errores reemplazaba todo el contenido del contenedor de imagen, eliminando los controles de gestión
+- El estado de error se manejaba a nivel de componente padre en lugar de por imagen individual
+- Falta de reset del estado de error cuando cambiaba la prop `image`, causando que errores persistieran en imágenes nuevas
+- El placeholder de error se superponía a imágenes válidas después de reordenamientos
+
+**Fix**: 
+- Implementación de estado local `hasError` en cada `SortableImageItem` individual
+- Agregado de `useEffect` que resetea automáticamente `hasError` cuando cambia la prop `image`
+- Renderizado condicional que mantiene los controles (botones eliminar, drag handle) visibles independientemente del estado de error
+- Manejadores simplificados `onError` y `onLoad` que solo afectan el estado de la imagen específica
+
+**Prevention**: 
+- **Estado local por elemento**: Manejar estados de error a nivel de elemento individual, no a nivel de lista o contenedor
+- **Reset automático**: Implementar `useEffect` para limpiar estados cuando cambien las props relevantes
+- **Controles siempre accesibles**: Nunca reemplazar completamente el contenido de un elemento que contiene controles de gestión
+- **Testing de casos edge**: Probar comportamiento con imágenes que fallan al cargar, reordenamientos y eliminaciones
+- **Separar presentación de funcionalidad**: Los errores de presentación (imagen no carga) no deben afectar la funcionalidad (eliminar, reordenar)

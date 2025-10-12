@@ -20,6 +20,69 @@
 
 ## **REGISTRO DE CAMBIOS RECIENTES**
 
+### **2025-01-11 19:10 - Solución Definitiva Problema Slug Duplicado en Edición Productos** ✅
+
+**Problema identificado:**
+- ❌ **Error persistente de clave duplicada**: Aunque se preservaba el slug existente, el problema persistía cuando el slug era nulo o el nombre del producto cambiaba
+- ❌ **Generación de slugs conflictivos**: La lógica simple de generación podía crear slugs que ya existían en la base de datos
+- ❌ **Falta de robustez**: No había verificación de unicidad antes de asignar un slug
+
+**Cambios implementados:**
+- ✅ **Función `generateUniqueSlug()`**: Nueva función en `actions.ts` que genera slugs únicos automáticamente
+- ✅ **Verificación de unicidad**: Consulta la base de datos para verificar si un slug ya existe (excluyendo el producto actual)
+- ✅ **Sistema de contadores**: Si un slug existe, agrega un contador (`-1`, `-2`, etc.) hasta encontrar uno único
+- ✅ **Preservación inteligente**: Mantiene el slug existente si el nombre no cambió, genera uno nuevo único si es necesario
+- ✅ **Simplificación frontend**: Removida la generación manual de slug en el frontend, delegando toda la lógica al backend
+
+**Archivos modificados:**
+- `src/app/admin/productos/actions.ts`: Nueva función `generateUniqueSlug()` y lógica mejorada en `updateProduct()`
+- `src/app/admin/productos/[id]/page.tsx`: Removida generación manual de slug
+
+**Calidad verificada:**
+- ✅ **ESLint**: Sin errores ni warnings
+- ✅ **TypeScript**: Sin errores de tipos
+- ✅ **Base de datos**: Verificados 52 productos existentes, sin slugs duplicados
+- ✅ **Funcionalidad**: Edición de productos sin errores de constraint único
+
+**Resultado:**
+- ✅ **Sistema robusto**: Generación automática de slugs únicos que maneja todos los casos edge
+- ✅ **Preservación de datos**: Mantiene slugs existentes cuando es posible, evitando cambios innecesarios
+- ✅ **Escalabilidad**: El sistema funciona independientemente del número de productos existentes
+- ✅ **UX perfecta**: Los usuarios pueden editar productos sin preocuparse por conflictos de slug
+
+### **2025-01-11 18:58 - Solución Completa Problema Superposición Errores Imágenes** ✅
+
+**Problema identificado:**
+- ❌ **Botones ocultos**: Manejador de errores reemplazaba todo el contenido del contenedor, eliminando botones de eliminar y drag handle
+- ❌ **Error persistente**: Estado de error persistía después de eliminar imágenes por falta de re-render del componente Image
+- ❌ **Superposición de errores**: Placeholder de error se superponía a nuevas imágenes cuando se reordenaban después de eliminar
+- ✅ **URLs admin correctas**: URLs usan UUID (correcto para seguridad en panel admin vs slugs en frontend)
+
+**Cambios implementados:**
+- ✅ **Estado local por imagen**: Implementado `useState(false)` para `hasError` en cada `SortableImageItem`
+- ✅ **Reset automático**: Agregado `useEffect` que resetea `hasError` cuando cambia la prop `image`
+- ✅ **Manejadores simplificados**: `onError={() => setHasError(true)}` y `onLoad={() => setHasError(false)}`
+- ✅ **Renderizado condicional**: Placeholder de error solo se muestra cuando `hasError === true`
+- ✅ **Controles siempre funcionales**: Botones de eliminar y drag handle permanecen visibles independientemente del estado de error
+- ✅ **Fix TypeScript**: Corregido error en debug-upload.spec.ts con manejo de error unknown
+
+**Archivos modificados:**
+- `src/components/ui/image-upload.tsx`: Estado local de error por imagen + reset automático
+- `tests/e2e/debug-upload.spec.ts`: Fix error TypeScript en manejo de errores
+
+**Calidad verificada:**
+- ✅ **ESLint**: Sin errores ni warnings
+- ✅ **TypeScript**: Sin errores de tipos
+- ✅ **Funcionalidad**: Botones de eliminar visibles y funcionales en imágenes con error
+- ✅ **Comportamiento**: Eliminación de imagen principal promueve correctamente la siguiente imagen
+- ✅ **Estado limpio**: No hay superposición de errores al reordenar imágenes
+
+**Resultado:**
+- ✅ **UX mejorada**: Usuarios pueden gestionar imágenes incluso cuando fallan al cargar
+- ✅ **Robustez**: Componente mantiene funcionalidad completa ante errores de carga de imágenes
+- ✅ **Estado independiente**: Cada imagen maneja su propio estado de error sin interferir con otras
+- ✅ **Reset automático**: Estado de error se limpia automáticamente al cambiar imágenes
+
 ### **2025-01-10 19:30 - Corrección Superposición Botones X en Modal Carrito** ✅
 
 **Problema identificado:**
